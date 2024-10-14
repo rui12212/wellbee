@@ -25,9 +25,8 @@ SECRET_KEY = 'django-insecure-%8(($1b%-mblyg!75rre(n9$r1@rr@z4lsa9!h9qh(1(6y0&5h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
-
-
+# ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
+ALLOWED_HOSTS = ['157.175.176.151']
 # Application definition
 
 INSTALLED_APPS = [
@@ -82,13 +81,24 @@ WSGI_APPLICATION = 'wellbee.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'wellbee',
+#         'USER': 'root',
+#         'PASSWORD': 'Kruike221',
+#         'HOST': 'localhost',
+#         'PORT': '3306'
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wellbee',
-        'USER': 'root',
-        'PASSWORD': 'Kruike221',
-        'HOST': 'localhost',
+        'NAME': 'wellbee_aws_db',
+        'USER': 'admin',
+        'PASSWORD': 'yuiyuiyui7S',
+        'HOST': 'wellbee-rds-db.cfaq804m48c5.me-south-1.rds.amazonaws.com',
         'PORT': '3306'
     }
 }
