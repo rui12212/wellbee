@@ -293,7 +293,6 @@ class _SignInPageState extends State<SignInPage> {
     try {
       await DialogGenerator.showLoadingDialog(context: context);
       token = await SharedPrefs.fetchAccessToken();
-      print(token);
       if (token == null) {
         return false;
       } else {
@@ -313,12 +312,15 @@ class _SignInPageState extends State<SignInPage> {
         } else if (response.statusCode >= 400) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Internet Error occurred.')));
+          Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text('Something went wrong. Try again later')));
+          Navigator.pop(context);
         }
       }
     } catch (e) {
+      Navigator.pop(context);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error: $e')));
     }

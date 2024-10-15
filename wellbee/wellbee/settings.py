@@ -11,22 +11,27 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 from datetime import timedelta
 from pathlib import Path
+import environ
+
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+environ.Env.read_env(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%8(($1b%-mblyg!75rre(n9$r1@rr@z4lsa9!h9qh(1(6y0&5h'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 # ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
-ALLOWED_HOSTS = ['157.175.176.151']
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 # Application definition
 
 INSTALLED_APPS = [
@@ -94,12 +99,12 @@ WSGI_APPLICATION = 'wellbee.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wellbee_aws_db',
-        'USER': 'admin',
-        'PASSWORD': 'yuiyuiyui7S',
-        'HOST': 'wellbee-rds-db.cfaq804m48c5.me-south-1.rds.amazonaws.com',
-        'PORT': '3306'
+        'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.mysql'),
+        'NAME': env('DATABASE_NAME'),
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASSWORD'),
+        'HOST': env('DATABASE_HOST'),
+        'PORT': env('DATABASE_PORT', default='3306'),
     }
 }
 
