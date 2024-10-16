@@ -391,8 +391,8 @@ class AttendeeDisplay extends StatelessWidget {
           ),
           Expanded(
               child: Container(
-                  height: 150.h,
-                  padding: EdgeInsets.all(18).h,
+                  height: 160.h,
+                  padding: EdgeInsets.all(16).h,
                   decoration: BoxDecoration(
                       color: Colors.white,
                       // boxShadow: shadowList,
@@ -429,7 +429,7 @@ class AttendeeDisplay extends StatelessWidget {
                                   TextStyle(fontSize: 16.sp, color: kColorText))
                         ],
                       ),
-                      SizedBox(height: 10.h),
+                      // SizedBox(height: 10.h),
                       Align(
                           alignment: Alignment.topLeft,
                           child: goal == ''

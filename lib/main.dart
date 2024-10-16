@@ -155,36 +155,59 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String? token = '';
-  bool isAttendee = false;
+  bool? isAttendee = false;
   bool isToken = false;
+  int attendeeInt = 2;
 
-  void autoLoad() {
+  Future<void>? autoLoad() {
     if (isToken == true && isAttendee == true) {
-      Navigator.push(context, MaterialPageRoute(
-        builder: (context) {
-          return const TopPage(0);
-        },
-      ));
+      // print(isAttendee);
+      // Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const TopPage(0)),
+      );
     }
     if (isToken == true && isAttendee == false) {
-      Navigator.push(context, MaterialPageRoute(
-        builder: (context) {
-          return const FirstAttendeeAddPage();
-        },
-      ));
+      // Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const FirstAttendeeAddPage()),
+      );
     }
-    return;
+    Navigator.pop(context);
+    // return;
   }
 
   Future<void> fetchTokenAndBool() async {
     token = await SharedPrefs.fetchAccessToken();
     if (token != null) {
-      bool attendeeExists = await _fetchAttendeeExist();
+      int fetchedAttendeeInt = await _fetchAttendeeExist();
       setState(() {
-        isToken = true;
-        isAttendee = attendeeExists;
+        attendeeInt = fetchedAttendeeInt;
       });
-      autoLoad();
+
+      if (attendeeInt == 0) {
+        setState(() {
+          isToken = true;
+          isAttendee = true;
+        });
+        if (mounted) autoLoad();
+      } else if (attendeeInt == 1) {
+        setState(() {
+          isToken = true;
+          isAttendee = false;
+        });
+        if (mounted) autoLoad();
+      } else if (attendeeInt == 2) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                'Error occurred. Try again later with internet connection')));
+        // print('attendeeInt:$attendeeInt');
+        // print('isToken:$isToken');
+        // print('isAttendee:$isAttendee');
+        return;
+      }
     } else {
       setState(() {
         isToken = false;
@@ -233,11 +256,16 @@ class _SignInPageState extends State<SignInPage> {
         final refreshToken = data['refresh'];
         // print(accessToken);
         await SharedPrefs.setAccessToken(accessToken);
-        bool attendeeExists = await _fetchAttendeeExist();
-        setState(() {
-          isAttendee = attendeeExists;
-        });
-        // print(accessToken);
+        int attendeeInt = await _fetchAttendeeExist();
+        if (attendeeInt == 0) {
+          setState(() {
+            isAttendee = true;
+          });
+        } else if (attendeeInt == 1) {
+          setState(() {
+            isAttendee = false;
+          });
+        }
         Navigator.pop(context);
         await Future.delayed(Duration(milliseconds: 250));
 
@@ -258,11 +286,6 @@ class _SignInPageState extends State<SignInPage> {
           );
         }
       } else if (response.statusCode > 350) {
-        // ロードの終了
-
-        // Navigator.pop(context);
-        // await Future.delayed(Duration(milliseconds: 400));
-
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
                 'Error occurred. Mobile number or password maybe wrong.')));
@@ -305,24 +328,30 @@ class _SignInPageState extends State<SignInPage> {
         ]);
         if (response.statusCode == 200) {
           List<dynamic> data = jsonDecode(response.body);
+          // print(data);
           if (data.isNotEmpty) {
-            return true;
+            // ネット正常＋attendeeがいる
+            return 0;
           } else
-            return false;
+            // ネット正常＋attendeeがいない
+            return 1;
         } else if (response.statusCode >= 400) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Internet Error occurred.')));
           Navigator.pop(context);
+          return 2;
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text('Something went wrong. Try again later')));
           Navigator.pop(context);
+          return 2;
         }
       }
     } catch (e) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error: $e')));
+      return 2;
     }
   }
 
@@ -349,7 +378,7 @@ class _SignInPageState extends State<SignInPage> {
                 child: Container(
                     child: CustomTextBox(
                   label: 'Mobile Number',
-                  hintText: '10 digits number',
+                  hintText: 'ex) 7501234567',
                   controller: _phoneController,
                 ).phoneFieldDecoration()),
               ),

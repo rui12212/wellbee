@@ -221,7 +221,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Container(
                 width: 390.w,
-                height: 140.h,
+                height: 160.h,
                 child: Material(
                   color: kColorPrimary,
                   // elevation: 68,
@@ -253,13 +253,13 @@ class _HomePageState extends State<HomePage> {
                                 snapshot.data == null) {
                               return Container(
                                 width: 390.w,
-                                // height: 130,
+                                // height: 300.h,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text('No Reservation',
                                         style: TextStyle(
-                                            fontSize: 28.sp,
+                                            fontSize: 28.h,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white)),
                                     Text('1.Add Member from "Member" Page',
