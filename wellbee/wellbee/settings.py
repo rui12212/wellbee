@@ -97,27 +97,27 @@ WSGI_APPLICATION = 'wellbee.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.mysql'),
-#         'NAME': env('DATABASE_NAME'),
-#         'USER': env('DATABASE_USER'),
-#         'PASSWORD': env('DATABASE_PASSWORD'),
-#         'HOST': env('DATABASE_HOST'),
-#         'PORT': env('DATABASE_PORT', default='3306'),
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE':'django.db.backends.mysql',
-        'NAME': 'wellbee_aws_db',
-        'USER': 'admin',
-        'PASSWORD': 'yuiyuiyui7S',
-        'HOST': 'wellbee-rds-db.cfaq804m48c5.me-south-1.rds.amazonaws.com',
-        'PORT': 3306,
+        'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.mysql'),
+        'NAME': env('DATABASE_NAME'),
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASSWORD'),
+        'HOST': env('DATABASE_HOST'),
+        'PORT': env('DATABASE_PORT', default='3306'),
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE':'django.db.backends.mysql',
+#         'NAME': 'wellbee_aws_db',
+#         'USER': 'admin',
+#         'PASSWORD': 'yuiyuiyui7S',
+#         'HOST': 'wellbee-rds-db.cfaq804m48c5.me-south-1.rds.amazonaws.com',
+#         'PORT': 3306,
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -157,7 +157,7 @@ REST_FRAMEWORK = {
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'ja'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'Africa/Nairobi'
 
