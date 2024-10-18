@@ -32,7 +32,7 @@ DEBUG = env('DEBUG')
 
 # ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
 # ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
-ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
 INSTALLED_APPS = [
     'rest_framework',
