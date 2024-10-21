@@ -127,7 +127,9 @@ class _HealthInterviewPageState extends State<HealthInterviewPage> {
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data == null) {
-                      return Center(child: Text('No interview has been set.'));
+                      return Center(
+                          child: Text('No interview has been set.',
+                              style: TextStyle(fontSize: 20.sp)));
                     } else {
                       final fetchedInterviewList = snapshot.data!;
                       return Expanded(

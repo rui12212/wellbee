@@ -26,7 +26,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50.h,
+      height: 60.h,
       child: Column(
         children: [
           Align(
@@ -215,7 +215,8 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                                   SizedBox(
                                     height: 30.h,
                                   ),
-                                  Text('No Survey is taken.Take a new one!'),
+                                  Text('No Survey is taken.Take a new one!',
+                                      style: TextStyle(fontSize: 18.sp)),
                                   SizedBox(
                                     height: 30.h,
                                   ),
@@ -415,7 +416,7 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                                             axisNameSize: 16.sp,
                                             sideTitles: SideTitles(
                                               showTitles: true,
-                                              reservedSize: 20, // 余白を調整
+                                              reservedSize: 20.h, // 余白を調整
                                               getTitlesWidget: (value, meta) {
                                                 return Text('');
                                               },
@@ -438,7 +439,7 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                                                     mySurveyList[value.toInt()]
                                                         ['created_at']);
                                               },
-                                              reservedSize: 30,
+                                              reservedSize: 30.w,
                                             ),
                                           ),
                                           // rightTitles: AxisTitles(
@@ -508,12 +509,14 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                               );
                             }
                           }),
-                      Text('GHQ-28: General Health Questionnaire-28'),
-                      Text(
-                          '*Survey for your depression, somatic,anxiety level'),
+                      Text('GHQ-28: General Health Questionnaire-28',
+                          style: TextStyle(fontSize: 14.h)),
+                      Text('*Survey for your depression, somatic,anxiety level',
+                          style: TextStyle(fontSize: 14.h)),
                       Text('*Healthy score is between 0 - 11 ',
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
+                              fontSize: 14.h,
                               color: Color.fromARGB(255, 4, 141, 151)))
                     ],
                   ),
@@ -562,7 +565,8 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                                   SizedBox(
                                     height: 30.h,
                                   ),
-                                  Text('No Survey is taken.Take a new one!'),
+                                  Text('No Survey is taken.Take a new one!',
+                                      style: TextStyle(fontSize: 18.sp)),
                                 ],
                               ));
                             } else {
@@ -772,7 +776,7 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                                                     myBodyList[value.toInt()]
                                                         ['created_at']);
                                               },
-                                              reservedSize: 30,
+                                              reservedSize: 30.w,
                                             ),
                                           ),
                                           // rightTitles: AxisTitles(
@@ -902,7 +906,8 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                                   SizedBox(
                                     height: 30.h,
                                   ),
-                                  Text('No Survey is taken.Take a new one!'),
+                                  Text('No Survey is taken.Take a new one!',
+                                      style: TextStyle(fontSize: 18.sp)),
                                   SizedBox(
                                     height: 30.h,
                                   ),
@@ -1104,7 +1109,7 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                                                     myBMIList[value.toInt()]
                                                         ['created_at']);
                                               },
-                                              reservedSize: 30,
+                                              reservedSize: 30.w,
                                             ),
                                           ),
                                           // rightTitles: AxisTitles(
@@ -1181,10 +1186,13 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                               );
                             }
                           }),
-                      Text('BMI: Body Mass Index'),
-                      Text('*It shows ideal body weight'),
+                      Text('BMI: Body Mass Index',
+                          style: TextStyle(fontSize: 14.h)),
+                      Text('*It shows ideal body weight',
+                          style: TextStyle(fontSize: 14.h)),
                       Text('*Healthy score is between 18 - 24 ',
                           style: TextStyle(
+                              fontSize: 14.h,
                               fontWeight: FontWeight.bold,
                               color: kColorPrimary)),
                       SizedBox(height: 50.h)

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wellbee/ui_parts/color.dart';
 
 class _TicketShapeBorder extends ShapeBorder {
@@ -128,7 +129,7 @@ class _Ticket extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 128,
+      height: 128.h,
       decoration: ShapeDecoration(
         color: Colors.white,
         shape: _TicketShapeBorder(width: 1, radius: 16.0),
@@ -145,13 +146,13 @@ class _Ticket extends StatelessWidget {
           Container(
             width: 1,
             height: double.infinity,
-            margin: EdgeInsets.symmetric(vertical: 8.0),
+            margin: EdgeInsets.symmetric(vertical: 8.0.h),
             color: kColorTicketBorder,
           ),
           Expanded(
             flex: 2,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: 12.w),
               child: Table(
                 children: [
                   TableRow(
@@ -161,15 +162,13 @@ class _Ticket extends StatelessWidget {
                         children: [
                           Text(
                             'Course',
-                            style: TextStyle(
-                              color: kColorText,
-                            ),
+                            style: TextStyle(color: kColorText, fontSize: 18.h),
                           ),
-                          SizedBox(height: 4),
+                          // SizedBox(height: 4.h),
                           Text(
                             course_name,
                             style: TextStyle(
-                              fontSize: 17,
+                              fontSize: 17.h,
                               color: kColorPrimary,
                               fontWeight: FontWeight.bold,
                             ),
@@ -181,14 +180,14 @@ class _Ticket extends StatelessWidget {
                         children: [
                           Text(
                             'Name',
-                            style: TextStyle(color: kColorText),
+                            style: TextStyle(color: kColorText, fontSize: 18.h),
                           ),
-                          SizedBox(height: 4),
+                          // SizedBox(height: 4.h),
                           Text(
                             attendee_name,
                             style: TextStyle(
                               color: kColorTextDark,
-                              fontSize: 17,
+                              fontSize: 17.h,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -198,8 +197,13 @@ class _Ticket extends StatelessWidget {
                   ),
                   TableRow(
                     children: [
-                      SizedBox(height: 8),
-                      SizedBox(height: 8),
+                      SizedBox(
+                        height: 8.h,
+                        // width: 20.w,
+                      ),
+                      SizedBox(
+                        height: 8.h,
+                      ),
                     ],
                   ),
                   TableRow(
@@ -208,15 +212,15 @@ class _Ticket extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Valid until',
-                            style: TextStyle(color: kColorText),
+                            'Expire At',
+                            style: TextStyle(color: kColorText, fontSize: 16.h),
                           ),
-                          SizedBox(height: 4),
+                          // SizedBox(height: 4.h),
                           Text(
                             expire_day,
                             style: TextStyle(
                               color: kColorTextDark,
-                              fontSize: 16,
+                              fontSize: 16.h,
                             ),
                           ),
                         ],
@@ -225,15 +229,15 @@ class _Ticket extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Times to join',
-                            style: TextStyle(color: kColorText),
+                            'Join Times',
+                            style: TextStyle(color: kColorText, fontSize: 16.h),
                           ),
-                          SizedBox(height: 4),
+                          // SizedBox(height: 4.h),
                           Text(
                             '$already_join_times/$max_join_times',
                             style: TextStyle(
                               color: kColorTextDark,
-                              fontSize: 18,
+                              fontSize: 18.h,
                             ),
                           ),
                         ],

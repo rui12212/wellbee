@@ -34,7 +34,7 @@ class _StaffHomePageState extends State<StaffHomePage> {
             title: Text('Staff Home',
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 28.sp,
+                    fontSize: 28.h,
                     fontWeight: FontWeight.bold)),
             backgroundColor: kColorPrimary),
         body: SafeArea(

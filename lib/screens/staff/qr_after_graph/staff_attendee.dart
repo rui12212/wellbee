@@ -27,7 +27,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80.h,
+      height: 90.h,
       child: Column(
         children: [
           Align(
@@ -60,7 +60,7 @@ class _Header extends StatelessWidget {
             child: Text(
               subtitle,
               style: TextStyle(
-                  fontSize: 22.sp,
+                  fontSize: 22.h,
                   fontWeight: FontWeight.w300,
                   color: kColorTextDarkGrey),
             ),

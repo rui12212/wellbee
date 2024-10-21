@@ -39,8 +39,8 @@ class _StaffTopPageState extends State<StaffTopPage> {
     _selectedIndex = widget.firstNum;
     _pages = [
       StaffHomePage(),
-      UserHomePage(pk: 'df3b86cfa57846eb8838061bda5d5b3d'),
-      // ScannerWidget(),
+      // UserHomePage(pk: '16fa0d042b55440688dc3f1b88a16331'),
+      ScannerWidget(),
       // CheckInPage(id: '1'),
       showLogOutDialogue(),
     ];

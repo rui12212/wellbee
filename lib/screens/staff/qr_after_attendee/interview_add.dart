@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:survey_kit/survey_kit.dart';
 import 'package:wellbee/assets/inet.dart';
@@ -24,7 +25,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
+      height: 90.h,
       child: Column(
         children: [
           Align(
@@ -33,7 +34,7 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 28.h, fontWeight: FontWeight.bold),
                 ),
                 TextButton(
                   style: TextButton.styleFrom(
@@ -56,7 +57,7 @@ class _Header extends StatelessWidget {
             child: Text(
               subtitle,
               style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 22.h,
                   fontWeight: FontWeight.w300,
                   color: kColorTextDarkGrey),
             ),
@@ -160,7 +161,7 @@ class _InterviewAddPageState extends State<InterviewAddPage> {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 36,
+                      height: 36.h,
                     ),
                     Column(
                       children: [],
@@ -173,7 +174,7 @@ class _InterviewAddPageState extends State<InterviewAddPage> {
                             child: Text('Emotional State',
                                 style: TextStyle(
                                     color: kColorTextDarkGrey,
-                                    fontSize: 20,
+                                    fontSize: 20.sp,
                                     fontWeight: FontWeight.w500))),
                         InterviewCustomTextBox(
                           label: '',
@@ -184,7 +185,7 @@ class _InterviewAddPageState extends State<InterviewAddPage> {
                       ],
                     )),
                     SizedBox(
-                      height: 15,
+                      height: 15.h,
                     ),
                     Container(
                         child: Column(
@@ -194,7 +195,7 @@ class _InterviewAddPageState extends State<InterviewAddPage> {
                             child: Text('Physical State',
                                 style: TextStyle(
                                     color: kColorTextDarkGrey,
-                                    fontSize: 20,
+                                    fontSize: 20.sp,
                                     fontWeight: FontWeight.w500))),
                         InterviewCustomTextBox(
                           label: '',
@@ -214,7 +215,7 @@ class _InterviewAddPageState extends State<InterviewAddPage> {
                             child: Text('Comments',
                                 style: TextStyle(
                                     color: kColorTextDarkGrey,
-                                    fontSize: 20,
+                                    fontSize: 20.sp,
                                     fontWeight: FontWeight.w500))),
                         InterviewCustomTextBox(
                           label: '',
@@ -224,22 +225,22 @@ class _InterviewAddPageState extends State<InterviewAddPage> {
                       ],
                     )),
                     SizedBox(
-                      height: 52,
+                      height: 52.h,
                     ),
                     FilledButton.icon(
                       onPressed: () {
                         _createAttendee();
                       },
                       icon: const Icon(Icons.note_alt_outlined),
-                      label: const Text('Create Interview',
-                          style: TextStyle(fontSize: 20)),
+                      label: Text('Create Interview',
+                          style: TextStyle(fontSize: 20.sp)),
                       style: ButtonStyle(
                         minimumSize: MaterialStateProperty.all<Size>(
-                            Size(300, 80)), // ボタンの幅と高さを設定
+                            Size(300.h, 80)), // ボタンの幅と高さを設定
                       ),
                     ),
                     SizedBox(
-                      height: 52,
+                      height: 52.h,
                     ),
                   ],
                 ),

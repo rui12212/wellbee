@@ -47,14 +47,14 @@ class _Question extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 80.h,
+        height: 90.h,
         child: Column(
           children: [
             Align(
               alignment: Alignment.center,
               child: Text(question,
                   style:
-                      TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w300)),
+                      TextStyle(fontSize: 28.h, fontWeight: FontWeight.w300)),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -64,7 +64,7 @@ class _Question extends StatelessWidget {
                         fontSize: 22.sp, fontWeight: FontWeight.w300)),
                 Text(coloredText,
                     style: TextStyle(
-                        fontSize: 22.sp,
+                        fontSize: 22.h,
                         fontWeight: FontWeight.w700,
                         color: kColorPrimary)),
               ],
@@ -255,6 +255,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                           },
                           child: Text('GO TO NEXT',
                               style: TextStyle(
+                                  fontSize: 16.sp,
                                   color: kColorPrimary,
                                   fontWeight: FontWeight.w700)),
                         ),

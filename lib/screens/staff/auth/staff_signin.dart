@@ -177,7 +177,7 @@ class _StaffSignInPageState extends State<StaffSignInPage> {
                 child: Container(
                     child: CustomTextBox(
                   label: 'Mobile Number',
-                  hintText: '10 digits number',
+                  hintText: '7501234567',
                   controller: _phoneController,
                 ).phoneFieldDecoration()),
               ),

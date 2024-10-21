@@ -54,7 +54,7 @@ class _Question extends StatelessWidget {
         child: Column(
           children: [
             Text(question,
-                style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w300)),
+                style: TextStyle(fontSize: 28.h, fontWeight: FontWeight.w300)),
             Text(name,
                 style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w600))
           ],
@@ -298,6 +298,7 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                                   border:
                                       Border.all(color: kColorTextDarkGrey)),
                               child: DropdownButton(
+                                  itemHeight: 75.h,
                                   value: selectedPrice,
                                   isExpanded: true,
                                   style: TextStyle(

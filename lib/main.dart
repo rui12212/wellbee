@@ -157,63 +157,178 @@ class _SignInPageState extends State<SignInPage> {
   String? token = '';
   bool? isAttendee = false;
   bool isToken = false;
-  int attendeeInt = 2;
+  int attendeeInt = 1;
 
-  Future<void>? autoLoad() {
+  void autoLoad() {
     if (isToken == true && isAttendee == true) {
-      // print(isAttendee);
-      // Navigator.pop(context);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const TopPage(0)),
-      );
+      Navigator.push(context, MaterialPageRoute(
+        builder: (context) {
+          return const TopPage(0);
+        },
+      ));
     }
     if (isToken == true && isAttendee == false) {
-      // Navigator.pop(context);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const FirstAttendeeAddPage()),
-      );
+      Navigator.push(context, MaterialPageRoute(
+        builder: (context) {
+          return const FirstAttendeeAddPage();
+        },
+      ));
     }
-    Navigator.pop(context);
-    // return;
+    return;
   }
 
   Future<void> fetchTokenAndBool() async {
     token = await SharedPrefs.fetchAccessToken();
     if (token != null) {
-      int fetchedAttendeeInt = await _fetchAttendeeExist();
+      bool attendeeExists = await _fetchAttendeeExist();
       setState(() {
-        attendeeInt = fetchedAttendeeInt;
+        isToken = true;
+        isAttendee = attendeeExists;
       });
-
-      if (attendeeInt == 0) {
-        setState(() {
-          isToken = true;
-          isAttendee = true;
-        });
-        if (mounted) autoLoad();
-      } else if (attendeeInt == 1) {
-        setState(() {
-          isToken = true;
-          isAttendee = false;
-        });
-        if (mounted) autoLoad();
-      } else if (attendeeInt == 2) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-                'Error occurred. Try again later with internet connection')));
-        // print('attendeeInt:$attendeeInt');
-        // print('isToken:$isToken');
-        // print('isAttendee:$isAttendee');
-        return;
-      }
+      autoLoad();
     } else {
       setState(() {
         isToken = false;
       });
     }
   }
+
+  _fetchAttendeeExist() async {
+    try {
+      await DialogGenerator.showLoadingDialog(context: context);
+      token = await SharedPrefs.fetchAccessToken();
+      if (token == null) {
+        return false;
+      } else {
+        var url =
+            Uri.parse('${baseUri}attendances/attendee/first_page_attendee/');
+        var response = await Future.any([
+          http.get(url, headers: {"Authorization": 'JWT $token'}),
+          Future.delayed(const Duration(seconds: 5),
+              () => throw TimeoutException("Request timeout"))
+        ]);
+        if (response.statusCode == 200) {
+          List<dynamic> data = jsonDecode(response.body);
+          if (data.isNotEmpty) {
+            return true;
+          } else
+            return false;
+        } else if (response.statusCode >= 400) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Internet Error occurred.')));
+        } else {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Something went wrong. Try again later')));
+        }
+      }
+    } catch (e) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+// ----------------right----------- down below is for 2nd ideas
+
+  // Future<void>? autoLoad() {
+  //   if (isToken == true && isAttendee == true) {
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => const TopPage(0)),
+  //     );
+  //   }
+  //   if (isToken == true && isAttendee == false) {
+  //     // Navigator.pop(context);
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => const FirstAttendeeAddPage()),
+  //     );
+  //   }
+  //   Navigator.pop(context);
+  //   // return;
+  // }
+
+  // Future<void> fetchTokenAndBool() async {
+  //   token = await SharedPrefs.fetchAccessToken();
+  //   if (token != null) {
+  //     int fetchedAttendeeInt = await _fetchAttendeeExist();
+  //     setState(() {
+  //       attendeeInt = fetchedAttendeeInt;
+  //     });
+
+  //     if (attendeeInt == 0) {
+  //       setState(() {
+  //         isToken = true;
+  //         isAttendee = true;
+  //       });
+  //       autoLoad();
+  //     } else if (attendeeInt == 1) {
+  //       setState(() {
+  //         isToken = true;
+  //         isAttendee = false;
+  //       });
+  //       autoLoad();
+  //     } else if (attendeeInt == 2) {
+  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //           content: Text(
+  //               'Error occurred. Try again later with internet connection')));
+  //       // print('attendeeInt:$attendeeInt');
+  //       // print('isToken:$isToken');
+  //       // print('isAttendee:$isAttendee');
+  //       return;
+  //     }
+  //   } else {
+  //     setState(() {
+  //       isToken = false;
+  //     });
+  //   }
+  // }
+
+  // _fetchAttendeeExist() async {
+  //   try {
+  //     await DialogGenerator.showLoadingDialog(context: context);
+  //     token = await SharedPrefs.fetchAccessToken();
+  //     // print(token);
+  //     if (token == null) {
+  //       return false;
+  //     } else {
+  //       var url =
+  //           Uri.parse('${baseUri}attendances/attendee/first_page_attendee/');
+  //       var response = await Future.any([
+  //         http.get(url, headers: {"Authorization": 'JWT $token'}),
+  //         Future.delayed(const Duration(seconds: 5),
+  //             () => throw TimeoutException("Request timeout"))
+  //       ]);
+  //       if (response.statusCode == 200) {
+  //         List<dynamic> data = jsonDecode(response.body);
+  //         // print(data);
+  //         if (data.isNotEmpty) {
+  //           // ネット正常＋attendeeがいる
+  //           return 0;
+  //         } else
+  //           // ネット正常＋attendeeがいない
+  //           return 1;
+  //       } else if (response.statusCode >= 400) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //             const SnackBar(content: Text('Internet Error occurred.')));
+  //         Navigator.pop(context);
+  //         return 2;
+  //       } else {
+  //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //             content: Text('Something went wrong. Try again later')));
+  //         Navigator.pop(context);
+  //         return 2;
+  //       }
+  //     }
+  //   } catch (e) {
+  //     Navigator.pop(context);
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(SnackBar(content: Text('Error: $e')));
+  //     return 2;
+  //   }
+  // }
 
   @override
   void initState() {
@@ -256,16 +371,11 @@ class _SignInPageState extends State<SignInPage> {
         final refreshToken = data['refresh'];
         // print(accessToken);
         await SharedPrefs.setAccessToken(accessToken);
-        int attendeeInt = await _fetchAttendeeExist();
-        if (attendeeInt == 0) {
-          setState(() {
-            isAttendee = true;
-          });
-        } else if (attendeeInt == 1) {
-          setState(() {
-            isAttendee = false;
-          });
-        }
+        bool attendeeExists = await _fetchAttendeeExist();
+        setState(() {
+          isAttendee = attendeeExists;
+        });
+        // print(accessToken);
         Navigator.pop(context);
         await Future.delayed(Duration(milliseconds: 250));
 
@@ -286,6 +396,11 @@ class _SignInPageState extends State<SignInPage> {
           );
         }
       } else if (response.statusCode > 350) {
+        // ロードの終了
+
+        // Navigator.pop(context);
+        // await Future.delayed(Duration(milliseconds: 400));
+
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
                 'Error occurred. Mobile number or password maybe wrong.')));
@@ -312,48 +427,89 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  _fetchAttendeeExist() async {
-    try {
-      await DialogGenerator.showLoadingDialog(context: context);
-      token = await SharedPrefs.fetchAccessToken();
-      if (token == null) {
-        return false;
-      } else {
-        var url =
-            Uri.parse('${baseUri}attendances/attendee/first_page_attendee/');
-        var response = await Future.any([
-          http.get(url, headers: {"Authorization": 'JWT $token'}),
-          Future.delayed(const Duration(seconds: 5),
-              () => throw TimeoutException("Request timeout"))
-        ]);
-        if (response.statusCode == 200) {
-          List<dynamic> data = jsonDecode(response.body);
-          // print(data);
-          if (data.isNotEmpty) {
-            // ネット正常＋attendeeがいる
-            return 0;
-          } else
-            // ネット正常＋attendeeがいない
-            return 1;
-        } else if (response.statusCode >= 400) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Internet Error occurred.')));
-          Navigator.pop(context);
-          return 2;
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Something went wrong. Try again later')));
-          Navigator.pop(context);
-          return 2;
-        }
-      }
-    } catch (e) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
-      return 2;
-    }
-  }
+  // Future<void> _login() async {
+  //   try {
+  //     if (_phoneController.text.isEmpty || _passwordController.text.isEmpty) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('Please fill in all fields.')));
+  //       return;
+  //     }
+  //     // ダイアログを呼び出す
+  //     await DialogGenerator.showLoadingDialog(context: context);
+
+  //     var url = Uri.parse('${baseUri}authen/jwt/create/');
+  //     var response = await Future.any([
+  //       http.post(url, body: {
+  //         'phone_number': _phoneController.text,
+  //         'password': _passwordController.text,
+  //       }),
+  //       Future.delayed(const Duration(seconds: 15),
+  //           () => throw TimeoutException("Request timeout"))
+  //     ]);
+
+  //     if (response.statusCode == 200) {
+  //       // 作成成功したら、Token作成
+  //       // 作成したTokenを取得し、SharedPrefsに保存
+  //       final data = jsonDecode(response.body);
+  //       final accessToken = data['access'];
+  //       final refreshToken = data['refresh'];
+  //       // print(accessToken);
+  //       await SharedPrefs.setAccessToken(accessToken);
+  //       int attendeeInt = await _fetchAttendeeExist();
+  //       if (attendeeInt == 0) {
+  //         setState(() {
+  //           isAttendee = true;
+  //         });
+  //       } else if (attendeeInt == 1) {
+  //         setState(() {
+  //           isAttendee = false;
+  //         });
+  //       }
+  //       Navigator.pop(context);
+  //       await Future.delayed(Duration(milliseconds: 250));
+
+  //       ScaffoldMessenger.of(context)
+  //           .showSnackBar(const SnackBar(content: Text('Login success!')));
+
+  //       if (isAttendee == true) {
+  //         Navigator.push(
+  //           context,
+  //           MaterialPageRoute(builder: (context) => const TopPage(0)),
+  //         );
+  //       }
+  //       if (isAttendee == false) {
+  //         Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //               builder: (context) => const FirstAttendeeAddPage()),
+  //         );
+  //       }
+  //     } else if (response.statusCode > 350) {
+  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //           content: Text(
+  //               'Error occurred. Mobile number or password maybe wrong.')));
+  //       Navigator.pop(context);
+  //       // Navigator.pop(context);
+  //     } else {
+  //       // ロードの終了
+  //       Navigator.pop(context);
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(content: Text('Failed to create user. Try again later.')));
+  //     }
+  //     // エラー処理
+  //   } catch (e) {
+  //     // ロードの終了
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(SnackBar(content: Text('Error: $e')));
+  //     // Navigator.pop(context);
+  //     Navigator.pop(context);
+  //     // ここは最後に必ず実行される
+  //   } finally {
+  //     // ロードの終了
+  //     // Navigator.pop(context);
+  //     return;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

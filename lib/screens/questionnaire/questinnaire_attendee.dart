@@ -51,7 +51,7 @@ class _Question extends StatelessWidget {
         child: Column(
           children: [
             Text(question,
-                style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.w300))
+                style: TextStyle(fontSize: 26.h, fontWeight: FontWeight.w300))
           ],
         ));
   }

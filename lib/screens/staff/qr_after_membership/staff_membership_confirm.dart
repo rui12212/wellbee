@@ -51,7 +51,7 @@ class _Question extends StatelessWidget {
         child: Column(
           children: [
             Text(question,
-                style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w300)),
+                style: TextStyle(fontSize: 28.h, fontWeight: FontWeight.w300)),
             Text(name,
                 style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w600))
           ],
@@ -178,7 +178,7 @@ class _StaffMembershipConfirmPageState
                   SingleChildScrollView(
                     child: Container(
                       padding: EdgeInsets.all(30),
-                      height: 460.h,
+                      height: 500.h,
                       width: 390.w,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -281,7 +281,7 @@ class _StaffMembershipConfirmPageState
                         style: TextStyle(
                           color: kColorPrimary,
                           fontWeight: FontWeight.w700,
-                          fontSize: 20,
+                          fontSize: 20.sp,
                         )),
                   ),
                   SizedBox(

@@ -55,7 +55,7 @@ class _ScannerWidgetState extends State<ScannerWidget>
                       });
                     }),
                 Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // IconButton(
                       // // アイコンの表示はオン／オフによって変わる
@@ -97,29 +97,26 @@ class _ScannerWidgetState extends State<ScannerWidget>
                         }),
                       ),
                       // アイコン前のカメラと裏のカメラを切り替えるボタン
-                      // IconButton(
-                      //   color: const Color(0xFFBBDDFF),
-                      //   icon: ValueListenableBuilder<CameraFacing>(
-                      //     // アイコンの表示は使っているカメラによって変わる
-                      //     valueListenable: controller.cameraFacing,
-                      //     builder: (context, state, child) {
-                      //       switch (state) {
-                      //         // 前のカメラの場合
-                      //         case CameraFacing.front:
-                      //           return const Icon(Icons.camera_front);
-                      //         // 後ろのカメラの場合
-                      //         case CameraFacing.back:
-                      //           return const Icon(Icons.camera_rear);
-                      //       }
-                      //     },
-                      //   ),
-                      //   iconSize: 50,
-                      //   onPressed: () {
-                      //     if (isStarted) {
-                      //       controller.switchCamera();
-                      //     }
-                      //   },
-                      // ),
+                      ValueListenableBuilder(
+                        valueListenable: controller,
+                        builder: (context, value, child) {
+                          // 現在のカメラの向きに応じてアイコンを変更
+                          IconData icon;
+                          if (value == CameraFacing.front) {
+                            icon = Icons.camera_front;
+                          } else {
+                            icon = Icons.camera_rear;
+                          }
+                          return IconButton(
+                            color: const Color(0xFFBBDDFF),
+                            icon: Icon(icon),
+                            iconSize: 50.0,
+                            onPressed: () {
+                              controller.switchCamera();
+                            },
+                          );
+                        },
+                      ),
                     ])
               ],
             ),
