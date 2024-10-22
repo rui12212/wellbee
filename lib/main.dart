@@ -16,6 +16,7 @@ import 'ui_parts/show_dialogue.dart';
 import 'ui_function/shared_prefs.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Future<void> main() async {
   await initializeDateFormatting('en', null);
@@ -50,6 +51,11 @@ class MyApp extends StatelessWidget {
 }
 
 class _Footer extends StatelessWidget {
+  // ここ、Function()にしないと、Widgetが読み込まれたタイミングでurlLauncherが起動しちゃう
+  final Future<void> Function() callback;
+
+  _Footer({required this.callback});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -134,6 +140,32 @@ class _Footer extends StatelessWidget {
                   fontSize: 18.sp,
                 )),
           )
+        ]),
+        SizedBox(
+          height: 18.h,
+        ),
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(
+              // \をいれることで、文字列として使いたい「'」と文字の中で使いたい「'」を分けられる
+              'Privacy Policy',
+              style: TextStyle(
+                fontSize: 15.sp,
+              )),
+          // SizedBox(
+          //   width: 4.w,
+          // ),
+          IconButton(
+              icon: Icon(
+                Icons.privacy_tip_outlined,
+              ),
+              onPressed: () async {
+                await callback();
+                // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+                //   builder: (context) {
+                //     return LaunchUrlContainer();
+                //   },
+                // ), ((route) => false));
+              })
         ]),
       ],
     );
@@ -227,6 +259,18 @@ class _SignInPageState extends State<SignInPage> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+  Future<void> onLaunchUrl() async {
+    final Uri url =
+        Uri.parse('https://laporte727.github.io/ecole.la.porte/chronomap.html');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      // エラーハンドリング: URLを開けない場合の処理
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Try again later')));
     }
   }
 
@@ -567,7 +611,7 @@ class _SignInPageState extends State<SignInPage> {
                           color: kColorPrimary, fontWeight: FontWeight.w700)),
                 ),
               ),
-              _Footer(),
+              _Footer(callback: onLaunchUrl),
             ]),
           ),
         ),

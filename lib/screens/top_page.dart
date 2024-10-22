@@ -41,7 +41,7 @@ class _TopPageState extends State<TopPage> {
     _pages = [
       HomePage(),
       UserQrCodePage(),
-      // showLogOutDialogue(),
+      // PrivacyPage(),
     ];
     super.initState();
   }
@@ -67,7 +67,7 @@ class _TopPageState extends State<TopPage> {
           Icon(Icons.home, color: Color.fromARGB(255, 97, 198, 187), size: 30),
           Icon(Icons.qr_code_rounded,
               color: Color.fromARGB(255, 97, 198, 187), size: 30),
-          // Icon(Icons.settings,
+          // Icon(Icons.privacy_tip,
           //     color: Color.fromARGB(255, 97, 198, 187), size: 30),
         ],
         // type: BottomNavigationBarType.fixed,

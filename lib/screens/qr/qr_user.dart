@@ -126,7 +126,7 @@ class _UserQrCodePageState extends State<UserQrCodePage> {
           child: Column(
             children: [
               _Header(),
-              _Question(question: 'Scan me for My Home!'),
+              _Question(question: 'QR for Staff'),
               FutureBuilder(
                   future: _fetchAttendee(),
                   builder: (context, snapshot) {

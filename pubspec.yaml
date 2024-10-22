@@ -49,9 +49,10 @@ dependencies:
   fl_chart: ^0.68.0
   flutter_slidable: ^3.1.1
   mobile_scanner: ^5.2.1
-  url_launcher: ^6.3.0
+  url_launcher: ^6.3.1
   google_fonts: ^6.2.1
   flutter_screenutil: ^5.9.3
+  flutter_launcher_icons: ^0.14.1
 
 dev_dependencies:
   flutter_test:
@@ -110,12 +111,18 @@ flutter:
      - lib/assets/invi_course_pic/invi_pilates.png
      - lib/assets/invi_course_pic/invi_family_pilates.png
      - lib/assets/invi_course_pic/invi_family_yoga.png
-    #  - lib/assets/.png
+  fonts:
+    - family: Playfair
+      fonts:
+        - asset: lib/assets/font/PlayfairDisplay-Regular.ttf
+        - asset: lib/assets/font/PlayfairDisplay-SemiBold.ttf
 
-    #  - lib/assets/survey.png
-    #  - lib/assets/survey.png
-    #  - lib/assets/survey.png
-    #  - lib/assets/survey.png
+
+flutter_launcher_icons:
+  image_path_android: "lib/assets/icon_android.png"
+  image_path_ios: "lib/assets/icon_ios.png"
+  android: true
+  ios: true
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -129,11 +136,6 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: Playfair
-      fonts:
-        - asset: lib/assets/font/PlayfairDisplay-Regular.ttf
-        - asset: lib/assets/font/PlayfairDisplay-SemiBold.ttf
       # uses-material-design: true
   #         style: italic
   #   - family: Trajan Pro
