@@ -29,7 +29,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80.h,
+      height: 90.h,
       child: Column(
         children: [
           Align(
@@ -38,8 +38,7 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style:
-                      TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 30.h, fontWeight: FontWeight.bold),
                 ),
                 TextButton(
                   style: TextButton.styleFrom(

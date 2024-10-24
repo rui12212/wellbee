@@ -264,17 +264,17 @@ class _HomePageState extends State<HomePage> {
                                             color: Colors.white)),
                                     Text('1.Add Member from "Member" Page',
                                         style: TextStyle(
-                                            fontSize: 16.sp,
+                                            fontSize: 16.h,
                                             fontWeight: FontWeight.w400,
                                             color: Colors.white)),
                                     Text('2.Visit Wellbee and buy Membership',
                                         style: TextStyle(
-                                            fontSize: 16.sp,
+                                            fontSize: 16.h,
                                             fontWeight: FontWeight.w400,
                                             color: Colors.white)),
                                     Text('3.Make a Reservation',
                                         style: TextStyle(
-                                            fontSize: 16.sp,
+                                            fontSize: 16.h,
                                             fontWeight: FontWeight.w400,
                                             color: Colors.white))
                                   ],

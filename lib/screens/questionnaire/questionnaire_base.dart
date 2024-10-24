@@ -54,7 +54,7 @@ class _Question extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(question,
                   style:
-                      TextStyle(fontSize: 28.h, fontWeight: FontWeight.w300)),
+                      TextStyle(fontSize: 26.h, fontWeight: FontWeight.w300)),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

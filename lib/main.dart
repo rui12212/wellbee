@@ -264,7 +264,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> onLaunchUrl() async {
     final Uri url =
-        Uri.parse('https://laporte727.github.io/ecole.la.porte/chronomap.html');
+        Uri.parse('https://rui12212.github.io/wellbee/privacy-policy');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {

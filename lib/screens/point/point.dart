@@ -116,7 +116,7 @@ class _PointPageState extends State<PointPage> {
                               ]),
                           borderRadius: BorderRadius.all(Radius.circular(70))),
                       child: Container(
-                        height: 500.h,
+                        height: 53.h,
                         alignment: Alignment.topCenter,
                         child: Column(
                           children: [
