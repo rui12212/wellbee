@@ -92,7 +92,15 @@ class _PointDecreasePageState extends State<PointDecreasePage> {
   Future<void> decreasePoints() async {
     if (_pointController.text.trim().isEmpty) {
       showSnackBar(Colors.red, 'The field is empty');
-    } else {
+      return;
+    }
+    // final int? parsedIncreasedPoints =
+    //     int.tryParse(_pointController.text.trim());
+    // if (parsedIncreasedPoints == null) {
+    //   showSnackBar(Colors.red, 'Please enter a valid number');
+    //   return;
+    // }
+    else {
       try {
         final int increasedPoints = int.tryParse(_pointController.text) ?? 0;
         final int finalPoint = widget.point - increasedPoints;

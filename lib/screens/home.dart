@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -192,401 +193,418 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              (Text('Next Reservation is...',
-                  style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white))),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kColorPrimary,
-                  minimumSize: Size(10, 30),
+        // appBar: AppBar(
+        //   title: Row(
+        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //     children: [
+        //       (Text('Next Reservation is...',
+        //           style: TextStyle(
+        //               fontSize: 20.sp,
+        //               fontWeight: FontWeight.w400,
+        //               color: Colors.white))),
+        //       ElevatedButton(
+        //         style: ElevatedButton.styleFrom(
+        //           backgroundColor: kColorPrimary,
+        //           minimumSize: Size(10, 30),
+        //         ),
+        //         onPressed: () {
+        //           showAwesomeDialog();
+        //         },
+        //         child: Text('Leave', style: TextStyle(color: Colors.white60)),
+        //       ),
+        //     ],
+        //   ),
+        //   backgroundColor: kColorPrimary,
+        //   automaticallyImplyLeading: false,
+        // ),
+        body: ColorfulSafeArea(
+      color: kColorPrimary,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              width: 390.w,
+              height: 180.h,
+              child: Material(
+                color: kColorPrimary,
+                // elevation: 68,
+                shadowColor: kColorPrimary,
+                borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(24),
+                  bottomLeft: Radius.circular(24),
                 ),
-                onPressed: () {
-                  showAwesomeDialog();
-                },
-                child: Text('Leave', style: TextStyle(color: Colors.white60)),
-              ),
-            ],
-          ),
-          backgroundColor: kColorPrimary,
-          automaticallyImplyLeading: false,
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: 390.w,
-                height: 160.h,
-                child: Material(
-                  color: kColorPrimary,
-                  // elevation: 68,
-                  shadowColor: kColorPrimary,
-                  borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(24),
-                    bottomLeft: Radius.circular(24),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 24.w,
+                    right: 24.w,
+                    top: 8.h,
+                    bottom: 18.h,
                   ),
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: 24.w,
-                      right: 24.w,
-                      top: 8.h,
-                      bottom: 18.h,
-                    ),
-                    child: Column(
-                      children: [
-                        FutureBuilder(
-                          future: _fetchReservation(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              return Center(
-                                  child: Text('Error: ${snapshot.error}'));
-                            } else if (!snapshot.hasData ||
-                                snapshot.data!.isEmpty ||
-                                snapshot.data == null) {
-                              return Container(
-                                width: 390.w,
-                                // height: 300.h,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('No Reservation',
-                                        style: TextStyle(
-                                            fontSize: 28.h,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white)),
-                                    Text('1.Add Member from "Member" Page',
-                                        style: TextStyle(
-                                            fontSize: 16.h,
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.white)),
-                                    Text('2.Visit Wellbee and buy Membership',
-                                        style: TextStyle(
-                                            fontSize: 16.h,
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.white)),
-                                    Text('3.Make a Reservation',
-                                        style: TextStyle(
-                                            fontSize: 16.h,
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.white))
-                                  ],
-                                ),
-                              );
-                            } else {
-                              final reservation = snapshot.data!;
-                              final DateTime intDate =
-                                  DateTime.parse(reservation['date']);
-                              String formattedDateOfWeek =
-                                  DateFormat.EEEE('en').format(intDate);
-                              final courseName =
-                                  reservation['slot_course_name'];
-                              final startTime = reservation['slot_start_time'];
-                              final endTime = reservation['slot_end_time'];
-                              String formattedStartTime =
-                                  IntConverter.formatTime(startTime);
-                              String formattedEndTime =
-                                  IntConverter.formatTime(endTime);
-                              final dateOfWeek = formattedDateOfWeek;
-                              final date = reservation['date'];
-                              return Row(
-                                children: [
-                                  Expanded(
-                                    child: CourseTime(
-                                      courseName: courseName,
-                                      startTime: formattedStartTime,
-                                      endTime: formattedEndTime,
-                                      courseDate: date,
-                                      dateOfWeek: dateOfWeek,
-                                    ),
-                                  ),
-                                  Container(
-                                      width: 130.w,
-                                      height: 110.h,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: reservation[
-                                                            'slot_course_name'] ==
-                                                        'Yoga' ||
-                                                    reservation['slot_course_name'] ==
-                                                        'Kids Yoga'
-                                                ? AssetImage(
-                                                    'lib/assets/invi_course_pic/invi_yoga.png')
-                                                : reservation['slot_course_name'] ==
-                                                            'Dance' ||
-                                                        reservation['slot_course_name'] ==
-                                                            'Kids Dance' ||
-                                                        reservation['slot_course_name'] ==
-                                                            'Zumba'
-                                                    ? AssetImage(
-                                                        'lib/assets/invi_course_pic/invi_dance.png')
-                                                    : reservation['slot_course_name'] ==
-                                                                'Karate' ||
-                                                            reservation['slot_course_name'] ==
-                                                                'Kids Karate'
-                                                        ? AssetImage(
-                                                            'lib/assets/invi_course_pic/invi_karate.png')
-                                                        : reservation['slot_course_name'] ==
-                                                                    'Music' ||
-                                                                reservation['slot_course_name'] ==
-                                                                    'Kids Music'
-                                                            ? AssetImage(
-                                                                'lib/assets/invi_course_pic/invi_music.png')
-                                                            : reservation['slot_course_name'] ==
-                                                                    'Kids Taiso'
-                                                                ? AssetImage(
-                                                                    'lib/assets/invi_course_pic/male_fitness.png')
-                                                                : reservation['slot_course_name'] ==
-                                                                            'Pilates' ||
-                                                                        reservation['slot_course_name'] ==
-                                                                            'Kids Pilates'
-                                                                    ? AssetImage(
-                                                                        'lib/assets/invi_course_pic/invi_pilates.png')
-                                                                    : reservation['slot_course_name'] ==
-                                                                            'Family Pilates'
-                                                                        ? AssetImage(
-                                                                            'lib/assets/invi_course_pic/invi_family_pilates.png')
-                                                                        : reservation['slot_course_name'] ==
-                                                                                'Family Yoga'
-                                                                            ? AssetImage('lib/assets/invi_course_pic/invi_family_yoga.png')
-                                                                            : AssetImage('lib/assets/invi_course_pic/female_fitness.png')),
-                                      ))
-                                ],
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                child: Column(
-                  children: [
-                    SafeArea(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(height: 28.h),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 20.0.w),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          (Text('Next Reservation is...',
+                              style: TextStyle(
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white))),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: kColorPrimary,
+                              minimumSize: Size(10, 30),
+                            ),
+                            onPressed: () {
+                              showAwesomeDialog();
+                            },
+                            child: Text('Leave',
+                                style: TextStyle(color: Colors.white60)),
+                          ),
+                        ],
+                      ),
+                      FutureBuilder(
+                        future: _fetchReservation(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty ||
+                              snapshot.data == null) {
+                            return Container(
+                              width: 390.w,
+                              // height: 300.h,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    'Wellbee Service',
-                                    style: TextStyle(
-                                        fontSize: 26.sp,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                    height: 15.h,
-                                  ),
-                                  Container(
-                                    height: 200.h,
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      children: <Widget>[
-                                        HomeCard(
-                                            image:
-                                                'lib/assets/attendee_pic/attendee.png',
-                                            text: 'Member',
-                                            pass: AttendeePage()),
-                                        HomeCard(
-                                            image:
-                                                'lib/assets/home_pic/survey.png',
-                                            text: 'Health Survey',
-                                            pass: SurveyAttendeePage()),
-                                        HomeCard(
-                                            image:
-                                                'lib/assets/home_pic/graph.png',
-                                            text: 'Graph',
-                                            pass: GraphAttendeePage()),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 20.h,
-                                  ),
-                                  InkWell(
-                                      child: Container(
-                                        height: 140.h,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                  'lib/assets/home_pic/ticket.png')),
-                                        ),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            gradient: LinearGradient(
-                                                begin: Alignment.bottomRight,
-                                                stops: [
-                                                  0.3,
-                                                  0.9
-                                                ],
-                                                colors: [
-                                                  Colors.black.withOpacity(.8),
-                                                  Colors.black.withOpacity(.2)
-                                                ]),
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(15.0),
-                                              child: Text(
-                                                'Membership & Reservation',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 20.sp),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    MembershipPage()));
-                                      }),
-                                  SizedBox(
-                                    height: 20.h,
-                                  ),
-                                  InkWell(
-                                      child: Container(
-                                        height: 140.h,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                  'lib/assets/home_pic/reservation.png')),
-                                        ),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            gradient: LinearGradient(
-                                                begin: Alignment.bottomRight,
-                                                stops: [
-                                                  0.3,
-                                                  0.9
-                                                ],
-                                                colors: [
-                                                  Colors.black.withOpacity(.8),
-                                                  Colors.black.withOpacity(.2)
-                                                ]),
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(15.0),
-                                              child: Text(
-                                                'My Reservation',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 20.sp),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    QrReservationPage()));
-                                      }),
-                                  SizedBox(
-                                    height: 20.h,
-                                  ),
-                                  InkWell(
-                                      child: Container(
-                                        height: 140.h,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                  'lib/assets/home_pic/point.png')),
-                                        ),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            gradient: LinearGradient(
-                                                begin: Alignment.bottomRight,
-                                                stops: [
-                                                  0.3,
-                                                  0.9
-                                                ],
-                                                colors: [
-                                                  Colors.black.withOpacity(.8),
-                                                  Colors.black.withOpacity(.2)
-                                                ]),
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(15.0),
-                                              child: Text(
-                                                'Wellbee Point',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 20.sp),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () async {
-                                        final fetchedUserData =
-                                            await _fetchAttendee();
-                                        final userId =
-                                            fetchedUserData?[0]['user_id'];
-                                        final points =
-                                            fetchedUserData?[0]['points'];
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) => PointPage(
-                                                    userId: userId,
-                                                    points: points)));
-                                      }),
-                                  SizedBox(
-                                    height: 20.h,
-                                  ),
+                                children: [
+                                  Text('No Reservation',
+                                      style: TextStyle(
+                                          fontSize: 28.h,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                  Text('1.Add Member from "Member" Page',
+                                      style: TextStyle(
+                                          fontSize: 16.h,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.white)),
+                                  Text('2.Visit Wellbee and buy Membership',
+                                      style: TextStyle(
+                                          fontSize: 16.h,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.white)),
+                                  Text('3.Make a Reservation',
+                                      style: TextStyle(
+                                          fontSize: 16.h,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.white))
                                 ],
                               ),
-                            )
-                          ],
-                        ),
+                            );
+                          } else {
+                            final reservation = snapshot.data!;
+                            final DateTime intDate =
+                                DateTime.parse(reservation['date']);
+                            String formattedDateOfWeek =
+                                DateFormat.EEEE('en').format(intDate);
+                            final courseName = reservation['slot_course_name'];
+                            final startTime = reservation['slot_start_time'];
+                            final endTime = reservation['slot_end_time'];
+                            String formattedStartTime =
+                                IntConverter.formatTime(startTime);
+                            String formattedEndTime =
+                                IntConverter.formatTime(endTime);
+                            final dateOfWeek = formattedDateOfWeek;
+                            final date = reservation['date'];
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: CourseTime(
+                                    courseName: courseName,
+                                    startTime: formattedStartTime,
+                                    endTime: formattedEndTime,
+                                    courseDate: date,
+                                    dateOfWeek: dateOfWeek,
+                                  ),
+                                ),
+                                Container(
+                                    width: 130.w,
+                                    height: 110.h,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: reservation['slot_course_name'] ==
+                                                      'Yoga' ||
+                                                  reservation['slot_course_name'] ==
+                                                      'Kids Yoga'
+                                              ? AssetImage(
+                                                  'lib/assets/invi_course_pic/invi_yoga.png')
+                                              : reservation['slot_course_name'] ==
+                                                          'Dance' ||
+                                                      reservation['slot_course_name'] ==
+                                                          'Kids Dance' ||
+                                                      reservation['slot_course_name'] ==
+                                                          'Zumba'
+                                                  ? AssetImage(
+                                                      'lib/assets/invi_course_pic/invi_dance.png')
+                                                  : reservation['slot_course_name'] ==
+                                                              'Karate' ||
+                                                          reservation['slot_course_name'] ==
+                                                              'Kids Karate'
+                                                      ? AssetImage(
+                                                          'lib/assets/invi_course_pic/invi_karate.png')
+                                                      : reservation['slot_course_name'] ==
+                                                                  'Music' ||
+                                                              reservation[
+                                                                      'slot_course_name'] ==
+                                                                  'Kids Music'
+                                                          ? AssetImage(
+                                                              'lib/assets/invi_course_pic/invi_music.png')
+                                                          : reservation['slot_course_name'] ==
+                                                                  'Kids Taiso'
+                                                              ? AssetImage(
+                                                                  'lib/assets/invi_course_pic/male_fitness.png')
+                                                              : reservation['slot_course_name'] ==
+                                                                          'Pilates' ||
+                                                                      reservation['slot_course_name'] ==
+                                                                          'Kids Pilates'
+                                                                  ? AssetImage(
+                                                                      'lib/assets/invi_course_pic/invi_pilates.png')
+                                                                  : reservation['slot_course_name'] ==
+                                                                          'Family Pilates'
+                                                                      ? AssetImage(
+                                                                          'lib/assets/invi_course_pic/invi_family_pilates.png')
+                                                                      : reservation['slot_course_name'] ==
+                                                                              'Family Yoga'
+                                                                          ? AssetImage('lib/assets/invi_course_pic/invi_family_yoga.png')
+                                                                          : AssetImage('lib/assets/invi_course_pic/female_fitness.png')),
+                                    ))
+                              ],
+                            );
+                          }
+                        },
                       ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
-              )
-            ],
-          ),
-        ));
+              ),
+            ),
+            Container(
+              child: Column(
+                children: [
+                  SafeArea(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(height: 28.h),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20.0.w),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  'Wellbee Service',
+                                  style: TextStyle(
+                                      fontSize: 26.sp,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 15.h,
+                                ),
+                                Container(
+                                  height: 200.h,
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: <Widget>[
+                                      HomeCard(
+                                          image:
+                                              'lib/assets/attendee_pic/attendee.png',
+                                          text: 'Member',
+                                          pass: AttendeePage()),
+                                      HomeCard(
+                                          image:
+                                              'lib/assets/home_pic/survey.png',
+                                          text: 'Health Survey',
+                                          pass: SurveyAttendeePage()),
+                                      HomeCard(
+                                          image:
+                                              'lib/assets/home_pic/graph.png',
+                                          text: 'Graph',
+                                          pass: GraphAttendeePage()),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20.h,
+                                ),
+                                InkWell(
+                                    child: Container(
+                                      height: 140.h,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: AssetImage(
+                                                'lib/assets/home_pic/ticket.png')),
+                                      ),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          gradient: LinearGradient(
+                                              begin: Alignment.bottomRight,
+                                              stops: [
+                                                0.3,
+                                                0.9
+                                              ],
+                                              colors: [
+                                                Colors.black.withOpacity(.8),
+                                                Colors.black.withOpacity(.2)
+                                              ]),
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.bottomLeft,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(15.0),
+                                            child: Text(
+                                              'Membership & Reservation',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 20.sp),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MembershipPage()));
+                                    }),
+                                SizedBox(
+                                  height: 20.h,
+                                ),
+                                InkWell(
+                                    child: Container(
+                                      height: 140.h,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: AssetImage(
+                                                'lib/assets/home_pic/reservation.png')),
+                                      ),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          gradient: LinearGradient(
+                                              begin: Alignment.bottomRight,
+                                              stops: [
+                                                0.3,
+                                                0.9
+                                              ],
+                                              colors: [
+                                                Colors.black.withOpacity(.8),
+                                                Colors.black.withOpacity(.2)
+                                              ]),
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.bottomLeft,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(15.0),
+                                            child: Text(
+                                              'My Reservation',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 20.sp),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  QrReservationPage()));
+                                    }),
+                                SizedBox(
+                                  height: 20.h,
+                                ),
+                                InkWell(
+                                    child: Container(
+                                      height: 140.h,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: AssetImage(
+                                                'lib/assets/home_pic/point.png')),
+                                      ),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          gradient: LinearGradient(
+                                              begin: Alignment.bottomRight,
+                                              stops: [
+                                                0.3,
+                                                0.9
+                                              ],
+                                              colors: [
+                                                Colors.black.withOpacity(.8),
+                                                Colors.black.withOpacity(.2)
+                                              ]),
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.bottomLeft,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(15.0),
+                                            child: Text(
+                                              'Wellbee Point',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 20.sp),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    onTap: () async {
+                                      final fetchedUserData =
+                                          await _fetchAttendee();
+                                      final userId =
+                                          fetchedUserData?[0]['user_id'];
+                                      final points =
+                                          fetchedUserData?[0]['points'];
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) => PointPage(
+                                                  userId: userId,
+                                                  points: points)));
+                                    }),
+                                SizedBox(
+                                  height: 20.h,
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    ));
   }
 }

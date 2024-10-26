@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/attendee/attendee_add.dart';
+import 'package:wellbee/screens/staff/qr_after_attendee/health_interview.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:http/http.dart' as http;
 import 'package:wellbee/ui_parts/color.dart';
@@ -19,8 +20,12 @@ import 'package:wellbee/screens/attendee/attendee_update.dart';
 class _Header extends StatelessWidget {
   String title;
   String subtitle;
+  Map<String, dynamic> attendeeList;
 
-  _Header({required this.title, required this.subtitle});
+  _Header(
+      {required this.title,
+      required this.subtitle,
+      required this.attendeeList});
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +52,11 @@ class _Header extends StatelessWidget {
                   child: const Icon(Icons.chevron_left,
                       color: Color.fromARGB(255, 155, 152, 152)),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+                      builder: (context) {
+                        return HealthInterviewPage(attendeeList: attendeeList);
+                      },
+                    ), ((route) => false));
                   },
                 )
               ],
@@ -71,7 +80,9 @@ class _Header extends StatelessWidget {
 
 class InterviewDetailPage extends StatefulWidget {
   Map<String, dynamic> interviewList;
-  InterviewDetailPage({Key? key, required this.interviewList})
+  Map<String, dynamic> attendeeList;
+  InterviewDetailPage(
+      {Key? key, required this.interviewList, required this.attendeeList})
       : super(key: key);
 
   @override
@@ -105,7 +116,8 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
               children: [
                 _Header(
                     title: '${widget.interviewList['attendee_name']}',
-                    subtitle: 'Interview of Member'),
+                    subtitle: 'Interview of Member',
+                    attendeeList: widget.attendeeList),
                 Container(
                     padding: EdgeInsets.all(15),
                     child: Column(

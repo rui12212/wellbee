@@ -222,7 +222,7 @@ class _QrReservationPageState extends State<QrReservationPage> {
                                       fontSize: 20.sp,
                                       fontWeight: FontWeight.w300)),
                             ),
-                            Text('Make Reservation from "Membership"',
+                            Text('Reserve from "Membership"',
                                 style: TextStyle(
                                     fontSize: 20.sp,
                                     fontWeight: FontWeight.w300)),

@@ -99,15 +99,27 @@ class IntConverter {
 }
 
 class QuestionConverter {
-  static convertStringToNum(String str) {
-    switch (str) {
-      case 'Better than usual':
+  // static convertStringToNum(String str) {
+  //   switch (str) {
+  //     case 'Better than usual':
+  //       return 0;
+  //     case 'Same as usual':
+  //       return 1;
+  //     case 'Worse than usual':
+  //       return 2;
+  //     case 'Much worse than usual':
+  //       return 3;
+  //   }
+  // }
+  static convertDoubleToNum(double) {
+    switch (double) {
+      case 0.0:
         return 0;
-      case 'Same as usual':
+      case 1.0:
         return 1;
-      case 'Worse than usual':
+      case 2.0:
         return 2;
-      case 'Much worse than usual':
+      case 3.0:
         return 3;
     }
   }

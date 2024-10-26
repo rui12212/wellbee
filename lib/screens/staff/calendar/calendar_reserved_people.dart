@@ -138,6 +138,7 @@ class _ReservedPeoplePageState extends State<ReservedPeoplePage> {
                       return Center(child: Text('No reservation on this day.'));
                     } else {
                       final fetchedReservationList = snapshot.data!;
+                      print(fetchedReservationList);
                       return Expanded(
                         child: ListView.builder(
                           itemCount: fetchedReservationList.length,

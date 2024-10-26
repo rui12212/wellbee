@@ -13,6 +13,10 @@ migrate_working_dir/
 # 環境変数
 .env
 
+# androidのkey(今後バージョン更新に必要)
+/android/app/key.jks
+/android/app/key.properties
+
 # IntelliJ related
 *.iml
 *.ipr

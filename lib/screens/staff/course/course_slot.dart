@@ -169,7 +169,7 @@ class _SlotPageState extends State<SlotPage> {
             children: [
               _Header(title: '${widget.courseList['course_name']} Slot'),
               CalendarWeek(
-                height: 125.h,
+                height: 150.h,
                 controller: _controller,
                 pressedDateBackgroundColor: kColorPrimary,
                 dateStyle: TextStyle(
@@ -274,7 +274,7 @@ class _SlotPageState extends State<SlotPage> {
                               child: is_cancelled == true
                                   ? Stack(children: [
                                       Container(
-                                        height: 90.h,
+                                        height: 100.h,
                                         alignment: Alignment.center,
                                         child: Column(
                                           mainAxisAlignment:

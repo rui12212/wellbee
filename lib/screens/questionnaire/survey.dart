@@ -126,20 +126,38 @@ class _SurveyPageState extends State<SurveyPage> {
                       if (result.finishReason == FinishReason.COMPLETED) {
                         List intResponseList = [];
                         final jsonResult = result.toJson();
+                        // print(jsonResult);
+
                         for (int i = 1; i < 29; i++) {
                           //  0はInstructionIndicator、1からアンケートの回答
-                          final response = jsonResult['results'][i]['results']
-                              [0]['result']['text'];
+                          final response =
+                              jsonResult['results'][i]['results'][0]['result'];
                           int responseInt =
-                              QuestionConverter.convertStringToNum(response);
+                              QuestionConverter.convertDoubleToNum(response);
                           intResponseList.add(responseInt);
                         }
+                        // print(intResponseList);
+                        await _createSurvey(intResponseList);
+
+// ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+                        // for (int i = 1; i < 29; i++) {
+                        //   //  0はInstructionIndicator、1からアンケートの回答
+                        //   final response = jsonResult['results'][i]['results']
+                        //       [0]['result']['result'];
+                        //   int responseInt =
+                        //       QuestionConverter.convertStringToNum(response);
+                        //   intResponseList.add(responseInt);
+                        // }
+                        // print(intResponseList);
+                        // await _createSurvey(intResponseList);
+
+// ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
                         // Map listForModel = QuestionConverter.createResponseMap(
                         //     intResponseList);
                         // print(listForModel);
                         // print(intResponseList);
                         // print(jsonEncode(response));
-                        await _createSurvey(intResponseList);
+
                         // if (mounted) {
                         //   Navigator.of(context).pushAndRemoveUntil(
                         //       MaterialPageRoute(
@@ -300,429 +318,769 @@ class _SurveyPageState extends State<SurveyPage> {
         ),
         QuestionStep(
           title: 'Been feeling bad and in bad health?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling bad and in bad health?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been feeling in need of \na good tonic?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling in need of \na good tonic?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
+
         QuestionStep(
           title: 'Been feeling run down and \nout of sorts?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling run down and \nout of sorts?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been feeling that \nyou are ill?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling that \nyou are ill?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been getting any pains \nin your head?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been getting any pains \nin your head?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title:
               'Been getting a feeling of tightness or pressure \nin your head?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title:
+        //       'Been getting a feeling of tightness or pressure \nin your head?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been having hot or cold spells?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been having hot or cold spells?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been losing much sleep \nover worry?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been losing much sleep \nover worry?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title:
               'Been having difficulty \nin staying asleep \nonce you fall asleep?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title:
+        //       'Been having difficulty \nin staying asleep \nonce you fall asleep?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been feeling \nconstantly under strain?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling \nconstantly under strain?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been getting edgy or \nbad tempered?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been getting edgy or \nbad tempered?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been getting scared or \npanicky for no reason?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been getting scared or \npanicky for no reason?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been feeling everything is getting on top of you?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling everything is getting on top of you?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been feeling nervous and strung-out all the time?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling nervous and strung-out all the time?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been managing to keep yourself busy and occupied?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been managing to keep yourself busy and occupied?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been taking longer over the things you do?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been taking longer over the things you do?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been feeling you were doing things well?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling you were doing things well?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been satisfied with the way you have carried out your tasks?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been satisfied with the way you have carried out your tasks?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been feeling that you are playing a useful part in things?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling that you are playing a useful part in things?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been feeling capable of making decisions about things?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling capable of making decisions about things?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been able to enjoy your normal day-to-day activities?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been able to enjoy your normal day-to-day activities?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been thinking of yourself as a worthless person?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been thinking of yourself as a worthless person?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been feeling that \nlife is entirely hopeless?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling that \nlife is entirely hopeless?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been feeling that \nlife is not worth living?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been feeling that \nlife is not worth living?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title: 'Been having a suicidal thoughts?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title: 'Been having a suicidal thoughts?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title:
               'Been feeling at times that you could not do anything because your nerves & anxiety were too bad?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
           isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title:
+        //       'Been feeling at times that you could not do anything because your nerves & anxiety were too bad?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         QuestionStep(
           title:
               'Been finding yourself wishing you were dead and away from it all?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
-          isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // QuestionStep(
+        //   title:
+        //       'Been finding yourself wishing you were dead and away from it all?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
         QuestionStep(
           title:
               'Been finding that the idea of taking your own life keeps coming into your mind?',
-          // text: 'We are done, do you mind to tell us more about yourself?',
-          isOptional: false,
-          answerFormat: const SingleChoiceAnswerFormat(
-            textChoices: <TextChoice>[
-              TextChoice(text: 'Better than usual', value: 'Better than usual'),
-              TextChoice(text: 'Same as usual', value: 'Same as usual'),
-              TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-              TextChoice(
-                  text: 'Much worse than usual',
-                  value: 'Much worse than usual'),
-            ],
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Better than usual',
+            maximumValueDescription: 'Much worse',
           ),
         ),
+        // ),
+        // QuestionStep(
+        //   title:
+        //       'Been finding that the idea of taking your own life keeps coming into your mind?',
+        //   // text: 'We are done, do you mind to tell us more about yourself?',
+        //   isOptional: false,
+        //   answerFormat: const SingleChoiceAnswerFormat(
+        //     textChoices: <TextChoice>[
+        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
+        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
+        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
+        //       TextChoice(
+        //           text: 'Much worse than usual',
+        //           value: 'Much worse than usual'),
+        //     ],
+        //   ),
+        // ),
         CompletionStep(
           isOptional: false,
           stepIdentifier: StepIdentifier(id: '321'),

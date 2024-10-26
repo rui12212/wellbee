@@ -127,13 +127,29 @@ class _AttendeeDetailPageState extends State<AttendeeDetailPage> {
                         Text('Goal',
                             style: TextStyle(
                                 fontSize: 28.sp, fontWeight: FontWeight.bold)),
-                        Text(widget.fetchedReservationList['attendee_goal'],
+                        Text(
+                            widget.fetchedReservationList['attendee_goal'] ==
+                                        null ||
+                                    widget.fetchedReservationList[
+                                            'attendee_goal'] ==
+                                        ''
+                                ? 'No comment'
+                                : widget
+                                    .fetchedReservationList['attendee_goal'],
                             style: TextStyle(fontSize: 20.sp)),
                         SizedBox(height: 30.h),
                         Text('Reason',
                             style: TextStyle(
                                 fontSize: 28.sp, fontWeight: FontWeight.bold)),
-                        Text(widget.fetchedReservationList['attendee_reason'],
+                        Text(
+                            widget.fetchedReservationList['attendee_reason'] ==
+                                        null ||
+                                    widget.fetchedReservationList[
+                                            'attendee_reason'] ==
+                                        ''
+                                ? 'No comment'
+                                : widget
+                                    .fetchedReservationList['attendee_reason'],
                             style: TextStyle(fontSize: 20.sp)),
                         SizedBox(height: 30.h),
                         Text('Comment',

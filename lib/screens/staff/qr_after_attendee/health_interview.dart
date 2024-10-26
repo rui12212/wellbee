@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/staff/calendar/attendee_detail_page.dart';
 import 'package:wellbee/screens/staff/course/course_slot.dart';
+import 'package:wellbee/screens/staff/qr_after_attendee/attendee_detail.dart';
 import 'package:wellbee/screens/staff/qr_after_attendee/interview_add.dart';
 import 'package:wellbee/screens/staff/qr_after_attendee/interview_detail.dart';
 import 'package:wellbee/ui_function/convert.dart';
@@ -17,9 +18,11 @@ import 'package:wellbee/ui_parts/color.dart';
 
 class _Header extends StatelessWidget {
   String title;
+  Map<String, dynamic> attendeeList;
 
   _Header({
     required this.title,
+    required this.attendeeList,
   });
 
   @override
@@ -41,7 +44,11 @@ class _Header extends StatelessWidget {
             child: const Icon(Icons.chevron_left,
                 color: Color.fromARGB(255, 155, 152, 152)),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+                builder: (context) {
+                  return StaffAttendeeDetailPage(attendeeList: attendeeList);
+                },
+              ), ((route) => false));
             },
           )
         ],
@@ -91,7 +98,7 @@ class _HealthInterviewPageState extends State<HealthInterviewPage> {
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
         if (data.isNotEmpty) {
-          print(data);
+          // print(data);
           return data;
         }
       } else if (response.statusCode >= 400) {
@@ -116,7 +123,8 @@ class _HealthInterviewPageState extends State<HealthInterviewPage> {
           padding: EdgeInsets.all(15),
           child: Column(
             children: [
-              _Header(title: 'All Interview'),
+              _Header(
+                  title: 'All Interview', attendeeList: widget.attendeeList),
               FutureBuilder(
                   future: _fetchInterviews(),
                   builder: (context, snapshot) {
@@ -132,6 +140,7 @@ class _HealthInterviewPageState extends State<HealthInterviewPage> {
                               style: TextStyle(fontSize: 20.sp)));
                     } else {
                       final fetchedInterviewList = snapshot.data!;
+                      print(fetchedInterviewList);
                       return Expanded(
                         child: ListView.builder(
                           itemCount: fetchedInterviewList.length,
@@ -166,7 +175,9 @@ class _HealthInterviewPageState extends State<HealthInterviewPage> {
                                                     InterviewDetailPage(
                                                         interviewList:
                                                             fetchedInterviewList[
-                                                                index])));
+                                                                index],
+                                                        attendeeList: widget
+                                                            .attendeeList)));
                                       },
                                       child: Text('Detail',
                                           style: TextStyle(

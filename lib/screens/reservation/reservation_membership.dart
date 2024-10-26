@@ -203,7 +203,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
             children: [
               _Header(title: '${widget.membershipList['course_name']} '),
               CalendarWeek(
-                height: 130.h,
+                height: 150.h,
                 controller: _controller,
                 pressedDateBackgroundColor: kColorPrimary,
                 dateStyle: TextStyle(
@@ -288,11 +288,15 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data == null) {
-                    return Center(child: Text('No reservation available.'));
+                    return Container(
+                        height: 300.h,
+                        child: Center(
+                            child: Text('No reservation available.',
+                                style: TextStyle(fontSize: 20.h))));
                   } else {
                     final courseSlotList = snapshot.data!;
                     return Container(
-                      height: 450.h,
+                      height: 420.h,
                       child: ListView.builder(
                         itemCount: courseSlotList.length,
                         itemBuilder: (context, index) {
@@ -306,7 +310,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                           final bool is_max = courseSlotList[index]['is_max'];
                           // print(courseSlotList[index]['is_max']);
                           return Container(
-                            height: 80.h,
+                            height: 100.h,
                             child: is_cancelled == true || is_max == true
                                 ? Opacity(
                                     opacity: 0.3,

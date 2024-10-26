@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/attendee/attendee_add.dart';
+import 'package:wellbee/screens/staff/qr_after_attendee/attendee_all.dart';
 import 'package:wellbee/screens/staff/qr_after_attendee/health_interview.dart';
 import 'package:wellbee/screens/staff/qr_after_attendee/interview_detail.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
@@ -21,8 +22,9 @@ import 'package:wellbee/screens/attendee/attendee_update.dart';
 class _Header extends StatelessWidget {
   String title;
   String subtitle;
+  String userId;
 
-  _Header({required this.title, required this.subtitle});
+  _Header({required this.title, required this.subtitle, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,11 @@ class _Header extends StatelessWidget {
                   child: const Icon(Icons.chevron_left,
                       color: Color.fromARGB(255, 155, 152, 152)),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+                      builder: (context) {
+                        return StaffAttendeeAllPage(userId: userId);
+                      },
+                    ), ((route) => false));
                   },
                 )
               ],
@@ -113,6 +119,7 @@ class _StaffAttendeeDetailPageState extends State<StaffAttendeeDetailPage> {
   @override
   void initState() {
     super.initState();
+    print(widget.attendeeList);
   }
 
   @override
@@ -133,8 +140,10 @@ class _StaffAttendeeDetailPageState extends State<StaffAttendeeDetailPage> {
             child: Column(
               children: [
                 _Header(
-                    title: '${widget.attendeeList['name']}',
-                    subtitle: 'Goal & Reason of joining'),
+                  title: '${widget.attendeeList['name']}',
+                  subtitle: 'Goal & Reason of joining',
+                  userId: widget.attendeeList['user'],
+                ),
                 Container(
                     padding: EdgeInsets.all(15),
                     child: Column(
@@ -143,20 +152,29 @@ class _StaffAttendeeDetailPageState extends State<StaffAttendeeDetailPage> {
                         Text('Goal',
                             style: TextStyle(
                                 fontSize: 28.sp, fontWeight: FontWeight.bold)),
-                        Text(widget.attendeeList['goal'],
+                        Text(
+                            widget.attendeeList['goal'] == null ||
+                                    widget.attendeeList['goal'] == ''
+                                ? 'No comment'
+                                : widget.attendeeList['goal'],
                             style: TextStyle(fontSize: 20.sp)),
                         SizedBox(height: 30.h),
                         Text('Reason',
                             style: TextStyle(
                                 fontSize: 28.sp, fontWeight: FontWeight.bold)),
-                        Text(widget.attendeeList['reason'],
+                        Text(
+                            widget.attendeeList['reason'] == null ||
+                                    widget.attendeeList['reason'] == ''
+                                ? 'No comment'
+                                : widget.attendeeList['any_comment'],
                             style: TextStyle(fontSize: 20.sp)),
                         SizedBox(height: 30.h),
                         Text('Comment',
                             style: TextStyle(
                                 fontSize: 28.sp, fontWeight: FontWeight.bold)),
                         Text(
-                            widget.attendeeList['any_comment'] == null
+                            widget.attendeeList['any_comment'] == null ||
+                                    widget.attendeeList['any_comment'] == ''
                                 ? 'No comment'
                                 : widget.attendeeList['any_comment'],
                             style: TextStyle(fontSize: 20.sp)),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wellbee/assets/inet.dart';
@@ -105,41 +106,51 @@ class _CheckInPageState extends State<CheckInPage> {
   }
 
   _createCheckIn(Map<String, dynamic> scannedData) async {
-    try {
-      token = await SharedPrefs.fetchStaffAccessToken();
-      var url = Uri.parse('${baseUri}attendances/checkin/');
-      var response = await Future.any([
-        http.post(url,
-            body: jsonEncode({
-              'reservation': scannedData['id'],
-              'num_person': selectedNumPerson,
-            }),
-            headers: {
-              "Authorization": 'JWT $token',
-              'Content-Type': 'application/json',
-            }),
-        Future.delayed(const Duration(seconds: 15),
-            () => throw TimeoutException("Request timeout"))
-      ]);
-      if (response.statusCode == 201) {
-        // List<dynamic> data = jsonDecode(response.body);
-        // if (data.isNotEmpty) {
-        showSnackBar(kColorPrimary, 'Check In Success!');
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-          builder: (context) {
-            return UserHomePage(pk: scannedData['user_id']);
-          },
-        ), ((route) => false));
-      } else if (response.statusCode >= 400) {
-        showSnackBar(Colors.red,
-            'Error: You already checked in OR you need a new membership');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Something went wrong. Try again later')));
+    DateTime formattedDate = DateTime.parse(scannedData['slot_date']);
+    DateTime today = DateTime.now();
+
+    if (formattedDate.year == today.year &&
+        formattedDate.month == today.month &&
+        formattedDate.day == today.day) {
+      try {
+        token = await SharedPrefs.fetchStaffAccessToken();
+        var url = Uri.parse('${baseUri}attendances/checkin/');
+        var response = await Future.any([
+          http.post(url,
+              body: jsonEncode({
+                'reservation': scannedData['id'],
+                'num_person': selectedNumPerson,
+              }),
+              headers: {
+                "Authorization": 'JWT $token',
+                'Content-Type': 'application/json',
+              }),
+          Future.delayed(const Duration(seconds: 15),
+              () => throw TimeoutException("Request timeout"))
+        ]);
+        if (response.statusCode == 201) {
+          // List<dynamic> data = jsonDecode(response.body);
+          // if (data.isNotEmpty) {
+          showSnackBar(kColorPrimary, 'Check In Success!');
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+            builder: (context) {
+              return UserHomePage(pk: scannedData['user_id']);
+            },
+          ), ((route) => false));
+        } else if (response.statusCode >= 400) {
+          showSnackBar(Colors.red,
+              'Error: You already checked in OR you need a new membership');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Something went wrong. Try again later')));
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
+    } else {
+      showSnackBar(Colors.red, 'This reservation is NOT TODAY');
+      return;
     }
   }
 
@@ -171,7 +182,34 @@ class _CheckInPageState extends State<CheckInPage> {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Center(
-                          child: Text('Error occured. No reservation.'));
+                          child: Container(
+                        height: 500.h,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Error occured. No reservation.',
+                                style: TextStyle(fontSize: 16.h)),
+                            SizedBox(height: 20.h),
+                            FilledButton.icon(
+                              onPressed: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                  builder: (context) {
+                                    return StaffTopPage(0);
+                                  },
+                                ), ((route) => false));
+                              },
+                              icon: const Icon(Icons.arrow_back_ios),
+                              label: Text('Go Back to Staff Home',
+                                  style: TextStyle(fontSize: 20.sp)),
+                              style: ButtonStyle(
+                                minimumSize: MaterialStateProperty.all<Size>(
+                                    Size(300, 80)), // ボタンの幅と高さを設定
+                              ),
+                            ),
+                          ],
+                        ),
+                      ));
                     } else {
                       final Map<String, dynamic> scannedReservation =
                           snapshot.data!;

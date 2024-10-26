@@ -364,34 +364,29 @@ class AttendeeDisplay extends StatelessWidget {
 
     // }
     return Container(
-      height: 170.h,
-      // margin: EdgeInsets.symmetric(horizontal: 20),
+      height: 150.h,
+      margin: EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
           Container(
             width: 120.w,
-            child: Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: gender == 'male'
-                          ? AssetImage(
-                              'lib/assets/attendee_pic/male_fitness.png')
-                          : AssetImage(
-                              'lib/assets/attendee_pic/female_fitness.png'),
-                    ),
-                    color: Colors.white,
-                    boxShadow: shadowList,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20.r),
-                        bottomLeft: Radius.circular(20.r))),
-                height: 150.h,
-              ),
-            ),
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: gender == 'male'
+                      ? AssetImage('lib/assets/attendee_pic/male_fitness.png')
+                      : AssetImage(
+                          'lib/assets/attendee_pic/female_fitness.png'),
+                ),
+                color: Colors.white,
+                boxShadow: shadowList,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.r),
+                    bottomLeft: Radius.circular(20.r))),
+            height: 150.h,
           ),
           Expanded(
               child: Container(
-                  height: 160.h,
+                  height: 150.h,
                   padding: EdgeInsets.all(16).h,
                   decoration: BoxDecoration(
                       color: Colors.white,
@@ -438,15 +433,13 @@ class AttendeeDisplay extends StatelessWidget {
                                   style: TextStyle(
                                       fontSize: 16.sp,
                                       color: kColorTextDarkGrey))
-                              : Flexible(
-                                  child: DefaultTextStyle(
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        color: kColorTextDarkGrey),
-                                    child: Text(
-                                      goal,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                              : DefaultTextStyle(
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: kColorTextDarkGrey),
+                                  child: Text(
+                                    goal,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ))
                     ],

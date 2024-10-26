@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/attendee/attendee_add.dart';
+import 'package:wellbee/screens/staff/qr_after/user_home.dart';
 import 'package:wellbee/screens/staff/qr_after_attendee/attendee_detail.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:http/http.dart' as http;
@@ -20,8 +21,9 @@ import 'package:wellbee/screens/attendee/attendee_update.dart';
 class _Header extends StatelessWidget {
   String title;
   String subtitle;
+  String userId;
 
-  _Header({required this.title, required this.subtitle});
+  _Header({required this.title, required this.subtitle, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,11 @@ class _Header extends StatelessWidget {
                   child: const Icon(Icons.chevron_left,
                       color: Color.fromARGB(255, 155, 152, 152)),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+                      builder: (context) {
+                        return UserHomePage(pk: userId);
+                      },
+                    ), ((route) => false));
                   },
                 )
               ],
@@ -96,6 +102,7 @@ class _StaffAttendeeAllPageState extends State<StaffAttendeeAllPage> {
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
         if (data.isNotEmpty) {
+          print(data);
           return data;
         }
       } else if (response.statusCode >= 400) {
@@ -134,7 +141,8 @@ class _StaffAttendeeAllPageState extends State<StaffAttendeeAllPage> {
             children: [
               _Header(
                   title: 'Wellbee Member',
-                  subtitle: 'Select for Member detail '),
+                  subtitle: 'Select for Member detail ',
+                  userId: widget.userId),
               FutureBuilder(
                 future: _fetchAttendee(),
                 builder: (context, snapshot) {

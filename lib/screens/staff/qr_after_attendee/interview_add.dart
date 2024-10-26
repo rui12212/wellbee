@@ -19,8 +19,12 @@ import 'package:wellbee/ui_parts/textstyle.dart';
 class _Header extends StatelessWidget {
   String title;
   String subtitle;
+  Map<String, dynamic> attendeeList;
 
-  _Header({required this.title, required this.subtitle});
+  _Header(
+      {required this.title,
+      required this.subtitle,
+      required this.attendeeList});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +50,11 @@ class _Header extends StatelessWidget {
                   child: const Icon(Icons.chevron_left,
                       color: Color.fromARGB(255, 155, 152, 152)),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+                      builder: (context) {
+                        return HealthInterviewPage(attendeeList: attendeeList);
+                      },
+                    ), ((route) => false));
                   },
                 )
               ],
@@ -155,7 +163,9 @@ class _InterviewAddPageState extends State<InterviewAddPage> {
         child: Column(
           children: [
             _Header(
-                title: 'Health Interview', subtitle: 'Check body & mind state'),
+                title: 'Health Interview',
+                subtitle: 'Check body & mind state',
+                attendeeList: widget.attendeeList),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(

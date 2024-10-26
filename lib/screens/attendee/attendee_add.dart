@@ -205,6 +205,7 @@ class _AttendeeAddPageState extends State<AttendeeAddPage> {
                                   border:
                                       Border.all(color: kColorTextDarkGrey)),
                               child: DropdownButton(
+                                underline: SizedBox.shrink(),
                                 itemHeight: 75.h,
                                 isExpanded: true,
                                 style: TextStyle(

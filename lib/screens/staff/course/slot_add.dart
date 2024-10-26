@@ -240,6 +240,7 @@ class _SlotAddPageState extends State<SlotAddPage> {
                                   border:
                                       Border.all(color: kColorTextDarkGrey)),
                               child: DropdownButton(
+                                underline: SizedBox.shrink(),
                                 itemHeight: 75.h,
                                 isExpanded: true,
                                 style: TextStyle(
@@ -343,6 +344,7 @@ class _SlotAddPageState extends State<SlotAddPage> {
                                   border:
                                       Border.all(color: kColorTextDarkGrey)),
                               child: DropdownButton(
+                                underline: SizedBox.shrink(),
                                 itemHeight: 75.h,
                                 isExpanded: true,
                                 style: TextStyle(

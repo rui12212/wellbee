@@ -193,6 +193,7 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                                   border:
                                       Border.all(color: kColorTextDarkGrey)),
                               child: DropdownButton(
+                                underline: SizedBox.shrink(),
                                 itemHeight: 75.h,
                                 isExpanded: true,
                                 style: TextStyle(
@@ -298,6 +299,7 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                                   border:
                                       Border.all(color: kColorTextDarkGrey)),
                               child: DropdownButton(
+                                  underline: SizedBox.shrink(),
                                   itemHeight: 75.h,
                                   value: selectedPrice,
                                   isExpanded: true,
@@ -332,6 +334,7 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                                   border:
                                       Border.all(color: kColorTextDarkGrey)),
                               child: DropdownButton(
+                                underline: SizedBox.shrink(),
                                 itemHeight: 75.h,
                                 isExpanded: true,
                                 style: TextStyle(
@@ -395,6 +398,7 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                                   border:
                                       Border.all(color: kColorTextDarkGrey)),
                               child: DropdownButton(
+                                underline: SizedBox.shrink(),
                                 itemHeight: 75.h,
                                 isExpanded: true,
                                 style: TextStyle(
@@ -444,6 +448,7 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                                   border:
                                       Border.all(color: kColorTextDarkGrey)),
                               child: DropdownButton(
+                                  underline: SizedBox.shrink(),
                                   isExpanded: true,
                                   style: TextStyle(
                                       fontSize: 22.sp, color: Colors.black),
@@ -478,6 +483,7 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                                   border:
                                       Border.all(color: kColorTextDarkGrey)),
                               child: DropdownButton(
+                                  underline: SizedBox.shrink(),
                                   isExpanded: true,
                                   style: TextStyle(
                                       fontSize: 22.sp, color: Colors.black),
