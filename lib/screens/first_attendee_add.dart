@@ -90,7 +90,7 @@ class _FirstAttendeeAddPageState extends State<FirstAttendeeAddPage> {
     try {
       token = await SharedPrefs.fetchAccessToken();
       final String formattedDate = DateFormat('yyyy-MM-dd').format(newDate);
-      var url = Uri.parse('${baseUri}attendances/attendee/');
+      var url = Uri.parse('${baseUri}attendances/attendee/?token=$token');
       var response = await Future.any([
         http.post(
           url,

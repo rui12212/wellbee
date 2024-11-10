@@ -9,6 +9,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/staff/calendar/attendee_detail_page.dart';
+import 'package:wellbee/screens/staff/course/course.dart';
 import 'package:wellbee/screens/staff/course/slot_add.dart';
 import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
@@ -83,8 +84,9 @@ class _SlotPageState extends State<SlotPage> {
       final String formattedDate =
           DateFormat('yyyy-MM-dd').format(selectedDate);
       token = await SharedPrefs.fetchStaffAccessToken();
-      var url = Uri.parse('${baseUri}reservations/slot/course_slots_for_staff')
+      var url = Uri.parse('${baseUri}reservations/slot/course_slots_for_staff/')
           .replace(queryParameters: {
+        'token': token,
         'course_name': widget.courseList['course_name'],
         'date': formattedDate,
       });
@@ -118,7 +120,8 @@ class _SlotPageState extends State<SlotPage> {
   Future<List<dynamic>?> _deleteSlot(int slotId) async {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
-      var url = Uri.parse('${baseUri}reservations/slot/${slotId}/update_slot/');
+      var url = Uri.parse(
+          '${baseUri}reservations/slot/${slotId}/update_slot/?token=$token');
       var response = await Future.any([
         http.patch(url, headers: {
           "Authorization": 'JWT $token',
@@ -129,8 +132,18 @@ class _SlotPageState extends State<SlotPage> {
       ]);
       if (response.statusCode == 200) {
         showSnackBar(kColorPrimary, 'Slot has been cancelled');
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+          builder: (context) {
+            return AllCoursePage();
+          },
+        ), ((route) => false));
       } else if (response.statusCode == 204) {
         showSnackBar(kColorPrimary, 'Slot has been deleted');
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+          builder: (context) {
+            return AllCoursePage();
+          },
+        ), ((route) => false));
       } else if (response.statusCode >= 400) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('Internet Error. You may not have slots')));

@@ -168,7 +168,16 @@ class _Ticket extends StatelessWidget {
                           Text(
                             course_name,
                             style: TextStyle(
-                              fontSize: 17.h,
+                              fontSize: course_name == 'Family Pilates' ||
+                                      course_name == 'Family Yoga' ||
+                                      course_name == 'Kids Karate' ||
+                                      course_name == 'Kids Taiso(A)' ||
+                                      course_name == 'Kids Taiso(B)' ||
+                                      course_name == 'Kids Yoga(A)' ||
+                                      course_name == 'Kids Yoga(B)' ||
+                                      course_name == 'Kids Yoga KG'
+                                  ? 13.h
+                                  : 17.h,
                               color: kColorPrimary,
                               fontWeight: FontWeight.bold,
                             ),
@@ -279,7 +288,9 @@ class TicketList extends StatelessWidget {
         max_join_times: membershipList['max_join_times'],
         already_join_times: membershipList['already_join_times'],
         image: membershipList['course_name'] == 'Yoga' ||
-                membershipList['course_name'] == 'Kids Yoga'
+                membershipList['course_name'] == 'Kids Yoga(A)' ||
+                membershipList['course_name'] == 'Kids Yoga(B)' ||
+                membershipList['course_name'] == 'Kids Yoga KG'
             ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
             : membershipList['course_name'] == 'Dance' ||
                     membershipList['course_name'] == 'Kids Dance' ||
@@ -292,12 +303,11 @@ class TicketList extends StatelessWidget {
                             membershipList['course_name'] == 'Kids Music'
                         ? Image.asset(
                             'lib/assets/invi_course_pic/invi_music.png')
-                        : membershipList['course_name'] == 'Kids Taiso'
+                        : membershipList['course_name'] == 'Kids Taiso(A)' ||
+                                membershipList['course_name'] == 'Kids Taiso(B)'
                             ? Image.asset(
                                 'lib/assets/invi_course_pic/male_fitness.png')
-                            : membershipList['course_name'] == 'Pilates' ||
-                                    membershipList['course_name'] ==
-                                        'Kids Pilates'
+                            : membershipList['course_name'] == 'Pilates'
                                 ? Image.asset(
                                     'lib/assets/invi_course_pic/invi_pilates.png')
                                 : membershipList['course_name'] ==

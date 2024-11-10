@@ -76,9 +76,8 @@ class _CheckInPageState extends State<CheckInPage> {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
       var url = Uri.parse('${baseUri}reservations/reservation/qr_reservation/')
-          .replace(queryParameters: {
-        'reservation_id': widget.id,
-      });
+          .replace(
+              queryParameters: {'reservation_id': widget.id, 'token': token});
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -114,7 +113,7 @@ class _CheckInPageState extends State<CheckInPage> {
         formattedDate.day == today.day) {
       try {
         token = await SharedPrefs.fetchStaffAccessToken();
-        var url = Uri.parse('${baseUri}attendances/checkin/');
+        var url = Uri.parse('${baseUri}attendances/checkin/?token=$token');
         var response = await Future.any([
           http.post(url,
               body: jsonEncode({
@@ -157,6 +156,7 @@ class _CheckInPageState extends State<CheckInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
             automaticallyImplyLeading: false,
             title: Text('Check In',

@@ -108,7 +108,7 @@ class _StaffMembershipPageState extends State<StaffMembershipPage> {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
       var url = Uri.parse(
-          '${baseUri}attendances/membership/membership_by_staff?user_id=${widget.pk}');
+          '${baseUri}attendances/membership/membership_by_staff?user_id=${widget.pk}&token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',

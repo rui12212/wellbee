@@ -37,7 +37,8 @@ class _UserHomePageState extends State<UserHomePage> {
   Future<Map<String, dynamic>?> _fetchUser() async {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
-      var url = Uri.parse('${baseUri}accounts/users/${widget.pk}');
+      var url =
+          Uri.parse('${baseUri}accounts/users/${widget.pk}/?token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',

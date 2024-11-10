@@ -101,8 +101,8 @@ class _MembershipPageState extends State<MembershipPage> {
   Future<List<dynamic>?> _fetchMyAvailableMembership() async {
     try {
       token = await SharedPrefs.fetchAccessToken();
-      var url =
-          Uri.parse('${baseUri}attendances/membership/my_all_membership/');
+      var url = Uri.parse(
+          '${baseUri}attendances/membership/my_all_membership/?token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',

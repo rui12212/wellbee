@@ -86,7 +86,7 @@ class _HealthInterviewPageState extends State<HealthInterviewPage> {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
       var url = Uri.parse(
-          '${baseUri}attendances/interview/interview_by_staff?attendee_id=${widget.attendeeList['id']}');
+          '${baseUri}attendances/interview/interview_by_staff?attendee_id=${widget.attendeeList['id']}&token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',

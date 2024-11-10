@@ -89,8 +89,8 @@ class _QrReservationPageState extends State<QrReservationPage> {
   Future<List<dynamic>?> _fetchReservation() async {
     try {
       token = await SharedPrefs.fetchAccessToken();
-      var url =
-          Uri.parse('${baseUri}reservations/reservation/my_all_reservation/');
+      var url = Uri.parse(
+          '${baseUri}reservations/reservation/my_all_reservation/?token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -123,7 +123,8 @@ class _QrReservationPageState extends State<QrReservationPage> {
   Future<List<dynamic>?> _cancelReservation(int reservationId) async {
     try {
       token = await SharedPrefs.fetchAccessToken();
-      var url = Uri.parse('${baseUri}reservations/reservation/$reservationId/');
+      var url = Uri.parse(
+          '${baseUri}reservations/reservation/$reservationId/?token=$token');
       var response = await Future.any([
         http.delete(url, headers: {
           "Authorization": 'JWT $token',
@@ -167,7 +168,7 @@ class _QrReservationPageState extends State<QrReservationPage> {
     int id,
   ) {
     CustomAwesomeDialogueForCancelReservation(
-      titleText: 'Cancel Reservation',
+      titleText: 'Cancel Reservation\nهەلوەشاندنا حجزکرنێ',
       desc: 'Are you sure to cancel?',
       callback: () async {
         await _cancelReservation(id);
@@ -253,7 +254,8 @@ class _QrReservationPageState extends State<QrReservationPage> {
                                     ['slot_is_cancelled'];
                             return Column(
                               children: [
-                                isAttended == true && is_before
+                                isAttended == true && is_before ||
+                                        isAttended == true
                                     ? Opacity(
                                         opacity: 0.4,
                                         child: PastReservationTicketList(
@@ -271,7 +273,7 @@ class _QrReservationPageState extends State<QrReservationPage> {
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     Text(
-                                                        'Delete Past Reservation',
+                                                        'Delete Past Reservation\nژێبرنا حجزکرنا بەری نوکە',
                                                         style: TextStyle(
                                                             color:
                                                                 Color.fromARGB(
@@ -321,7 +323,6 @@ class _QrReservationPageState extends State<QrReservationPage> {
                                         : is_cancelled == true
                                             ?
                                             // Slotがキャンセルの場合は、Opacity
-
                                             Stack(
                                                 children: [
                                                   Container(

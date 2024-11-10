@@ -38,16 +38,18 @@ class _Question extends StatelessWidget {
   String question;
   String subQuestion;
   String coloredText;
+  String krSub;
 
   _Question(
       {required this.question,
       required this.subQuestion,
-      required this.coloredText});
+      required this.coloredText,
+      required this.krSub});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 90.h,
+        height: 140.h,
         child: Column(
           children: [
             Align(
@@ -68,7 +70,9 @@ class _Question extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                         color: kColorPrimary)),
               ],
-            )
+            ),
+            Text(krSub,
+                style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w300)),
           ],
         ));
   }
@@ -97,7 +101,8 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
   Future<List<dynamic>?> _createBaseBodySurvey() async {
     try {
       var token = await SharedPrefs.fetchAccessToken();
-      var url = Uri.parse('${baseUri}questionnaires/base_body_survey/');
+      var url =
+          Uri.parse('${baseUri}questionnaires/base_body_survey/?token=$token');
       var response = await Future.any([
         http.post(url,
             body: jsonEncode({
@@ -165,7 +170,8 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                         _Question(
                             question: 'Welcome to Health Survey!',
                             subQuestion: 'First, put ',
-                            coloredText: 'Height & Weight'),
+                            coloredText: 'Height & Weight',
+                            krSub: 'دەستپێکێ درێژی و کێشا خو دانە'),
                         SizedBox(
                           height: 30.h,
                         ),
@@ -194,7 +200,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                             width: 250.w,
                             child: CustomTextBox(
                               inputType: TextInputType.number,
-                              label: 'Height',
+                              label: 'Height/درێژی',
                               hintText: '170cm -> 170',
                               controller: _heightController,
                             ).textFieldDecoration()),
@@ -205,7 +211,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                             width: 250.w,
                             child: CustomTextBox(
                               inputType: TextInputType.number,
-                              label: 'Weight',
+                              label: 'Weight/کێشا',
                               hintText: '65kg -> 65',
                               controller: _weightController,
                             ).textFieldDecoration()),
@@ -222,11 +228,29 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                           onPressed: () {
                             String heightText = _heightController.text.trim();
                             String weightText = _weightController.text.trim();
+                            int heightNum = int.parse(heightText);
+                            int weightNum = int.parse(weightText);
 
                             if (heightText.isEmpty || weightText.isEmpty) {
                               CustomAwesomeDialogueForFail(
                                 titleText: 'Error',
                                 desc: 'There is an empty field',
+                                // callback: _createReservation,
+                              ).show(context);
+                              return;
+                              // 最小値。heightが100より小さく、体重が15より小さければエラー
+                            } else if (heightNum < 100 || weightNum < 15) {
+                              CustomAwesomeDialogueForFail(
+                                titleText: 'Error',
+                                desc: 'Minimum height is 100cm /weight is 15kg',
+                                // callback: _createReservation,
+                              ).show(context);
+                              return;
+                              // 最小値。heightが200より大きく、体重が150より大きければエラー
+                            } else if (heightNum > 200 || weightNum > 150) {
+                              CustomAwesomeDialogueForFail(
+                                titleText: 'Error',
+                                desc: 'Minimum height is 100cm /weight is 15kg',
                                 // callback: _createReservation,
                               ).show(context);
                               return;

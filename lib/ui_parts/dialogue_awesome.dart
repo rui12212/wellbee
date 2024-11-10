@@ -16,7 +16,7 @@ class CustomAwesomeDialogue {
   void show(BuildContext context) {
     AwesomeDialog(
       context: context,
-      dialogType: DialogType.warning,
+      dialogType: DialogType.noHeader,
       borderSide: BorderSide(
         color: kColorPrimary,
         width: 2,
@@ -57,7 +57,7 @@ class CustomAwesomeDialogueForSuccess {
   void show(BuildContext context) {
     AwesomeDialog(
       context: context,
-      dialogType: DialogType.success,
+      dialogType: DialogType.noHeader,
       borderSide: BorderSide(
         color: kColorPrimary,
         width: 2,
@@ -96,7 +96,7 @@ class CustomAwesomeDialogueForFail {
   void show(BuildContext context) {
     AwesomeDialog(
       context: context,
-      dialogType: DialogType.error,
+      dialogType: DialogType.noHeader,
       borderSide: BorderSide(
         color: kColorPrimary,
         width: 2,
@@ -136,7 +136,7 @@ class CustomAwesomeDialogueForCancelReservation {
   show(BuildContext context) {
     AwesomeDialog(
       context: context,
-      dialogType: DialogType.warning,
+      dialogType: DialogType.noHeader,
       borderSide: BorderSide(
         color: kColorPrimary,
         width: 2,

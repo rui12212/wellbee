@@ -92,7 +92,7 @@ class _StaffMembershipConfirmPageState
   void _createMembership() async {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
-      var url = Uri.parse('${baseUri}attendances/membership/');
+      var url = Uri.parse('${baseUri}attendances/membership/?token=$token');
       var response = await Future.any([
         http.post(url,
             body: jsonEncode({
@@ -104,6 +104,8 @@ class _StaffMembershipConfirmPageState
               'times_per_week': widget.membershipMap['times_per_week'],
               'duration': widget.membershipMap['duration'],
               'num_person': widget.membershipMap['num_person'],
+              'minus': widget.membershipMap['minus'],
+              'start_day': widget.membershipMap['start_day'],
               'discount_rate': widget.membershipMap['discount_rate'],
             }),
             headers: {
@@ -136,10 +138,11 @@ class _StaffMembershipConfirmPageState
   }
 
   calcTotalPrice() {
-    int value = widget.membershipMap['original_price'] *
-        widget.membershipMap['times_per_week'] *
-        widget.membershipMap['duration'] *
-        widget.membershipMap['num_person'];
+    int value = (widget.membershipMap['original_price'] *
+            widget.membershipMap['times_per_week'] *
+            widget.membershipMap['duration'] *
+            widget.membershipMap['num_person']) -
+        widget.membershipMap['minus'];
     totalPrice = value;
     return totalPrice;
   }
@@ -178,7 +181,7 @@ class _StaffMembershipConfirmPageState
                   SingleChildScrollView(
                     child: Container(
                       padding: EdgeInsets.all(30),
-                      height: 500.h,
+                      height: 600.h,
                       width: 390.w,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -198,6 +201,13 @@ class _StaffMembershipConfirmPageState
                         children: [
                           SizedBox(
                             height: 10.h,
+                          ),
+                          _DetailRow(
+                            title: 'Start Date:',
+                            value: widget.membershipMap['start_day'],
+                          ),
+                          SizedBox(
+                            height: 5.h,
                           ),
                           _DetailRow(
                             title: 'Course Name:',
@@ -233,6 +243,13 @@ class _StaffMembershipConfirmPageState
                             title: 'Number of People:',
                             value:
                                 '${widget.membershipMap['num_person']} people',
+                          ),
+                          SizedBox(
+                            height: 5.h,
+                          ),
+                          _DetailRow(
+                            title: 'Minus(\$):',
+                            value: '${widget.membershipMap['minus']} \$',
                           ),
                           SizedBox(
                             height: 5.h,

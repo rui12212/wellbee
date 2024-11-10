@@ -103,7 +103,7 @@ class _StaffSignInPageState extends State<StaffSignInPage> {
       // ダイアログを呼び出す
       await DialogGenerator.showLoadingDialog(context: context);
 
-      var url = Uri.parse('${baseUri}accounts/api/staff/token/');
+      var url = Uri.parse('${baseUri}accounts/api/staff/token/?token=$token');
       var response = await Future.any([
         http.post(url, body: {
           'phone_number': _phoneController.text,

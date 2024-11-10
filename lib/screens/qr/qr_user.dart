@@ -18,46 +18,70 @@ import '../../ui_parts/color.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class _Header extends StatelessWidget {
+  String title;
+
+  _Header({required this.title});
+
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: TextButton(
-        style: TextButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shape: const CircleBorder(
-                side: BorderSide(
-                    color: Color.fromARGB(255, 216, 214, 214), width: 5))),
-        child: const Icon(Icons.chevron_left,
-            color: Color.fromARGB(255, 155, 152, 152)),
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => TopPage(0)));
-        },
+    return Container(
+      height: 100.h,
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: Row(
+              children: [
+                Text(
+                  title,
+                  style:
+                      TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shape: const CircleBorder(
+                          side: BorderSide(
+                              color: Color.fromARGB(255, 216, 214, 214),
+                              width: 5))),
+                  child: const Icon(Icons.chevron_left,
+                      color: Color.fromARGB(255, 155, 152, 152)),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) {
+                        return TopPage(0);
+                      },
+                    ));
+                  },
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _Question extends StatelessWidget {
-  String question;
+// class _Question extends StatelessWidget {
+//   String question;
 
-  _Question({
-    required this.question,
-  });
+//   _Question({
+//     required this.question,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        height: 80.h,
-        child: Column(
-          children: [
-            Text(question,
-                style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w300))
-          ],
-        ));
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//         height: 80.h,
+//         child: Column(
+//           children: [
+//             Text(question,
+//                 style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w300))
+//           ],
+//         ));
+//   }
+// }
 
 class UserQrCodePage extends StatefulWidget {
   UserQrCodePage({
@@ -79,7 +103,8 @@ class _UserQrCodePageState extends State<UserQrCodePage> {
   Future<List<dynamic>?> _fetchAttendee() async {
     try {
       token = await SharedPrefs.fetchAccessToken();
-      var url = Uri.parse('${baseUri}attendances/attendee/my_attendee/');
+      var url =
+          Uri.parse('${baseUri}attendances/attendee/my_attendee/?token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -123,38 +148,40 @@ class _UserQrCodePageState extends State<UserQrCodePage> {
     return Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
-          child: Column(
-            children: [
-              _Header(),
-              _Question(question: 'QR for Staff'),
-              FutureBuilder(
-                  future: _fetchAttendee(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(
-                          child: Text('Error Occured.Try again later'));
-                    } else {
-                      final fetchedUserData = snapshot.data;
-                      // print(userId);
-                      return Container(
-                        height: 400.h,
-                        alignment: Alignment.center,
-                        child: QrImageView(
-                          data:
-                              '${baseUri}accounts/users/${fetchedUserData?[0]['user_id']}',
-                          version: QrVersions.auto,
-                          size: 200.0.h,
-                        ),
-                      );
-                    }
-                  }),
-            ],
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Column(
+              children: [
+                _Header(title: 'QR for Staff'),
+                FutureBuilder(
+                    future: _fetchAttendee(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(
+                            child: Text('Error Occured.Try again later'));
+                      } else {
+                        final fetchedUserData = snapshot.data;
+                        // print(userId);
+                        return Container(
+                          height: 400.h,
+                          alignment: Alignment.center,
+                          child: QrImageView(
+                            data:
+                                '${baseUri}accounts/users/${fetchedUserData?[0]['user_id']}',
+                            version: QrVersions.auto,
+                            size: 200.0.h,
+                          ),
+                        );
+                      }
+                    }),
+              ],
+            ),
           ),
         ));
   }

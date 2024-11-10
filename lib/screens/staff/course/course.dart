@@ -6,6 +6,7 @@ import 'package:flutter_calendar_week/flutter_calendar_week.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
+import 'package:wellbee/screens/staff/auth/staff_top_page.dart';
 import 'package:wellbee/screens/staff/calendar/attendee_detail_page.dart';
 import 'package:wellbee/screens/staff/course/course_slot.dart';
 import 'package:wellbee/ui_function/convert.dart';
@@ -39,7 +40,11 @@ class _Header extends StatelessWidget {
             child: const Icon(Icons.chevron_left,
                 color: Color.fromARGB(255, 155, 152, 152)),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+                builder: (context) {
+                  return StaffTopPage(0);
+                },
+              ), ((route) => false));
             },
           )
         ],
@@ -77,7 +82,7 @@ class _AllCoursePageState extends State<AllCoursePage> {
   Future<List<dynamic>?> _fetchAllCourse() async {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
-      var url = Uri.parse('${baseUri}attendances/course/');
+      var url = Uri.parse('${baseUri}attendances/course/?token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',

@@ -109,7 +109,7 @@ class _SlotAddPageState extends State<SlotAddPage> {
       int convertedCourseId =
           IntConverter.convertCourseToNum(widget.courseName);
 
-      var url = Uri.parse('${baseUri}reservations/slot/');
+      var url = Uri.parse('${baseUri}reservations/slot/?token=$token');
       var response = await Future.any([
         http.post(
           url,

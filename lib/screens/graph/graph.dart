@@ -12,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
+import 'package:wellbee/screens/graph/radar.dart';
 import 'package:wellbee/screens/questionnaire/questionnaire_base.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/color.dart';
@@ -81,7 +82,7 @@ class _GraphPageState extends State<GraphPage> {
     try {
       token = await SharedPrefs.fetchAccessToken();
       var url = Uri.parse(
-          '${baseUri}questionnaires/survey_response/my_survey?attendee_name=${attendeeName}');
+          '${baseUri}questionnaires/survey_response/my_survey?attendee_name=$attendeeName&token=$token');
       var response = await Future.any([
         http.get(url, headers: {"Authorization": 'JWT $token'}),
         Future.delayed(const Duration(seconds: 15),
@@ -112,7 +113,7 @@ class _GraphPageState extends State<GraphPage> {
     try {
       token = await SharedPrefs.fetchAccessToken();
       var url = Uri.parse(
-          '${baseUri}questionnaires/base_body_survey/my_bmi?attendee_name=${attendeeName}');
+          '${baseUri}questionnaires/base_body_survey/my_bmi?attendee_name=${attendeeName}&token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -186,7 +187,7 @@ class _GraphPageState extends State<GraphPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Mental Health(GHQ-28)',
+                        'Mental Health/ساخلەمیا دەرونی',
                         style: TextStyle(
                             fontSize: 22.sp,
                             fontWeight: FontWeight.w600,
@@ -249,34 +250,29 @@ class _GraphPageState extends State<GraphPage> {
 
                               final lineBarsDataMentalHealth = [
                                 LineChartBarData(
-                                  spots: spotsData, // your data here
-                                  isCurved: true,
-                                  barWidth: 3,
-                                  color: kHealthColor, // グラフの色
-                                ),
+                                    spots: spotsData, // your data here
+                                    isCurved: true,
+                                    barWidth: 3,
+                                    color: kHealthColor, // グラフの色
+                                    dotData: FlDotData(
+                                      show: true,
+                                      getDotPainter:
+                                          (spot, percent, barData, index) =>
+                                              FlDotCirclePainter(
+                                        // ドットの大きさ
+                                        radius: 7.h,
+                                        color: kHealthColor,
+                                        strokeWidth: 0.5,
+                                      ),
+                                    )),
                               ];
 
-                              // final gridData = FlGridData(
-                              //   show: true,
-                              //   getDrawingHorizontalLine: (value) {
-                              //     if (value == 10) {
-                              //       return FlLine(
-                              //         color: Colors.grey, // y=10 の線の色
-                              //         strokeWidth: 5,
-                              //       );
-                              //     }
-                              //     return FlLine(
-                              //       color: Colors.transparent,
-                              //     );
-                              //   },
-                              // );
-
-                              // どのspotを表示させるか
                               final lineBarsData = [
                                 LineChartBarData(
                                   // spotのどこを表示させるか？
                                   showingIndicators: spotShowingList,
                                   spots: spotsData,
+
                                   isCurved: true,
                                   barWidth: 3,
                                   dotData: const FlDotData(show: true),
@@ -326,7 +322,7 @@ class _GraphPageState extends State<GraphPage> {
                                           ]);
                                         }).toList(),
                                         lineTouchData: LineTouchData(
-                                          enabled: false,
+                                          enabled: true,
                                           handleBuiltInTouches: false,
                                           touchCallback: (FlTouchEvent event,
                                               LineTouchResponse? response) {
@@ -339,16 +335,15 @@ class _GraphPageState extends State<GraphPage> {
                                                   .lineBarSpots!
                                                   .first
                                                   .spotIndex;
-                                              // setState(() {
-                                              //   // ボタンを押したらspotIndexのデータを表示する
-                                              //   if (showingTooltipOnSpots.contains(spotIndex)) {
-                                              //     // すでにshowingしているものをタッチしたら、spotが消えます
-                                              //     showingTooltipOnSpots.remove(spotIndex);
-                                              //   } else {
-                                              //     // showingされているものではなかったら、showするリスト押下したspotを入れます。（表示させます）
-                                              //     showingTooltipOnSpots.add(spotIndex);
-                                              //   }
-                                              // });
+                                              // print(mySurveyList[spotIndex]);
+                                              Navigator.of(context)
+                                                  .push(MaterialPageRoute(
+                                                builder: (context) {
+                                                  return RadarChartPage(
+                                                      surveyData: mySurveyList[
+                                                          spotIndex]);
+                                                },
+                                              ));
                                             }
                                           },
                                           mouseCursorResolver:
@@ -364,21 +359,21 @@ class _GraphPageState extends State<GraphPage> {
                                               (LineChartBarData barData,
                                                   List<int> spotIndexes) {
                                             return spotIndexes.map((index) {
-                                              return TouchedSpotIndicatorData(
+                                              return const TouchedSpotIndicatorData(
                                                 // spotまでの下からの線
                                                 FlLine(
                                                   color: Colors.transparent,
                                                 ),
                                                 FlDotData(
                                                   show: true,
-                                                  getDotPainter: (spot, percent,
-                                                          barData, index) =>
-                                                      FlDotCirclePainter(
-                                                    // ドットの大きさ
-                                                    radius: 6,
-                                                    color: kHealthColor,
-                                                    strokeWidth: 0.5,
-                                                  ),
+                                                  // getDotPainter: (spot, percent,
+                                                  //         barData, index) =>
+                                                  //     FlDotCirclePainter(
+                                                  //   // ドットの大きさ
+                                                  //   radius: 12,
+                                                  //   color: Colors.black,
+                                                  //   strokeWidth: 0.5,
+                                                  // ),
                                                 ),
                                               );
                                             }).toList();
@@ -408,14 +403,14 @@ class _GraphPageState extends State<GraphPage> {
                                         // セングラフのデータ自体何を表示するか？
                                         // Y軸の最低ポイントは？
                                         minY: 0,
-                                        maxY: 30, // Y軸の最大値を30に設定
+                                        maxY: 25, // Y軸の最大値を30に設定
                                         minX: 0,
                                         maxX: 6, // X軸の最大値を6に設定
                                         // グラフのY軸のタイトル
                                         titlesData: FlTitlesData(
                                           leftTitles: AxisTitles(
                                             axisNameWidget: Text(
-                                              'GHQ-28',
+                                              'Mental Health',
                                               style: TextStyle(
                                                 fontSize: 18.sp,
                                                 color: kHealthColor,
@@ -452,20 +447,6 @@ class _GraphPageState extends State<GraphPage> {
                                               reservedSize: 30.sp,
                                             ),
                                           ),
-                                          // rightTitles: AxisTitles(
-                                          //   drawBelowEverything: false,
-                                          //   // axisNameWidget: Text('BMI',
-                                          //   //     style: TextStyle(
-                                          //   //       fontSize: 20,
-                                          //   //       color: kColorPrimary,
-                                          //   //       decoration: TextDecoration.none,
-                                          //   //     )),
-                                          //   // axisNameSize: 20,
-                                          //   // sideTitles: SideTitles(
-                                          //   //   showTitles: false,
-                                          //   //   reservedSize: 0,
-                                          //   // ),
-                                          // ),
                                           topTitles: const AxisTitles(
                                             axisNameWidget: Text(
                                               '',
@@ -498,7 +479,7 @@ class _GraphPageState extends State<GraphPage> {
                                         extraLinesData: ExtraLinesData(
                                           horizontalLines: [
                                             HorizontalLine(
-                                              y: 11,
+                                              y: 10,
                                               color: kHealthColor,
                                               strokeWidth: 2,
                                               dashArray: [5, 5],
@@ -519,11 +500,12 @@ class _GraphPageState extends State<GraphPage> {
                               );
                             }
                           }),
-                      Text('GHQ-28: General Health Questionnaire-28'),
+                      Text('*Your somatic,anxiety,body condition level',
+                          style: TextStyle(fontSize: 14.h)),
                       Text(
-                          '*Survey for your depression, somatic,anxiety level'),
-                      Text('*Healthy score is between 0 - 11 ',
+                          '*Healthy score is between 0 - 10\nخالا ساخلەمیێ دنیڤێ دایە 0-10',
                           style: TextStyle(
+                              fontSize: 14.h,
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 4, 141, 151)))
                     ],
@@ -548,7 +530,7 @@ class _GraphPageState extends State<GraphPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Weight',
+                        'Weight/کێش',
                         style: TextStyle(
                             fontSize: 22.sp,
                             fontWeight: FontWeight.w600,
@@ -677,16 +659,6 @@ class _GraphPageState extends State<GraphPage> {
                                                   .lineBarSpots!
                                                   .first
                                                   .spotIndex;
-                                              // setState(() {
-                                              //   // ボタンを押したらspotIndexのデータを表示する
-                                              //   if (showingTooltipOnSpots.contains(spotIndex)) {
-                                              //     // すでにshowingしているものをタッチしたら、spotが消えます
-                                              //     showingTooltipOnSpots.remove(spotIndex);
-                                              //   } else {
-                                              //     // showingされているものではなかったら、showするリスト押下したspotを入れます。（表示させます）
-                                              //     showingTooltipOnSpots.add(spotIndex);
-                                              //   }
-                                              // });
                                             }
                                           },
                                           mouseCursorResolver:
@@ -713,7 +685,7 @@ class _GraphPageState extends State<GraphPage> {
                                                           barData, index) =>
                                                       FlDotCirclePainter(
                                                     // ドットの大きさ
-                                                    radius: 6,
+                                                    radius: 6.h,
                                                     color: kColorPrimary,
                                                     strokeWidth: 0.5,
                                                   ),
@@ -747,7 +719,7 @@ class _GraphPageState extends State<GraphPage> {
                                         lineBarsData: lineBarsData,
                                         // Y軸の最低ポイントは？
                                         minY: 0,
-                                        maxY: 120, // Y軸の最大値を30に設定
+                                        maxY: 150, // Y軸の最大値を30に設定
                                         minX: 0,
                                         maxX:
                                             convertedMaxXForBMI, // X軸の最大値を6に設定
@@ -792,19 +764,6 @@ class _GraphPageState extends State<GraphPage> {
                                               reservedSize: 30.sp,
                                             ),
                                           ),
-                                          // rightTitles: AxisTitles(
-                                          //   axisNameWidget: Text('BMI',
-                                          //       style: TextStyle(
-                                          //         fontSize: 20,
-                                          //         color: kColorPrimary,
-                                          //         decoration: TextDecoration.none,
-                                          //       )),
-                                          //   axisNameSize: 20,
-                                          //   sideTitles: SideTitles(
-                                          //     showTitles: true,
-                                          //     reservedSize: 0,
-                                          //   ),
-                                          // ),
                                           topTitles: const AxisTitles(
                                             axisNameWidget: Text(
                                               '',
@@ -834,31 +793,6 @@ class _GraphPageState extends State<GraphPage> {
                                             top: BorderSide.none,
                                           ),
                                         ),
-                                        // betweenBarsData: [
-                                        //   BetweenBarsData(
-                                        //     fromIndex: 0,
-                                        //     toIndex: 1,
-                                        //     color: kColorPrimary
-                                        //         .withOpacity(0.3), // 塗る色を指定
-                                        //   ),
-                                        // ],
-                                        // extraLinesData: ExtraLinesData(
-                                        //   horizontalLines: [
-                                        //     HorizontalLine(
-                                        //       y: 18,
-                                        //       color: kColorPrimary,
-                                        //       strokeWidth: 2,
-                                        //       dashArray: [5, 5],
-                                        //     ),
-                                        //     HorizontalLine(
-                                        //       label: HorizontalLineLabel(),
-                                        //       y: 24,
-                                        //       color: kColorPrimary,
-                                        //       strokeWidth: 2,
-                                        //       dashArray: [5, 5],
-                                        //     ),
-                                        //   ],
-                                        // ),
                                       ),
                                     );
                                   }),
@@ -866,12 +800,6 @@ class _GraphPageState extends State<GraphPage> {
                               );
                             }
                           }),
-                      // Text('BMI: Body Mass Index'),
-                      // Text('*It shows ideal body weight'),
-                      // Text('*Healthy score is between 18 - 24 ',
-                      //     style: TextStyle(
-                      //         fontWeight: FontWeight.bold,
-                      //         color: kColorPrimary)),
                       SizedBox(height: 20.h)
                     ],
                   ),
@@ -890,7 +818,7 @@ class _GraphPageState extends State<GraphPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'BMI',
+                        'BMI/خالا نموونەیی یا کێشا لەشێ تە',
                         style: TextStyle(
                             fontSize: 22.sp,
                             fontWeight: FontWeight.w600,
@@ -1055,7 +983,7 @@ class _GraphPageState extends State<GraphPage> {
                                                           barData, index) =>
                                                       FlDotCirclePainter(
                                                     // ドットの大きさ
-                                                    radius: 6,
+                                                    radius: 6.h,
                                                     color: kColorPrimary,
                                                     strokeWidth: 0.5,
                                                   ),
@@ -1207,10 +1135,14 @@ class _GraphPageState extends State<GraphPage> {
                               );
                             }
                           }),
-                      Text('BMI: Body Mass Index'),
-                      Text('*It shows ideal body weight'),
-                      Text('*Healthy score is between 18 - 24 ',
+                      Text('BMI: Body Mass Index',
+                          style: TextStyle(fontSize: 14.h)),
+                      Text('*It shows ideal body weight',
+                          style: TextStyle(fontSize: 14.h)),
+                      Text(
+                          '*Healthy score is between 18 - 24\nخالا ساخلەمیێ دنیڤێ دایە 18-24',
                           style: TextStyle(
+                              fontSize: 14.h,
                               fontWeight: FontWeight.bold,
                               color: kColorPrimary)),
                       SizedBox(height: 50.h)

@@ -35,6 +35,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
         times_per_week = data.get('times_per_week')
         duration = data.get('duration')
         num_person=data.get('num_person')
+        minus = data.get('minus')
         discount_rate=data.get('discount_rate')
             
         customer_user = get_object_or_404(User, id =customer_user_id)
@@ -46,6 +47,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
             times_per_week= int(times_per_week)
             duration = int(duration)
             num_person=int(num_person)
+            minus=int(minus)
             discount_rate=float(discount_rate)
         except (ValueError, TypeError) as e:
             return Response({'error': '${e}: Invalid input types.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -58,6 +60,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
                 times_per_week=times_per_week,
                 duration=duration,
                 num_person = num_person,
+                minus=minus,
                 discount_rate=discount_rate,
             )
         serializer = self.get_serializer(membership)
@@ -158,6 +161,7 @@ class AttendeeViewSet(viewsets.ModelViewSet):
     serializer_class=serializers.AttendeeSerializer
     permission_classes = [AttendeePermission]
 
+
     def get_queryset(self):
         if self.action == 'fetch_my_attendee':
             attendee = Attendee.objects.all()
@@ -178,12 +182,11 @@ class AttendeeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data,status=status.HTTP_200_OK)
         
     
-    @action(detail=False, methods=['get'],url_path='my_attendee')
+    @action(detail=False, methods=['get'],url_path='my_attendee/')
     def fetch_my_attendee(self, request):
         latest_survey = BaseBodySurvey.objects.filter(
             attendee__user = request.user
         ).order_by('-created_at').values('created_at')[:1]
-
         attendees = Attendee.objects.filter(user=request.user).annotate(
             latest_survey_date=Subquery(latest_survey),
             # user_id = F('user__id'),
@@ -196,6 +199,7 @@ class AttendeeViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='attendee_by_staff')
     def fetch_attendee_by_staff(self,request):
         user_id = self.request.query_params.get('user_id')
+        # token = self.request.query_params.get('token')
         attendees=Attendee.objects.filter(user = user_id).annotate(
             user_phone = F('user__phone_number')
         )
@@ -216,7 +220,7 @@ class AttendeeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self,serializer):
         my_attendee_count = Attendee.objects.filter(user=self.request.user).count()
-        if my_attendee_count >=5:
+        if my_attendee_count >=10:
             raise ValidationError('You have reach the maximum number of Member')
         else:
          serializer.save(user=self.request.user)
@@ -338,7 +342,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     # permission_classes=[IsStaffUser]
 
     def get_queryset(self):
-        return self.queryset
+        return self.queryset.order_by('course_name')
     
     def perform_create(self, serializer):
         serializer.save(self)

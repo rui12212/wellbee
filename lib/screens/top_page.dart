@@ -11,7 +11,9 @@ import 'package:wellbee/screens/questionnaire/ex_survey.dart';
 import 'package:wellbee/screens/questionnaire/questinnaire_attendee.dart';
 import 'package:wellbee/screens/questionnaire/questionnaire_base.dart';
 import 'package:wellbee/screens/questionnaire/survey.dart';
+import 'package:wellbee/screens/setting/setting_page.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
+import 'package:wellbee/ui_parts/color.dart';
 import 'package:wellbee/ui_parts/display.dart';
 import 'home.dart';
 import 'qr/qr_reservation.dart';
@@ -40,8 +42,8 @@ class _TopPageState extends State<TopPage> {
     _selectedIndex = widget.firstNum;
     _pages = [
       HomePage(),
-      UserQrCodePage(),
-      // PrivacyPage(),
+      // UserQrCodePage(),
+      SettingPage(),
     ];
     super.initState();
   }
@@ -61,14 +63,15 @@ class _TopPageState extends State<TopPage> {
       body: _pages[_selectedIndex],
       bottomNavigationBar: CurvedNavigationBar(
         animationDuration: const Duration(milliseconds: 200),
+        backgroundColor: kColorPrimary,
         index: _selectedIndex,
         onTap: _onItemTapped,
         items: const <Widget>[
           Icon(Icons.home, color: Color.fromARGB(255, 97, 198, 187), size: 30),
-          Icon(Icons.qr_code_rounded,
-              color: Color.fromARGB(255, 97, 198, 187), size: 30),
-          // Icon(Icons.privacy_tip,
+          // Icon(Icons.qr_code_rounded,
           //     color: Color.fromARGB(255, 97, 198, 187), size: 30),
+          Icon(Icons.settings_accessibility_outlined,
+              color: Color.fromARGB(255, 97, 198, 187), size: 30),
         ],
         // type: BottomNavigationBarType.fixed,
       ),

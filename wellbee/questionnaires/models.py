@@ -97,10 +97,10 @@ class Question(models.Model):
 class SurveyResponse(models.Model):
     
     RESPONSE_CHOICES=[
-        (0,  'Better than usual'),
-        (1,  'Same as usual'),
-        (2, 'Worse than usual'),
-        (3, 'Much worse than usual')
+        (0,  '0'),
+        (1,  '1'),
+        (2, '2'),
+        (3, '3')
     ]
     response0=models.IntegerField(verbose_name='response0', choices=RESPONSE_CHOICES, blank=False, null=False)
     score0 = models.IntegerField(verbose_name='score0', blank=True, null=True,)
@@ -142,22 +142,22 @@ class SurveyResponse(models.Model):
     score18 = models.IntegerField(verbose_name='score18', blank=True, null=True,)
     response19=models.IntegerField(verbose_name='response19', choices=RESPONSE_CHOICES, blank=False, null=False)
     score19 = models.IntegerField(verbose_name='score19',  blank=True, null=True,)
-    response20=models.IntegerField(verbose_name='response20', choices=RESPONSE_CHOICES, blank=False, null=False)
-    score20 = models.IntegerField(verbose_name='score20',  blank=True, null=True,)
-    response21=models.IntegerField(verbose_name='response21', choices=RESPONSE_CHOICES, blank=False, null=False)
-    score21 = models.IntegerField(verbose_name='score21', blank=True, null=True,)
-    response22=models.IntegerField(verbose_name='response22', choices=RESPONSE_CHOICES, blank=False, null=False)
-    score22 = models.IntegerField(verbose_name='score22',  blank=True, null=True,)
-    response23=models.IntegerField(verbose_name='response23', choices=RESPONSE_CHOICES, blank=False, null=False)
-    score23 = models.IntegerField(verbose_name='score23',  blank=True, null=True,)
-    response24=models.IntegerField(verbose_name='response24', choices=RESPONSE_CHOICES, blank=False, null=False)
-    score24 = models.IntegerField(verbose_name='score24',  blank=True, null=True,)
-    response25=models.IntegerField(verbose_name='response25', choices=RESPONSE_CHOICES, blank=False, null=False)
-    score25 = models.IntegerField(verbose_name='score25',  blank=True, null=True,)
-    response26=models.IntegerField(verbose_name='response26', choices=RESPONSE_CHOICES, blank=False, null=False)
-    score26 = models.IntegerField(verbose_name='score26',  blank=True, null=True,)
-    response27=models.IntegerField(verbose_name='response27', choices=RESPONSE_CHOICES, blank=False, null=False)
-    score27 = models.IntegerField(verbose_name='score27',  blank=True, null=True,)
+    # response20=models.IntegerField(verbose_name='response20', choices=RESPONSE_CHOICES, blank=False, null=False)
+    # score20 = models.IntegerField(verbose_name='score20',  blank=True, null=True,)
+    # response21=models.IntegerField(verbose_name='response21', choices=RESPONSE_CHOICES, blank=False, null=False)
+    # score21 = models.IntegerField(verbose_name='score21', blank=True, null=True,)
+    # response22=models.IntegerField(verbose_name='response22', choices=RESPONSE_CHOICES, blank=False, null=False)
+    # score22 = models.IntegerField(verbose_name='score22',  blank=True, null=True,)
+    # response23=models.IntegerField(verbose_name='response23', choices=RESPONSE_CHOICES, blank=False, null=False)
+    # score23 = models.IntegerField(verbose_name='score23',  blank=True, null=True,)
+    # response24=models.IntegerField(verbose_name='response24', choices=RESPONSE_CHOICES, blank=False, null=False)
+    # score24 = models.IntegerField(verbose_name='score24',  blank=True, null=True,)
+    # response25=models.IntegerField(verbose_name='response25', choices=RESPONSE_CHOICES, blank=False, null=False)
+    # score25 = models.IntegerField(verbose_name='score25',  blank=True, null=True,)
+    # response26=models.IntegerField(verbose_name='response26', choices=RESPONSE_CHOICES, blank=False, null=False)
+    # score26 = models.IntegerField(verbose_name='score26',  blank=True, null=True,)
+    # response27=models.IntegerField(verbose_name='response27', choices=RESPONSE_CHOICES, blank=False, null=False)
+    # score27 = models.IntegerField(verbose_name='score27',  blank=True, null=True,)
 
     attendee=models.ForeignKey(Attendee, verbose_name='attendee', on_delete=models.CASCADE,null=False, blank=False)
     total_score = total_score = models.IntegerField(default =0)
@@ -168,8 +168,8 @@ class SurveyResponse(models.Model):
 
 @receiver(pre_save, sender=SurveyResponse)
 def convert_response_to_score(sender, instance, **kwargs):
-    response_fields = [f'response{i}' for i in range(0, 28)]
-    score_fields = [f'score{i}' for i in range(0, 28)]
+    response_fields = [f'response{i}' for i in range(0, 20)]
+    score_fields = [f'score{i}' for i in range(0, 20)]
 
     for response_field, score_field in zip(response_fields, score_fields):
         response_value = getattr(instance, response_field)
@@ -179,5 +179,5 @@ def convert_response_to_score(sender, instance, **kwargs):
 
 @receiver(pre_save, sender=SurveyResponse)
 def calc_total_score(sender, instance, **kwargs):
-    sum_total_score = sum(getattr(instance, f'score{i}') for i in range(0,28))
+    sum_total_score = sum(getattr(instance, f'score{i}') for i in range(0,20))
     instance.total_score = sum_total_score

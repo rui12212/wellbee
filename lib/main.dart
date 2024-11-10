@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
         splitScreenMode: true,
         builder: (_, child) {
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             theme: ThemeData(
               primarySwatch: Colors.blue,
@@ -211,6 +212,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> fetchTokenAndBool() async {
     token = await SharedPrefs.fetchAccessToken();
+    // print(token);
     if (token != null) {
       bool attendeeExists = await _fetchAttendeeExist();
       setState(() {
@@ -232,8 +234,8 @@ class _SignInPageState extends State<SignInPage> {
       if (token == null) {
         return false;
       } else {
-        var url =
-            Uri.parse('${baseUri}attendances/attendee/first_page_attendee/');
+        var url = Uri.parse(
+            '${baseUri}attendances/attendee/first_page_attendee/?token=$token');
         var response = await Future.any([
           http.get(url, headers: {"Authorization": 'JWT $token'}),
           Future.delayed(const Duration(seconds: 5),
@@ -263,15 +265,16 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<void> onLaunchUrl() async {
+    // print('haha');
     final Uri url =
         Uri.parse('https://rui12212.github.io/wellbee/privacy-policy');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      // エラーハンドリング: URLを開けない場合の処理
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Try again later')));
-    }
+    // if (await canLaunchUrl(url)) {
+    await launchUrl(url);
+    // } else {
+    //   // エラーハンドリング: URLを開けない場合の処理
+    //   ScaffoldMessenger.of(context)
+    //       .showSnackBar(SnackBar(content: Text('Try again later')));
+    // }
   }
 
 // ----------------right----------- down below is for 2nd ideas

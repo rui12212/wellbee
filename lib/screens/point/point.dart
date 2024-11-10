@@ -101,7 +101,7 @@ class _PointPageState extends State<PointPage> {
                   ),
                   Container(
                       padding: EdgeInsets.all(20),
-                      height: 670.h,
+                      height: 830.h,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
                               begin: FractionalOffset.topLeft,
@@ -120,188 +120,183 @@ class _PointPageState extends State<PointPage> {
                         alignment: Alignment.topCenter,
                         child: Column(
                           children: [
-                            SizedBox(height: 50.h),
+                            SizedBox(height: 20.h),
                             QrImageView(
-                              data: '${baseUri}accounts/users/${widget.userId}',
+                              data:
+                                  '${baseUri}accounts/users/points/${widget.userId}',
                               version: QrVersions.auto,
                               size: 150.0.h,
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 5.h),
                             _DetailRow(
                               // title: 'Wellbee Point',
                               value: '${widget.points}',
                               // value: '500 pt',
                             ),
                             SizedBox(height: 20.h),
-                            Container(
-                              height: 300.h,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'How to get Wellbee Point?',
-                                    style: TextStyle(
-                                      fontSize: 18.sp,
-                                      fontWeight: FontWeight.w300,
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'How to get Wellbee Point?',
+                                  style: TextStyle(
+                                    fontSize: 18.h,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                                SizedBox(height: 15.h),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Container(
+                                      height: 60.h,
+                                      width: 60.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(70)),
+                                        image: DecorationImage(
+                                            fit: BoxFit.fill,
+                                            image: AssetImage(
+                                                'lib/assets/home_pic/point_reserve.png')),
+                                      ),
                                     ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Container(
-                                        height: 60.h,
-                                        width: 60.w,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(70)),
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'lib/assets/home_pic/point_reserve.png')),
-                                        ),
-                                      ),
 
-                                      // alignment: Alignment.bottomCenter,
-                                      Center(
-                                          child: Container(
-                                        width: 220.w,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('1 Point/time',
-                                                style: TextStyle(
-                                                    fontSize: 14.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            Text('Reserve & attend the course',
-                                                style: TextStyle(
-                                                    fontSize: 16.sp,
-                                                    fontWeight:
-                                                        FontWeight.w300)),
-                                          ],
-                                        ),
-                                      )),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Container(
-                                        height: 60.h,
-                                        width: 60.w,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(70)),
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'lib/assets/home_pic/point_survey.png')),
-                                        ),
+                                    // alignment: Alignment.bottomCenter,
+                                    Center(
+                                        child: Container(
+                                      width: 220.w,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('1 Point/time',
+                                              style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.bold)),
+                                          Text(
+                                              'Reserve & attend the course\nحجزکرن و ئامادەبوون د کورسی دا',
+                                              style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w300)),
+                                        ],
                                       ),
-                                      Center(
-                                          child: Container(
-                                        width: 220.w,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('1 Point/time',
-                                                style: TextStyle(
-                                                    fontSize: 14.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            Text('Answer the Health Survey',
-                                                style: TextStyle(
-                                                    fontSize: 16.sp,
-                                                    fontWeight:
-                                                        FontWeight.w300)),
-                                          ],
-                                        ),
-                                      )),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Container(
-                                        height: 60.h,
-                                        width: 60.w,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(70)),
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'lib/assets/home_pic/point_item.png')),
-                                        ),
+                                    )),
+                                  ],
+                                ),
+                                SizedBox(height: 20.h),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Container(
+                                      height: 60.h,
+                                      width: 60.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(70)),
+                                        image: DecorationImage(
+                                            fit: BoxFit.fill,
+                                            image: AssetImage(
+                                                'lib/assets/home_pic/point_survey.png')),
                                       ),
-                                      Container(
-                                        width: 220.w,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('1 Point/5,000IQD',
-                                                style: TextStyle(
-                                                    fontSize: 14.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            Text('Purchase Wellbee items',
-                                                style: TextStyle(
-                                                    fontSize: 16.sp,
-                                                    fontWeight:
-                                                        FontWeight.w300)),
-                                          ],
-                                        ),
+                                    ),
+                                    Center(
+                                        child: Container(
+                                      width: 220.w,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('1 Point/time',
+                                              style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.bold)),
+                                          Text(
+                                              'Answer the Health Survey\nبەرسڤدانا راپرسیا ساخلەمیێ',
+                                              style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w300)),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Container(
-                                        height: 60.h,
-                                        width: 60.w,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(70)),
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'lib/assets/home_pic/point_invite.png')),
-                                        ),
+                                    )),
+                                  ],
+                                ),
+                                SizedBox(height: 20.h),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Container(
+                                      height: 60.h,
+                                      width: 60.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(70)),
+                                        image: DecorationImage(
+                                            fit: BoxFit.fill,
+                                            image: AssetImage(
+                                                'lib/assets/home_pic/point_item.png')),
                                       ),
-                                      Container(
-                                        width: 220.w,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('1 Point/person',
-                                                style: TextStyle(
-                                                    fontSize: 14.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            Text('Invite friends to Wellbee',
-                                                style: TextStyle(
-                                                    fontSize: 16.sp,
-                                                    fontWeight:
-                                                        FontWeight.w300)),
-                                          ],
-                                        ),
+                                    ),
+                                    Container(
+                                      width: 220.w,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('1 Point/5,000IQD',
+                                              style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.bold)),
+                                          Text(
+                                              'Purchase Wellbee items\nکرینا کەل و پەلێن وێلبی',
+                                              style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w300)),
+                                        ],
                                       ),
-                                    ],
-                                  )
-                                ],
-                              ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20.h),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Container(
+                                      height: 60.h,
+                                      width: 60.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(70)),
+                                        image: DecorationImage(
+                                            fit: BoxFit.fill,
+                                            image: AssetImage(
+                                                'lib/assets/home_pic/point_invite.png')),
+                                      ),
+                                    ),
+                                    Container(
+                                      width: 220.w,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('1 Point/person',
+                                              style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.bold)),
+                                          Text(
+                                              'Invite friends to Wellbee\nداخاز کرنا هەڤالان بو وێلبی',
+                                              style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w300)),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
                             ),
                           ],
                         ),

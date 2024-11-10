@@ -2,7 +2,7 @@
 from django.urls import path
 from django.conf.urls import include
 from . import views
-from .views import CreateUserView, ProfileViewSet, StaffTokenObtainPairView, UserViewSet
+from .views import CreateUserView, ProfileViewSet, StaffTokenObtainPairView, UserViewSet,PasswordResetRequestViewSet,PasswordResetConfirmViewSet
 from rest_framework import routers
 # MyUserView,CreateStaffView,StaffViewSet
 # from .views import ProfileViewSet
@@ -15,7 +15,8 @@ router=routers.DefaultRouter()
 router.register('profile', views.ProfileViewSet)
 # router.register('users',views.UserViewSet)
 router.register(r'users',UserViewSet,basename='users')
-
+router.register(r'password-reset/request', PasswordResetRequestViewSet,basename='password_reset_request')
+router.register(r'password-reset/confirm', PasswordResetConfirmViewSet,basename='password_reset_confirm')
 # models.pyを参考にして、下記のurlpatternsを適切に書き換えてください
 
 

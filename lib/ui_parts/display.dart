@@ -315,7 +315,7 @@ class HomeCard extends StatelessWidget {
                   padding: const EdgeInsets.all(15.0),
                   child: Text(
                     text,
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    style: TextStyle(color: Colors.white, fontSize: 18.h),
                   ),
                 ),
               ),
@@ -407,21 +407,21 @@ class AttendeeDisplay extends StatelessWidget {
                       Row(
                         children: [
                           Text('Birthday: ',
-                              style: TextStyle(
-                                  fontSize: 14.sp, color: kColorText)),
+                              style:
+                                  TextStyle(fontSize: 16.h, color: kColorText)),
                           Text(dateOfBirth,
                               style:
-                                  TextStyle(fontSize: 15.sp, color: kColorText))
+                                  TextStyle(fontSize: 16.h, color: kColorText))
                         ],
                       ),
                       Row(
                         children: [
                           Text('Gender: ',
-                              style: TextStyle(
-                                  fontSize: 15.sp, color: kColorText)),
+                              style:
+                                  TextStyle(fontSize: 16.h, color: kColorText)),
                           Text(gender,
                               style:
-                                  TextStyle(fontSize: 16.sp, color: kColorText))
+                                  TextStyle(fontSize: 16.h, color: kColorText))
                         ],
                       ),
                       // SizedBox(height: 10.h),
@@ -431,11 +431,11 @@ class AttendeeDisplay extends StatelessWidget {
                               ? Text('No goal is set',
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      fontSize: 16.sp,
+                                      fontSize: 16.h,
                                       color: kColorTextDarkGrey))
                               : DefaultTextStyle(
                                   style: TextStyle(
-                                      fontSize: 16.sp,
+                                      fontSize: 16.h,
                                       color: kColorTextDarkGrey),
                                   child: Text(
                                     goal,
@@ -618,7 +618,16 @@ class _ReservationTicket extends StatelessWidget {
                               Text(
                                 course_name,
                                 style: TextStyle(
-                                  fontSize: 18.sp,
+                                  fontSize: course_name == 'Family Pilates' ||
+                                          course_name == 'Family Yoga' ||
+                                          course_name == 'Kids Karate' ||
+                                          course_name == 'Kids Taiso(A)' ||
+                                          course_name == 'Kids Taiso(B)' ||
+                                          course_name == 'Kids Yoga(A)' ||
+                                          course_name == 'Kids Yoga(B)' ||
+                                          course_name == 'Kids Yoga KG'
+                                      ? 15.h
+                                      : 18.h,
                                   color: kColorTextDark,
                                   // fontWeight: FontWeight.bold,
                                 ),
@@ -725,7 +734,9 @@ class ReservationTicketList extends StatelessWidget {
         start_time: reservationList['slot_start_time'],
         end_time: reservationList['slot_end_time'],
         image: reservationList['slot_course_name'] == 'Yoga' ||
-                reservationList['slot_course_name'] == 'Kids Yoga'
+                reservationList['slot_course_name'] == 'Kids Yoga(A)' ||
+                reservationList['slot_course_name'] == 'Kids Yoga(B)' ||
+                reservationList['slot_course_name'] == 'Kids Yoga KG'
             ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
             : reservationList['slot_course_name'] == 'Dance' ||
                     reservationList['slot_course_name'] == 'Kids Dance' ||
@@ -738,13 +749,13 @@ class ReservationTicketList extends StatelessWidget {
                             reservationList['slot_course_name'] == 'Kids Music'
                         ? Image.asset(
                             'lib/assets/invi_course_pic/invi_music.png')
-                        : reservationList['slot_course_name'] == 'Kids Taiso'
+                        : reservationList['slot_course_name'] ==
+                                    'Kids Taiso(A)' ||
+                                reservationList['slot_course_name'] ==
+                                    'Kids Taiso(B)'
                             ? Image.asset(
                                 'lib/assets/invi_course_pic/male_fitness.png')
-                            : reservationList['slot_course_name'] ==
-                                        'Pilates' ||
-                                    reservationList['slot_course_name'] ==
-                                        'Kids Pilates'
+                            : reservationList['slot_course_name'] == 'Pilates'
                                 ? Image.asset(
                                     'lib/assets/invi_course_pic/invi_pilates.png')
                                 : reservationList['slot_course_name'] ==
@@ -777,7 +788,9 @@ class PastReservationTicketList extends StatelessWidget {
         start_time: reservationList['slot_start_time'],
         end_time: reservationList['slot_end_time'],
         image: reservationList['slot_course_name'] == 'Yoga' ||
-                reservationList['slot_course_name'] == 'Kids Yoga'
+                reservationList['slot_course_name'] == 'Kids Yoga(A)' ||
+                reservationList['slot_course_name'] == 'Kids Yoga(B)' ||
+                reservationList['slot_course_name'] == 'Kids Yoga KG'
             ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
             : reservationList['slot_course_name'] == 'Dance' ||
                     reservationList['slot_course_name'] == 'Kids Dance' ||
@@ -790,13 +803,13 @@ class PastReservationTicketList extends StatelessWidget {
                             reservationList['slot_course_name'] == 'Kids Music'
                         ? Image.asset(
                             'lib/assets/invi_course_pic/invi_music.png')
-                        : reservationList['slot_course_name'] == 'Kids Taiso'
+                        : reservationList['slot_course_name'] ==
+                                    'Kids Taiso(A)' ||
+                                reservationList['slot_course_name'] ==
+                                    'Kids Taiso(B)'
                             ? Image.asset(
                                 'lib/assets/invi_course_pic/male_fitness.png')
-                            : reservationList['slot_course_name'] ==
-                                        'Pilates' ||
-                                    reservationList['slot_course_name'] ==
-                                        'Kids Pilates'
+                            : reservationList['slot_course_name'] == 'Pilates'
                                 ? Image.asset(
                                     'lib/assets/invi_course_pic/invi_pilates.png')
                                 : reservationList['slot_course_name'] ==
@@ -879,7 +892,16 @@ class _PastReservationTicket extends StatelessWidget {
                               Text(
                                 course_name,
                                 style: TextStyle(
-                                  fontSize: 16.sp,
+                                  fontSize: course_name == 'Family Pilates' ||
+                                          course_name == 'Family Yoga' ||
+                                          course_name == 'Kids Karate' ||
+                                          course_name == 'Kids Taiso(A)' ||
+                                          course_name == 'Kids Taiso(B)' ||
+                                          course_name == 'Kids Yoga(A)' ||
+                                          course_name == 'Kids Yoga(B)' ||
+                                          course_name == 'Kids Yoga KG'
+                                      ? 14.h
+                                      : 16.h,
                                   color: kColorTextDark,
                                   // fontWeight: FontWeight.bold,
                                 ),

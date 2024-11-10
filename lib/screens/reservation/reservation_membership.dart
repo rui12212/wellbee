@@ -98,10 +98,11 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
       final String course = widget.membershipList['course_name'];
       final String formattedDate =
           DateFormat('yyyy-MM-dd').format(selectedDate);
-      var url = Uri.parse('${baseUri}reservations/slot/course_slots')
+      var url = Uri.parse('${baseUri}reservations/slot/course_slots/')
           .replace(queryParameters: {
         'course_name': course,
         'date': formattedDate,
+        'token': token,
       });
       var response = await Future.any([
         http.get(url, headers: {
@@ -135,7 +136,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
       token = await SharedPrefs.fetchAccessToken();
       final String formattedDate =
           DateFormat('yyyy-MM-dd').format(selectedDate);
-      var url = Uri.parse('${baseUri}reservations/reservation/');
+      var url = Uri.parse('${baseUri}reservations/reservation/?token=$token');
       var response = await Future.any([
         http.post(url,
             body: jsonEncode({
@@ -384,7 +385,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                                                   // print(courseId);
                                                   CustomAwesomeDialogue(
                                                     titleText:
-                                                        'Confirm Reservation',
+                                                        'Confirm Reservation\nحجزکرنێ پشت راست بکە',
                                                     desc:
                                                         'Make reservation on \n$date  $formattedStartTime-$formattedEndTime',
                                                     callback:
@@ -392,7 +393,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                                                   ).show(context);
                                                 }
                                               : null,
-                                          child: Text('Reserve',
+                                          child: Text('Reserve\nحجزکرن',
                                               style: TextStyle(
                                                   color: kColorPrimary,
                                                   fontWeight: FontWeight.w700)),

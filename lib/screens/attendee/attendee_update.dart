@@ -102,7 +102,8 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
       // final date_of_birth = formatDate(dateOfBirth);
       final String formattedDate = DateFormat('yyyy-MM-dd').format(dateOfBirth);
       token = await SharedPrefs.fetchAccessToken();
-      var url = Uri.parse('${baseUri}attendances/attendee/${attendee['id']}/');
+      var url = Uri.parse(
+          '${baseUri}attendances/attendee/${attendee['id']}/?token=$token');
       var response = await Future.any([
         http.patch(
           url,
@@ -188,7 +189,7 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Name',
+                                child: Text('Name/ناڤ',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
@@ -207,7 +208,7 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Gender',
+                                child: Text('Gender/رەگەز',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
@@ -251,7 +252,7 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Birthday',
+                                child: Text('Birthday/ژدایک بوون',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
@@ -314,14 +315,15 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Difficulties',
+                                child: Text('Purpose/مەبەست',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
                                         fontWeight: FontWeight.w500))),
                             LongCustomTextBox(
                               label: '',
-                              hintText: 'Why will you join Wellbee?',
+                              hintText:
+                                  'Why will you join Wellbee?\nبوچی دێ بەشداربوونێ دگەل وێلبی کەی؟',
                               controller: _reasonController,
                             ).textFieldDecoration()
                           ],
@@ -334,14 +336,15 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Goals',
+                                child: Text('Goals/ئارمانج',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
                                         fontWeight: FontWeight.w500))),
                             LongCustomTextBox(
                               label: '',
-                              hintText: 'How you want to be?',
+                              hintText:
+                                  'How you want to be?\nتە دڤێت یا چاوا بی؟',
                               controller: _goalController,
                             ).textFieldDecoration()
                           ],
@@ -354,14 +357,15 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Comments',
+                                child: Text('Comments/کومێنت',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
                                         fontWeight: FontWeight.w500))),
                             LongCustomTextBox(
                               label: '',
-                              hintText: 'Anything that staffs should know??',
+                              hintText:
+                                  'Anything that staffs should know?\nهەر تشتەکێ کو کارمەند پێدڤیە بزانن؟',
                               controller: _commentController,
                             ).textFieldDecoration()
                           ],
@@ -375,7 +379,7 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
                             // print();
                           },
                           icon: const Icon(Icons.person),
-                          label: Text('Update Member Info',
+                          label: Text('Update/نویکرن',
                               style: TextStyle(fontSize: 20.sp)),
                           style: ButtonStyle(
                             minimumSize: MaterialStateProperty.all<Size>(

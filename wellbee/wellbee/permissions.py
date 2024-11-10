@@ -141,7 +141,7 @@ class UserPermission(BasePermission):
         if view.action in ['list', 'retrieve']:
             return (request.user and request.user.is_authenticated) or request.user.is_staff==1
         # 自分で作ったアクションを実行する許可を下記
-        if view.action  == 'fetch_my_id' or view.action == 'fetch_my_points' or view.action=='increase_points':
+        if view.action  == 'fetch_my_id' or view.action == 'fetch_my_points' or view.action=='increase_points' or view.action=='delete_user':
             return (request.user and request.user.is_authenticated) or request.user.is_staff==1
          # 更新と削除はスタッフのみ
         # if view.action == 'destroy': 

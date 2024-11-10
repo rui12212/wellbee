@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wellbee/assets/inet.dart';
@@ -46,8 +47,9 @@ class _Question extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 80.h,
+        height: 120.h,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(question,
                 style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w300))
@@ -75,7 +77,8 @@ class _QrCodePageState extends State<QrCodePage> {
   Future<List<dynamic>?> _fetchReservation() async {
     try {
       token = await SharedPrefs.fetchAccessToken();
-      var url = Uri.parse('${baseUri}reservations/reservation/my_reservations');
+      var url = Uri.parse(
+          '${baseUri}reservations/reservation/my_reservations/?token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -127,7 +130,8 @@ class _QrCodePageState extends State<QrCodePage> {
           child: Column(
             children: [
               _Header(),
-              _Question(question: 'Scan me for checking in!'),
+              _Question(
+                  question: 'Scan me for checking in!\nسکان بکە بو چوونا ژوو'),
               Container(
                 height: 400.h,
                 // width: 400.h,

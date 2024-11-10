@@ -12,10 +12,15 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 import environ
+import os
 
 env = environ.Env(
     DEBUG=(bool, False)
 )
+
+# AWSでSNSサービスを使用するため
+AWS_REGION = 'me-south-1'  
+SNS_TOPIC_ARN = 'arn:aws:iam::779846817718:role/PasswordReser_wellbee'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,11 +33,18 @@ environ.Env.read_env(BASE_DIR / '.env')
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# pro
 DEBUG = env('DEBUG')
 
+# DEBUG = True
+
 # ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
-# ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+
+# dev
+# ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
+
+# pro
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 INSTALLED_APPS = [
     'rest_framework',
@@ -97,6 +109,7 @@ WSGI_APPLICATION = 'wellbee.wsgi.application'
 #     }
 # }
 
+# pro
 DATABASES = {
     'default': {
         'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.mysql'),
@@ -139,7 +152,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=365),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1095),
 }
 
 REST_FRAMEWORK = {
@@ -148,10 +161,12 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'wellbee.authentication.QueryParameterJWTAuthentication', 
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
+     'EXCEPTION_HANDLER': 'wellbee.utils.custom_exception_handler',
 }
 
 # Internationalization
@@ -180,4 +195,16 @@ AUTH_USER_MODEL = 'accounts.User'
 
 ACCOUNT_AUTHENTICATION_METHOD = 'phone_number' 
 
-CORS_ALLOW_ALL_ORIGINS = True
+# セキュリティガバガバ
+# CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    # pro
+    env("CORS_ALLOWED_HOSTS"),
+#     # "https://another-trusted-domain.com",
+#     # dev
+#     "http://localhost:3000",  # 開発時のフロントエンド
+]
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')

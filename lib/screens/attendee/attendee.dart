@@ -27,7 +27,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100.h,
+      height: 120.h,
       child: Column(
         children: [
           Align(
@@ -88,7 +88,8 @@ class _AttendeePageState extends State<AttendeePage> {
   Future<List<dynamic>?> _fetchAttendee() async {
     try {
       token = await SharedPrefs.fetchAccessToken();
-      var url = Uri.parse('${baseUri}attendances/attendee/my_attendee/');
+      var url =
+          Uri.parse('${baseUri}attendances/attendee/my_attendee/?token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -138,7 +139,7 @@ class _AttendeePageState extends State<AttendeePage> {
             children: [
               _Header(
                   title: 'Wellbee Member',
-                  subtitle: 'You can add Member up to 5!'),
+                  subtitle: 'You can add Member up to 10!'),
               FutureBuilder(
                 future: _fetchAttendee(),
                 builder: (context, snapshot) {

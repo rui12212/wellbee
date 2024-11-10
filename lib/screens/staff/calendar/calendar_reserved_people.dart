@@ -87,7 +87,7 @@ class _ReservedPeoplePageState extends State<ReservedPeoplePage> {
       //     DateFormat('yyyy-MM-dd').format(selectedDate);
       // print(widget.date);
       var url = Uri.parse(
-          '${baseUri}reservations/reservation/slots_for_staff/?date=${widget.date}');
+          '${baseUri}reservations/reservation/slots_for_staff/?date=${widget.date}&token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -138,7 +138,7 @@ class _ReservedPeoplePageState extends State<ReservedPeoplePage> {
                       return Center(child: Text('No reservation on this day.'));
                     } else {
                       final fetchedReservationList = snapshot.data!;
-                      print(fetchedReservationList);
+                      // print(fetchedReservationList);
                       return Expanded(
                         child: ListView.builder(
                           itemCount: fetchedReservationList.length,

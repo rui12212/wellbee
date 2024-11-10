@@ -109,7 +109,8 @@ class _PointDecreasePageState extends State<PointDecreasePage> {
           return;
         }
         token = await SharedPrefs.fetchStaffAccessToken();
-        var url = Uri.parse('${baseUri}accounts/users/${widget.pk}/');
+        var url =
+            Uri.parse('${baseUri}accounts/users/${widget.pk}/?token=$token');
 
         final response = await Future.any([
           http.patch(url,
@@ -161,63 +162,69 @@ class _PointDecreasePageState extends State<PointDecreasePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
         body: SafeArea(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 20.w,
-        ),
-        child: SingleChildScrollView(
           child: Container(
-              child: Column(
-            children: [
-              _Header(title: 'Use Point', pk: widget.pk),
-              Container(
-                height: 500.h,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Current Point',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w300, fontSize: 20.sp)),
-                    Text('${widget.point}pt',
-                        style: TextStyle(
-                            fontSize: 50.sp, fontWeight: FontWeight.bold)),
-                    SizedBox(
-                      height: 26.h,
-                    ),
-                    Align(
-                        alignment: Alignment.topCenter,
-                        child: Text('How much point the member use?',
+            padding: EdgeInsets.symmetric(
+              horizontal: 20.w,
+            ),
+            child: SingleChildScrollView(
+              child: Container(
+                  child: Column(
+                children: [
+                  _Header(title: 'Use Point', pk: widget.pk),
+                  Container(
+                    height: 500.h,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Current Point',
                             style: TextStyle(
-                                color: kColorTextDarkGrey,
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.w500))),
-                    CustomTextBox(
-                      label: '',
-                      hintText: '',
-                      inputType: TextInputType.number,
-                      controller: _pointController,
-                    ).textFieldDecoration(),
-                    SizedBox(
-                      height: 40.h,
+                                fontWeight: FontWeight.w300, fontSize: 20.sp)),
+                        Text('${widget.point}pt',
+                            style: TextStyle(
+                                fontSize: 50.sp, fontWeight: FontWeight.bold)),
+                        SizedBox(
+                          height: 26.h,
+                        ),
+                        Align(
+                            alignment: Alignment.topCenter,
+                            child: Text('How much point the member use?',
+                                style: TextStyle(
+                                    color: kColorTextDarkGrey,
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w500))),
+                        CustomTextBox(
+                          label: '',
+                          hintText: '',
+                          inputType: TextInputType.number,
+                          controller: _pointController,
+                        ).textFieldDecoration(),
+                        SizedBox(
+                          height: 40.h,
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            final decreasePoint = _pointController.text.trim();
+                            int? intDecreasePoint = int.tryParse(decreasePoint);
+                            if (intDecreasePoint == null) {
+                              showSnackBar(Colors.red, 'Point must be numbers');
+                            } else
+                              decreasePoints();
+                          },
+                          child: Text('Use Point',
+                              style: TextStyle(
+                                  color: kColorPrimary,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 22)),
+                        ),
+                      ],
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        decreasePoints();
-                      },
-                      child: Text('Use Point',
-                          style: TextStyle(
-                              color: kColorPrimary,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 22)),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          )),
-        ),
-      ),
-    ));
+                  )
+                ],
+              )),
+            ),
+          ),
+        ));
   }
 }

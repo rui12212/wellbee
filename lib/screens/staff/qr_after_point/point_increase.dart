@@ -97,7 +97,8 @@ class _PointIncreasePageState extends State<PointIncreasePage> {
         final int increasedPoints = int.tryParse(_pointController.text) ?? 0;
         final int finalPoint = widget.point + increasedPoints;
         token = await SharedPrefs.fetchStaffAccessToken();
-        var url = Uri.parse('${baseUri}accounts/users/${widget.pk}/');
+        var url =
+            Uri.parse('${baseUri}accounts/users/${widget.pk}/?token=$token');
 
         final response = await Future.any([
           http.patch(url,
@@ -149,63 +150,69 @@ class _PointIncreasePageState extends State<PointIncreasePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
         body: SafeArea(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 20.w,
-        ),
-        child: SingleChildScrollView(
           child: Container(
-              child: Column(
-            children: [
-              _Header(title: 'Give Point to user', pk: widget.pk),
-              Container(
-                height: 500.h,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Current Point',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w300, fontSize: 20.sp)),
-                    Text('${widget.point}pt',
-                        style: TextStyle(
-                            fontSize: 50.sp, fontWeight: FontWeight.bold)),
-                    SizedBox(
-                      height: 26.h,
-                    ),
-                    Align(
-                        alignment: Alignment.topCenter,
-                        child: Text('How much point member get?',
+            padding: EdgeInsets.symmetric(
+              horizontal: 20.w,
+            ),
+            child: SingleChildScrollView(
+              child: Container(
+                  child: Column(
+                children: [
+                  _Header(title: 'Give Point to user', pk: widget.pk),
+                  Container(
+                    height: 500.h,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Current Point',
                             style: TextStyle(
-                                color: kColorTextDarkGrey,
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.w500))),
-                    CustomTextBox(
-                      label: '',
-                      hintText: '',
-                      inputType: TextInputType.number,
-                      controller: _pointController,
-                    ).textFieldDecoration(),
-                    SizedBox(
-                      height: 40.h,
+                                fontWeight: FontWeight.w300, fontSize: 20.sp)),
+                        Text('${widget.point}pt',
+                            style: TextStyle(
+                                fontSize: 50.sp, fontWeight: FontWeight.bold)),
+                        SizedBox(
+                          height: 26.h,
+                        ),
+                        Align(
+                            alignment: Alignment.topCenter,
+                            child: Text('How much point member get?',
+                                style: TextStyle(
+                                    color: kColorTextDarkGrey,
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w500))),
+                        CustomTextBox(
+                          label: '',
+                          hintText: '',
+                          inputType: TextInputType.number,
+                          controller: _pointController,
+                        ).textFieldDecoration(),
+                        SizedBox(
+                          height: 40.h,
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            final increasePoint = _pointController.text.trim();
+                            int? intIncreasePoint = int.tryParse(increasePoint);
+                            if (intIncreasePoint == null) {
+                              showSnackBar(Colors.red, 'Point must be numbers');
+                            } else
+                              increasePoints();
+                          },
+                          child: Text('Give Point',
+                              style: TextStyle(
+                                  color: kColorPrimary,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 22.sp)),
+                        ),
+                      ],
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        increasePoints();
-                      },
-                      child: Text('Give Point',
-                          style: TextStyle(
-                              color: kColorPrimary,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 22.sp)),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          )),
-        ),
-      ),
-    ));
+                  )
+                ],
+              )),
+            ),
+          ),
+        ));
   }
 }

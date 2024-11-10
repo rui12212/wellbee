@@ -24,7 +24,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 90.h,
+      height: 100.h,
       child: Column(
         children: [
           Align(
@@ -90,7 +90,7 @@ class _AttendeeAddPageState extends State<AttendeeAddPage> {
             newDate.month == DateTime.now().month &&
             newDate.day == DateTime.now().day)) {
       CustomAwesomeDialogueForFail(
-        titleText: 'Error',
+        titleText: 'Error!',
         desc: 'Name & Birthday are necessary to be filled',
         // callback: _createReservation,
       ).show(context);
@@ -104,7 +104,7 @@ class _AttendeeAddPageState extends State<AttendeeAddPage> {
     try {
       token = await SharedPrefs.fetchAccessToken();
       final String formattedDate = DateFormat('yyyy-MM-dd').format(newDate);
-      var url = Uri.parse('${baseUri}attendances/attendee/');
+      var url = Uri.parse('${baseUri}attendances/attendee/?token=$token');
       var response = await Future.any([
         http.post(
           url,
@@ -174,7 +174,7 @@ class _AttendeeAddPageState extends State<AttendeeAddPage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Name',
+                                child: Text('Name/ناڤ',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
@@ -193,7 +193,7 @@ class _AttendeeAddPageState extends State<AttendeeAddPage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Gender',
+                                child: Text('Gender/رەگەز',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
@@ -237,7 +237,7 @@ class _AttendeeAddPageState extends State<AttendeeAddPage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Birthday',
+                                child: Text('Birthday/ژدایک بوون',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
@@ -299,14 +299,15 @@ class _AttendeeAddPageState extends State<AttendeeAddPage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Difficulties',
+                                child: Text('Purpose/مەبەست',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
                                         fontWeight: FontWeight.w500))),
                             LongCustomTextBox(
                               label: '',
-                              hintText: 'Why will you join Wellbee?',
+                              hintText:
+                                  'Why will you join Wellbee?\nبوچی دێ بەشداربوونێ دگەل وێلبی کەی؟',
                               controller: _reasonController,
                             ).textFieldDecoration()
                           ],
@@ -319,14 +320,15 @@ class _AttendeeAddPageState extends State<AttendeeAddPage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Goals',
+                                child: Text('Goals/ئارمانج',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
                                         fontWeight: FontWeight.w500))),
                             LongCustomTextBox(
                               label: '',
-                              hintText: 'How you want to be?',
+                              hintText:
+                                  'How you want to be?\nتە دڤێت یا چاوا بی؟',
                               controller: _goalController,
                             ).textFieldDecoration()
                           ],
@@ -339,14 +341,15 @@ class _AttendeeAddPageState extends State<AttendeeAddPage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
-                                child: Text('Comments',
+                                child: Text('Comments/کومێنت',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
                                         fontSize: 20.sp,
                                         fontWeight: FontWeight.w500))),
                             LongCustomTextBox(
                               label: '',
-                              hintText: 'Anything that staffs should know??',
+                              hintText:
+                                  'Anything that staffs should know?\nهەر تشتەکێ کو کارمەند پێدڤیە بزانن؟',
                               controller: _commentController,
                             ).textFieldDecoration()
                           ],
@@ -359,7 +362,7 @@ class _AttendeeAddPageState extends State<AttendeeAddPage> {
                             _createAttendee();
                           },
                           icon: const Icon(Icons.person),
-                          label: Text('Add Member',
+                          label: Text('Add/زێدەکرن',
                               style: TextStyle(fontSize: 20.sp)),
                           style: ButtonStyle(
                             minimumSize: MaterialStateProperty.all<Size>(

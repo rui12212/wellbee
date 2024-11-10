@@ -44,10 +44,10 @@ android {
         applicationId = "com.wellbee.fitness.app"
         // 以下の値をアプリケーションのニーズに合わせて更新できます。
         // 詳細については、https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration を参照してください。
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = 2
-        versionName = '1.1.0'
+        minSdk = 21
+        targetSdk = 34
+        versionCode = 6
+        versionName = '2.0.0'
     }
 
     signingConfigs {

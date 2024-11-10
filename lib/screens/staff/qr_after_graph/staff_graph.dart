@@ -12,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
+import 'package:wellbee/screens/staff/qr_after_graph/staff_radar.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/color.dart';
 import 'package:http/http.dart' as http;
@@ -79,7 +80,7 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
       var url = Uri.parse(
-          '${baseUri}questionnaires/survey_response/staff_survey?id=${widget.attendeeList['id']}');
+          '${baseUri}questionnaires/survey_response/staff_survey?id=${widget.attendeeList['id']}&token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -113,7 +114,7 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
       var url = Uri.parse(
-          '${baseUri}questionnaires/base_body_survey/staff_bmi?id=${widget.attendeeList['id']}');
+          '${baseUri}questionnaires/base_body_survey/staff_bmi?id=${widget.attendeeList['id']}&token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -239,11 +240,21 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
 
                               final lineBarsDataMentalHealth = [
                                 LineChartBarData(
-                                  spots: spotsData, // your data here
-                                  isCurved: true,
-                                  barWidth: 3,
-                                  color: kHealthColor, // グラフの色
-                                ),
+                                    spots: spotsData, // your data here
+                                    isCurved: true,
+                                    barWidth: 3,
+                                    color: kHealthColor, // グラフの色
+                                    dotData: FlDotData(
+                                      show: true,
+                                      getDotPainter:
+                                          (spot, percent, barData, index) =>
+                                              FlDotCirclePainter(
+                                        // ドットの大きさ
+                                        radius: 7.h,
+                                        color: kHealthColor,
+                                        strokeWidth: 0.5,
+                                      ),
+                                    )),
                               ];
 
                               // final gridData = FlGridData(
@@ -316,7 +327,7 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                                           ]);
                                         }).toList(),
                                         lineTouchData: LineTouchData(
-                                          enabled: false,
+                                          enabled: true,
                                           handleBuiltInTouches: false,
                                           touchCallback: (FlTouchEvent event,
                                               LineTouchResponse? response) {
@@ -329,6 +340,15 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                                                   .lineBarSpots!
                                                   .first
                                                   .spotIndex;
+
+                                              Navigator.of(context)
+                                                  .push(MaterialPageRoute(
+                                                builder: (context) {
+                                                  return StaffRadarChartPage(
+                                                      surveyData: mySurveyList[
+                                                          spotIndex]);
+                                                },
+                                              ));
                                               // setState(() {
                                               //   // ボタンを押したらspotIndexのデータを表示する
                                               //   if (showingTooltipOnSpots.contains(spotIndex)) {
@@ -354,21 +374,21 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
                                               (LineChartBarData barData,
                                                   List<int> spotIndexes) {
                                             return spotIndexes.map((index) {
-                                              return TouchedSpotIndicatorData(
+                                              return const TouchedSpotIndicatorData(
                                                 // spotまでの下からの線
                                                 FlLine(
                                                   color: Colors.transparent,
                                                 ),
                                                 FlDotData(
                                                   show: true,
-                                                  getDotPainter: (spot, percent,
-                                                          barData, index) =>
-                                                      FlDotCirclePainter(
-                                                    // ドットの大きさ
-                                                    radius: 6,
-                                                    color: kHealthColor,
-                                                    strokeWidth: 0.5,
-                                                  ),
+                                                  // getDotPainter: (spot, percent,
+                                                  //         barData, index) =>
+                                                  //     FlDotCirclePainter(
+                                                  //   // ドットの大きさ
+                                                  //   radius: 6,
+                                                  //   color: kHealthColor,
+                                                  //   strokeWidth: 0.5,
+                                                  // ),
                                                 ),
                                               );
                                             }).toList();
@@ -734,7 +754,7 @@ class _StaffGraphPageState extends State<StaffGraphPage> {
 
                                         // Y軸の最低ポイントは？
                                         minY: 0,
-                                        maxY: 120, // Y軸の最大値を30に設定
+                                        maxY: 150, // Y軸の最大値を30に設定
                                         minX: 0,
                                         maxX:
                                             convertedMaxXForBMI, // X軸の最大値を6に設定

@@ -90,7 +90,7 @@ class _StaffAttendeeAllPageState extends State<StaffAttendeeAllPage> {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
       var url = Uri.parse(
-          '${baseUri}attendances/attendee/attendee_by_staff?user_id=${widget.userId}');
+          '${baseUri}attendances/attendee/attendee_by_staff?user_id=${widget.userId}&token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',

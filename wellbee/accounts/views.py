@@ -2,7 +2,8 @@
 # sys.path.append('/Users/rui/dev/wellbee/env_wellbee/lib/python3.9/site-packages/rest_framework')
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from requests import Response
+# from requests import Response
+from rest_framework.response import Response
 from rest_framework import generics, viewsets, status
 from rest_framework.permissions import AllowAny
 
@@ -18,6 +19,8 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework_simplejwt.views import TokenObtainPairView
 import json
+from django.contrib.auth import get_user_model
+
 
 # viewsでは、このクラスでデータをどのように扱うかを設定している。更新する？登録する？とかを
 # serializerが入ると、そのデータのやり取りが楽になるから、噛ませている
@@ -64,6 +67,19 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['post'], permission_classes=[UserPermission], url_path='delete_user')
+    def delete_user(self, request, pk=None):
+        token = request.query_params.get('token')
+        if not token:
+            return Response({'error': 'Token is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = get_object_or_404(User, pk=pk)
+        #if not user.is_active:
+        #    return Response({'message': 'User is already deactivated.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.delete()
+        return Response({'status': 'User has been deleted.'}, status=status.HTTP_200_OK)
 
 
     
@@ -113,3 +129,26 @@ def staff_login(request):
     else:
         return JsonResponse({'success':False, 'message': 'Invalid request method'})
     
+class PasswordResetRequestViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PasswordResetRequestSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response({'message': 'User confirmed. Reset password'}, status=status.HTTP_200_OK)
+    
+class PasswordResetConfirmViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PasswordResetSerializer
+
+    def post(self, request, *args, **kwargs):
+        phone_number = request.data.get('phone_number')
+        secret_words = request.data.get('secret_words')
+        new_password = request.data.get('new_password')
+
+        try:
+            user = User.objects.get(phone_number=phone_number, secret_words=secret_words)
+            user.set_password(new_password)
+            user.save()
+            return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "Phone number or secret words is not correct"}, status=status.HTTP_400_BAD_REQUEST)

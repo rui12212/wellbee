@@ -50,11 +50,13 @@ class _SurveyPageState extends State<SurveyPage> {
 
       Map responseMap = {'attendee_id': widget.attendeeList['id']};
       // Map responseMap = {};
-      for (int i = 0; i < 28; i++) {
+      for (int i = 0; i < 20; i++) {
         responseMap['response$i'] = responseList[i];
       }
-      var urlSurvey = Uri.parse('${baseUri}questionnaires/survey_response/');
-      var urlBase = Uri.parse('${baseUri}questionnaires/base_body_survey/');
+      var urlSurvey =
+          Uri.parse('${baseUri}questionnaires/survey_response/?token=$token');
+      var urlBase =
+          Uri.parse('${baseUri}questionnaires/base_body_survey/?token=$token');
       var response = await Future.any([
         // jsonEncodeではMap型で渡す
         http.post(urlSurvey, body: jsonEncode(responseMap), headers: {
@@ -128,7 +130,7 @@ class _SurveyPageState extends State<SurveyPage> {
                         final jsonResult = result.toJson();
                         // print(jsonResult);
 
-                        for (int i = 1; i < 29; i++) {
+                        for (int i = 1; i < 21; i++) {
                           //  0はInstructionIndicator、1からアンケートの回答
                           final response =
                               jsonResult['results'][i]['results'][0]['result'];
@@ -312,779 +314,287 @@ class _SurveyPageState extends State<SurveyPage> {
       id: TaskIdentifier(),
       steps: <Step>[
         InstructionStep(
-          title: 'Welcome to the Health Survey',
+          title: 'Welcome to the Health Survey\nبخێر هاتی بو راپرسیا ساخلەمیێ',
           text: 'Let\'s share your current physical & psychological health!',
           buttonText: 'Let\'s go!',
         ),
-        QuestionStep(
-          title: 'Been feeling bad and in bad health?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been feeling bad and in bad health?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been feeling in need of \na good tonic?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been feeling in need of \na good tonic?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-
-        QuestionStep(
-          title: 'Been feeling run down and \nout of sorts?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been feeling run down and \nout of sorts?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been feeling that \nyou are ill?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been feeling that \nyou are ill?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been getting any pains \nin your head?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been getting any pains \nin your head?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
+        // 1
         QuestionStep(
           title:
-              'Been getting a feeling of tightness or pressure \nin your head?',
+              'Having pain in the body?(backache, headache,knees…etc)\nهەست ب هەبوونا ئێشانێ دلەشێ خودا دکەی؟(پشت ئێشان، سەرئێشان، ئێشانا چووکان…هتد',
           isOptional: false,
           answerFormat: const ScaleAnswerFormat(
             step: 1,
             minimumValue: 0,
             maximumValue: 3,
             defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
+            minimumValueDescription: 'Not at all\nنەخێر ب چ شێوا',
+            maximumValueDescription: 'Pain Badly\nگەلەک ئێشان',
           ),
         ),
-        // QuestionStep(
-        //   title:
-        //       'Been getting a feeling of tightness or pressure \nin your head?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been having hot or cold spells?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been having hot or cold spells?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been losing much sleep \nover worry?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been losing much sleep \nover worry?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
+        // 2
         QuestionStep(
           title:
-              'Been having difficulty \nin staying asleep \nonce you fall asleep?',
+              'Easily get up in the morning?\nئەرێ ب ساناهی سپێدێ ژخەو رادبی؟',
           isOptional: false,
           answerFormat: const ScaleAnswerFormat(
             step: 1,
             minimumValue: 0,
             maximumValue: 3,
             defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
+            minimumValueDescription: 'Very easy\nگەلەک ساناهی',
+            maximumValueDescription: 'Very hard\nگەلەک زەحمەت',
           ),
         ),
-        // QuestionStep(
-        //   title:
-        //       'Been having difficulty \nin staying asleep \nonce you fall asleep?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
+        // 3
         QuestionStep(
-          title: 'Been feeling \nconstantly under strain?',
+          title: 'Always feeling tired?\nهەمی دەمان هەست ب وەستیانێ دکەی؟ ',
           isOptional: false,
           answerFormat: const ScaleAnswerFormat(
             step: 1,
             minimumValue: 0,
             maximumValue: 3,
             defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
+            minimumValueDescription: 'Not at all\nنەخێر ب چ شێوا ',
+            maximumValueDescription: 'Very much\nگەلەک',
           ),
         ),
-        // QuestionStep(
-        //   title: 'Been feeling \nconstantly under strain?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been getting edgy or \nbad tempered?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been getting edgy or \nbad tempered?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been getting scared or \npanicky for no reason?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been getting scared or \npanicky for no reason?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been feeling everything is getting on top of you?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been feeling everything is getting on top of you?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been feeling nervous and strung-out all the time?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been feeling nervous and strung-out all the time?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been managing to keep yourself busy and occupied?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been managing to keep yourself busy and occupied?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been taking longer over the things you do?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been taking longer over the things you do?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been feeling you were doing things well?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been feeling you were doing things well?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been satisfied with the way you have carried out your tasks?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been satisfied with the way you have carried out your tasks?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been feeling that you are playing a useful part in things?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been feeling that you are playing a useful part in things?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been feeling capable of making decisions about things?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been feeling capable of making decisions about things?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been able to enjoy your normal day-to-day activities?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been able to enjoy your normal day-to-day activities?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been thinking of yourself as a worthless person?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been thinking of yourself as a worthless person?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been feeling that \nlife is entirely hopeless?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been feeling that \nlife is entirely hopeless?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been feeling that \nlife is not worth living?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been feeling that \nlife is not worth living?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
-        QuestionStep(
-          title: 'Been having a suicidal thoughts?',
-          isOptional: false,
-          answerFormat: const ScaleAnswerFormat(
-            step: 1,
-            minimumValue: 0,
-            maximumValue: 3,
-            defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
-          ),
-        ),
-        // QuestionStep(
-        //   title: 'Been having a suicidal thoughts?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
+        // 4
         QuestionStep(
           title:
-              'Been feeling at times that you could not do anything because your nerves & anxiety were too bad?',
+              'Easily catch colds and get worse?\nزویکا پەرسیڤ دهێتە تە و یا بهێزە؟',
           isOptional: false,
           answerFormat: const ScaleAnswerFormat(
             step: 1,
             minimumValue: 0,
             maximumValue: 3,
             defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
+            minimumValueDescription: 'No\nنەخێر',
+            maximumValueDescription: 'Yes\nبەلێ',
           ),
         ),
-        // QuestionStep(
-        //   title:
-        //       'Been feeling at times that you could not do anything because your nerves & anxiety were too bad?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
+        // 5
         QuestionStep(
-          title:
-              'Been finding yourself wishing you were dead and away from it all?',
+          title: 'Easy to fall asleep at night?\nب ساناهی بشەڤێ دنڤی؟',
+          isOptional: false,
           answerFormat: const ScaleAnswerFormat(
             step: 1,
             minimumValue: 0,
             maximumValue: 3,
             defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
+            minimumValueDescription: 'Very easy\nگەلەک ساناهی',
+            maximumValueDescription: 'Very hard\nگەلەک زەحمەت',
           ),
         ),
-        // QuestionStep(
-        //   title:
-        //       'Been finding yourself wishing you were dead and away from it all?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
+        // 6
         QuestionStep(
-          title:
-              'Been finding that the idea of taking your own life keeps coming into your mind?',
+          title: 'Often dreams during sleep?\n گەلەک خەونان دبینی؟',
+          isOptional: false,
           answerFormat: const ScaleAnswerFormat(
             step: 1,
             minimumValue: 0,
             maximumValue: 3,
             defaultValue: 0,
-            minimumValueDescription: 'Better than usual',
-            maximumValueDescription: 'Much worse',
+            minimumValueDescription: 'Not much\nنە گەلەک',
+            maximumValueDescription: 'Very much\nگەلەک',
           ),
         ),
-        // ),
-        // QuestionStep(
-        //   title:
-        //       'Been finding that the idea of taking your own life keeps coming into your mind?',
-        //   // text: 'We are done, do you mind to tell us more about yourself?',
-        //   isOptional: false,
-        //   answerFormat: const SingleChoiceAnswerFormat(
-        //     textChoices: <TextChoice>[
-        //       TextChoice(text: 'Better than usual', value: 'Better than usual'),
-        //       TextChoice(text: 'Same as usual', value: 'Same as usual'),
-        //       TextChoice(text: 'Worse than usual', value: 'Worse than usual'),
-        //       TextChoice(
-        //           text: 'Much worse than usual',
-        //           value: 'Much worse than usual'),
-        //     ],
-        //   ),
-        // ),
+        // 7
+        QuestionStep(
+          title:
+              'Are you feeling tired when you wake up?\n دەمێ ژخەو رادبی هەست ب وەستیانێ دکەی؟',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Not much\nنە گەلەک',
+            maximumValueDescription: 'Very much\n گەلەک',
+          ),
+        ),
+        // 8
+        QuestionStep(
+          title:
+              'Having fixed time to get up or go to bed?\nچ دەمێ دیارکری بو ژخەو رابوون و نڤستنێ نینن؟ ',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Yes\nبەلێ ',
+            maximumValueDescription: 'No\nنەخێر',
+          ),
+        ),
+        // 9
+        QuestionStep(
+          title:
+              'Very big life event happened lately?\nدڤان دوماهیان دا گوهورینەکا مەزن د ژیانا تەدا رویدایە؟',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'No\n نەخێر',
+            maximumValueDescription: 'Yes\nبەلێ',
+          ),
+        ),
+        // 10
+        QuestionStep(
+          title: 'Easily irritated?\nب ساناهی تورە دبی؟',
+          // イライラしていると感じる
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Not much\nنە گەلەک',
+            maximumValueDescription: 'Very much\nگەلەک',
+          ),
+        ),
+        // 11
+        QuestionStep(
+          title: 'Defecation?\nچوونا دەستئاڤێ؟',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Very good\nگەلەک باشە ',
+            maximumValueDescription: 'Very bad\nگەلەک نە باشە',
+          ),
+        ),
+        // 12
+        QuestionStep(
+          title: 'Bedrooms are organized?\nژوورا نڤستنێ یا رێک و پێکە؟',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Very good\nگەلەک باشە',
+            maximumValueDescription: 'Very bad\nگەلەک نە باشە',
+          ),
+        ),
+        // 13
+        QuestionStep(
+          title:
+              'Use a car even if it is a short distance?\nبکارئینانا ترومبێلێ خو بو رێکێن نێزیک ژی؟',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'No\nنەخێر',
+            maximumValueDescription: 'Yes, always\nبەلێ گەلەک',
+          ),
+        ),
+        // 14
+        QuestionStep(
+          title: 'Easy to climb the stairs?\nب ساناهى سەر دەرەچکان دکەڤی؟',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Very easy\nگەلەک ساناهی',
+            maximumValueDescription: 'Very hard\nگەلەک زەحمەت',
+          ),
+        ),
+        // 15
+        QuestionStep(
+          title:
+              'Easily put on socks while standing?\n ب ساناهى راوەستای(ژپیاڤە) گورا خو دکەیە بەر خو؟',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Very easy\nگەلەک ساناهی',
+            maximumValueDescription: 'Very hard\nگەلەک زەحمەت',
+          ),
+        ),
+        // 16
+        QuestionStep(
+          title: 'Clothes size got larger?\nقیاسێ جلکێن تە مەزنتر لێ دهێت؟',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Same\nوەک خویە',
+            maximumValueDescription: 'Very much\nبەلێ گەلەک',
+          ),
+        ),
+        // 17
+        QuestionStep(
+          title: 'Has regular mealtimes?\nدەمێن خوارنێ یێن رێک و پێک هەنە؟',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Yes\nبەلێ',
+            maximumValueDescription: 'No\nنەخێر',
+          ),
+        ),
+        // 18
+        QuestionStep(
+          title: 'Have a good appetite?\n ئارەزوویا خوارنا تە یا باشە؟ ',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Yes\nبەلێ',
+            maximumValueDescription: 'No\nنەخێر',
+          ),
+        ),
+        // 19
+        QuestionStep(
+          title:
+              'Drink more than 1.5 liters of water a day?\nپتر ژ 1.5لترێن ئاڤێ د روژێدا ڤەدخویی؟ ',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Yes\nبەلێ',
+            maximumValueDescription: 'No\nنەخێر',
+          ),
+        ),
+        // 20
+        QuestionStep(
+          title:
+              'Eat often salty/sweet/oily foods?\nگەلەک جاران خوارنێن سویر/شرین/ ب زەیت دخوی؟',
+          isOptional: false,
+          answerFormat: const ScaleAnswerFormat(
+            step: 1,
+            minimumValue: 0,
+            maximumValue: 3,
+            defaultValue: 0,
+            minimumValueDescription: 'Not much\nنە گەلەک ',
+            maximumValueDescription: 'Very much\n بەلێ گەلەک',
+          ),
+        ),
+        // last
         CompletionStep(
           isOptional: false,
           stepIdentifier: StepIdentifier(id: '321'),
-          text: 'Thank! Make sure to push "NEXT" to finish',
+          text:
+              'Thank! Make sure to push "NEXT" to finish\nدانە بو دوماهیک ئینانێ “Next”',
           title: 'Done!',
           buttonText: 'Submit survey',
         ),

@@ -107,7 +107,7 @@ class _InterviewAddPageState extends State<InterviewAddPage> {
     }
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
-      var url = Uri.parse('${baseUri}attendances/interview/');
+      var url = Uri.parse('${baseUri}attendances/interview/?token=$token');
       var response = await Future.any([
         http.post(
           url,
@@ -157,108 +157,110 @@ class _InterviewAddPageState extends State<InterviewAddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
         body: SafeArea(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            _Header(
-                title: 'Health Interview',
-                subtitle: 'Check body & mind state',
-                attendeeList: widget.attendeeList),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 36.h,
-                    ),
-                    Column(
-                      children: [],
-                    ),
-                    Container(
-                        child: Column(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                _Header(
+                    title: 'Health Interview',
+                    subtitle: 'Check body & mind state',
+                    attendeeList: widget.attendeeList),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
                       children: [
-                        Align(
-                            alignment: Alignment.topLeft,
-                            child: Text('Emotional State',
-                                style: TextStyle(
-                                    color: kColorTextDarkGrey,
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w500))),
-                        InterviewCustomTextBox(
-                          label: '',
-                          hintText:
-                              'Any change for the emotional & mind state?',
-                          controller: _emotionController,
-                        ).textFieldDecoration()
+                        SizedBox(
+                          height: 36.h,
+                        ),
+                        Column(
+                          children: [],
+                        ),
+                        Container(
+                            child: Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('Emotional State',
+                                    style: TextStyle(
+                                        color: kColorTextDarkGrey,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w500))),
+                            InterviewCustomTextBox(
+                              label: '',
+                              hintText:
+                                  'Any change for the emotional & mind state?',
+                              controller: _emotionController,
+                            ).textFieldDecoration()
+                          ],
+                        )),
+                        SizedBox(
+                          height: 15.h,
+                        ),
+                        Container(
+                            child: Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('Physical State',
+                                    style: TextStyle(
+                                        color: kColorTextDarkGrey,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w500))),
+                            InterviewCustomTextBox(
+                              label: '',
+                              hintText:
+                                  'Any change for the physical & body state?',
+                              controller: _physicalController,
+                            ).textFieldDecoration()
+                          ],
+                        )),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Container(
+                            child: Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('Comments',
+                                    style: TextStyle(
+                                        color: kColorTextDarkGrey,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w500))),
+                            InterviewCustomTextBox(
+                              label: '',
+                              hintText: 'Anything that Member mentioned?',
+                              controller: _commentController,
+                            ).textFieldDecoration()
+                          ],
+                        )),
+                        SizedBox(
+                          height: 52.h,
+                        ),
+                        FilledButton.icon(
+                          onPressed: () {
+                            _createAttendee();
+                          },
+                          icon: const Icon(Icons.note_alt_outlined),
+                          label: Text('Create Interview',
+                              style: TextStyle(fontSize: 20.sp)),
+                          style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all<Size>(
+                                Size(300.h, 80)), // ボタンの幅と高さを設定
+                          ),
+                        ),
+                        SizedBox(
+                          height: 52.h,
+                        ),
                       ],
-                    )),
-                    SizedBox(
-                      height: 15.h,
                     ),
-                    Container(
-                        child: Column(
-                      children: [
-                        Align(
-                            alignment: Alignment.topLeft,
-                            child: Text('Physical State',
-                                style: TextStyle(
-                                    color: kColorTextDarkGrey,
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w500))),
-                        InterviewCustomTextBox(
-                          label: '',
-                          hintText: 'Any change for the physical & body state?',
-                          controller: _physicalController,
-                        ).textFieldDecoration()
-                      ],
-                    )),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Container(
-                        child: Column(
-                      children: [
-                        Align(
-                            alignment: Alignment.topLeft,
-                            child: Text('Comments',
-                                style: TextStyle(
-                                    color: kColorTextDarkGrey,
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w500))),
-                        InterviewCustomTextBox(
-                          label: '',
-                          hintText: 'Anything that Member mentioned?',
-                          controller: _commentController,
-                        ).textFieldDecoration()
-                      ],
-                    )),
-                    SizedBox(
-                      height: 52.h,
-                    ),
-                    FilledButton.icon(
-                      onPressed: () {
-                        _createAttendee();
-                      },
-                      icon: const Icon(Icons.note_alt_outlined),
-                      label: Text('Create Interview',
-                          style: TextStyle(fontSize: 20.sp)),
-                      style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all<Size>(
-                            Size(300.h, 80)), // ボタンの幅と高さを設定
-                      ),
-                    ),
-                    SizedBox(
-                      height: 52.h,
-                    ),
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    ));
+                  ),
+                )
+              ],
+            ),
+          ),
+        ));
   }
 }

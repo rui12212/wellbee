@@ -4,6 +4,7 @@ import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/staff/qr/qr_scanner.dart';
 import 'package:wellbee/screens/staff/qr_after/check_in.dart';
 import 'package:wellbee/screens/staff/qr_after/user_home.dart';
+import 'package:wellbee/screens/staff/qr_after_point/point_select.dart';
 
 class ScanDataWidget extends StatefulWidget {
   final BarcodeCapture? scandata;
@@ -41,12 +42,24 @@ class _ScanDataWidgetState extends State<ScanDataWidget> {
     }
 
     // URLがユーザー情報の場合
-    if (codeValue.contains("${baseUri}accounts/users/")) {
+    if (codeValue.contains("${baseUri}accounts/users")) {
       String pk = codeValue.split("/").last;
       if (pk.isNotEmpty) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) {
             return UserHomePage(pk: pk);
+          },
+        ));
+        return;
+      }
+    }
+
+    if (codeValue.contains("${baseUri}accounts/users/points")) {
+      String pk = codeValue.split("/").last;
+      if (pk.isNotEmpty) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) {
+            return PointSelectPage(pk: pk);
           },
         ));
         return;

@@ -30,7 +30,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80.h,
+      height: 100.h,
       child: Column(
         children: [
           Align(

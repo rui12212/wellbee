@@ -86,10 +86,12 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
   String selectedCourse = 'Yoga';
   int selectedTimesPerWeek = 1;
   int selectedDuration = 1;
-  late DateTime newDate = DateTime(2000);
+  // late DateTime newDate = DateTime(2000);
   int selectedPrice = 10;
   double selectedDiscountRate = 1.0;
   int selectedNumPerson = 1;
+  int selectedMinus = 0;
+  late DateTime newDate = DateTime.now();
 
   @override
   showSnackBar(color, text) {
@@ -139,6 +141,35 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
             child: Text('${discountPercentage.toStringAsFixed(1)}\%')));
   });
 
+  List<DropdownMenuItem> monthItems = List.generate(19, (index) {
+    List numItems = [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+    ];
+    int numMonth = (numItems[index]);
+    return DropdownMenuItem(
+        value: numMonth,
+        child: Padding(
+            padding: const EdgeInsets.all(10), child: Text('$numMonth month')));
+  });
+
   List<DropdownMenuItem<dynamic>> numPersonItems = List.generate(5, (index) {
     List numItems = [
       1,
@@ -152,6 +183,27 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
         value: numPerson,
         child: Padding(
             padding: const EdgeInsets.all(10), child: Text('$numPerson')));
+  });
+
+  List<DropdownMenuItem<dynamic>> minusItems = List.generate(11, (index) {
+    List numItems = [
+      0,
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90,
+      100,
+    ];
+    int numMinus = (numItems[index]);
+    return DropdownMenuItem(
+        value: numMinus,
+        child: Padding(
+            padding: const EdgeInsets.all(10), child: Text('$numMinus')));
   });
 
   @override
@@ -207,10 +259,31 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                                     ),
                                   ),
                                   DropdownMenuItem(
-                                    value: 'Kids Yoga',
+                                    value: 'Kids Yoga KG',
                                     child: Padding(
                                       padding: const EdgeInsets.all(10.0),
-                                      child: Text('Kids Yoga'),
+                                      child: Text('Kids Yoga KG'),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Kids Yoga(A)',
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text('Kids Yoga(A)'),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Kids Yoga(B)',
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text('Kids Yoga(B)'),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Pilates',
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text('Pilates'),
                                     ),
                                   ),
                                   DropdownMenuItem(
@@ -263,10 +336,31 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                                     ),
                                   ),
                                   DropdownMenuItem(
-                                    value: 'Kids Taiso',
+                                    value: 'Kids Taiso(A)',
                                     child: Padding(
                                       padding: const EdgeInsets.all(10.0),
-                                      child: Text('Kids Taiso'),
+                                      child: Text('Kids Taiso(A)'),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Kids Taiso(B)',
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text('Kids Taiso(B)'),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Family Yoga',
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text('Family Yoga'),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Family Pilates',
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text('Family Pilates'),
                                     ),
                                   ),
                                 ],
@@ -339,36 +433,7 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                                 isExpanded: true,
                                 style: TextStyle(
                                     fontSize: 22.sp, color: Colors.black),
-                                items: [
-                                  DropdownMenuItem(
-                                    value: 1,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('1 month'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 3,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('3 months'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 6,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('6 months'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 12,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('1 year'),
-                                    ),
-                                  ),
-                                ],
+                                items: monthItems,
                                 value: selectedDuration,
                                 onChanged: (value) {
                                   setState(() {
@@ -471,6 +536,42 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                           children: [
                             Align(
                                 alignment: Alignment.topLeft,
+                                child: Text('Minus(\$)',
+                                    style: TextStyle(
+                                        color: kColorTextDarkGrey,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w500))),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  border:
+                                      Border.all(color: kColorTextDarkGrey)),
+                              child: DropdownButton(
+                                  underline: SizedBox.shrink(),
+                                  isExpanded: true,
+                                  style: TextStyle(
+                                      fontSize: 22.sp, color: Colors.black),
+                                  itemHeight: 75.h,
+                                  value: selectedMinus,
+                                  hint: Text('Select an minus amount(\$)'),
+                                  items: minusItems,
+                                  onChanged: (newValue) {
+                                    // print(widget.attendeeList['points']);
+                                    setState(() {
+                                      selectedMinus = newValue;
+                                    });
+                                  }),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 25.h,
+                        ),
+                        Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
                                 child: Text('Discount rate',
                                     style: TextStyle(
                                         color: kColorTextDarkGrey,
@@ -501,25 +602,109 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                           ],
                         ),
                         SizedBox(
+                          height: 15.h,
+                        ),
+                        Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('Start Day',
+                                    style: TextStyle(
+                                        color: kColorTextDarkGrey,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w500))),
+                            Container(
+                              width: 390.w,
+                              height: 65.h,
+                              child: TextButton(
+                                style: ButtonStyle(
+                                  minimumSize: MaterialStateProperty.all<Size>(
+                                      Size(150, 50)), // ボタンのサイズを設定
+                                  side: MaterialStateProperty.all<BorderSide>(
+                                    BorderSide(
+                                        color: kColorTextDarkGrey,
+                                        width: 1), // 枠線の色と幅を設定
+                                  ),
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          10), // 枠線の角を丸くする
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  final DateTime? _selectedDate =
+                                      await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(2024),
+                                    lastDate: DateTime(2030),
+                                  );
+                                  if (_selectedDate != null) {
+                                    setState(
+                                      () {
+                                        newDate = _selectedDate;
+                                      },
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  '${newDate.year}/${newDate.month}/${newDate.day}',
+                                  style: TextStyle(
+                                      fontSize: 22.sp,
+                                      color:
+                                          Color.fromARGB(255, 161, 154, 154)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
                           height: 52.h,
                         ),
                         FilledButton.icon(
                           onPressed: () {
-                            Map<dynamic, dynamic> membershipMap = {
-                              'course': selectedCourse,
-                              'original_price': selectedPrice,
-                              'times_per_week': selectedTimesPerWeek,
-                              'duration': selectedDuration,
-                              'num_person': selectedNumPerson,
-                              'discount_rate': selectedDiscountRate,
-                            };
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) =>
-                                    StaffMembershipConfirmPage(
-                                      attendeeList: widget.attendeeList,
-                                      membershipMap: membershipMap,
-                                      userId: widget.userId,
-                                    )));
+                            // Family以外が1人より上なら
+                            if ((selectedCourse != 'Family Yoga' &&
+                                    selectedCourse != 'Family Pilates') &&
+                                selectedNumPerson > 1) {
+                              print(selectedCourse);
+                              // print(selectedNumPerson);
+                              showSnackBar(Colors.red,
+                                  'Only Family Yoga & Family Pilates has more than 1 number of person');
+                              return;
+                              // Familyが1人なら
+                            } else if ((selectedCourse == 'Family Yoga' ||
+                                    selectedCourse == 'Family Pilates') &&
+                                selectedNumPerson == 1) {
+                              // print(selectedCourse);
+                              // print(selectedNumPerson);
+                              showSnackBar(Colors.red,
+                                  'Only Family Yoga & Family Pilates has more than 1 number of person');
+                              return;
+                            } else {
+                              final String formattedDate =
+                                  DateFormat('yyyy-MM-dd').format(newDate);
+
+                              Map<dynamic, dynamic> membershipMap = {
+                                'course': selectedCourse,
+                                'original_price': selectedPrice,
+                                'times_per_week': selectedTimesPerWeek,
+                                'duration': selectedDuration,
+                                'num_person': selectedNumPerson,
+                                'minus': selectedMinus,
+                                'discount_rate': selectedDiscountRate,
+                                'start_day': formattedDate.toString(),
+                              };
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      StaffMembershipConfirmPage(
+                                        attendeeList: widget.attendeeList,
+                                        membershipMap: membershipMap,
+                                        userId: widget.userId,
+                                      )));
+                            }
                           },
                           label: Text('Check Out',
                               style: TextStyle(fontSize: 20.sp)),

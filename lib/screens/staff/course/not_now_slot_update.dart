@@ -95,7 +95,7 @@ class _SlotAddPageState extends State<SlotAddPage> {
     }
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
-      var url = Uri.parse('${baseUri}/reservations/slot/');
+      var url = Uri.parse('${baseUri}/reservations/slot/?token=$token');
       var response = await Future.any([
         http.post(
           url,
@@ -145,7 +145,8 @@ class _SlotAddPageState extends State<SlotAddPage> {
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
-            _Header(title: 'Update Slot', subtitle: 'put new data for this Slot'),
+            _Header(
+                title: 'Update Slot', subtitle: 'put new data for this Slot'),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(

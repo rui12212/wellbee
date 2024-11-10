@@ -132,17 +132,9 @@ class _SignUpFormState extends State<_SignUpForm> {
 
           Navigator.pop(context);
           await Future.delayed(Duration(milliseconds: 250));
-          // setState(() {
-          //   Navigator.pop(context);
-          // });
 
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('User created successfully!')));
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //       builder: (context) => const FirstAttendeeAddPage()),
-          // );
           Navigator.push(
             context,
             MaterialPageRoute(

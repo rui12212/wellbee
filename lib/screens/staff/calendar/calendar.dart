@@ -89,9 +89,7 @@ class _CalendarPageState extends State<CalendarPage> {
       final String formattedDate =
           DateFormat('yyyy-MM-dd').format(selectedDate);
       var url = Uri.parse('${baseUri}reservations/slot/slots_for_calendar/')
-          .replace(queryParameters: {
-        'date': formattedDate,
-      });
+          .replace(queryParameters: {'date': formattedDate, 'token': token});
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',

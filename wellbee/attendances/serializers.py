@@ -18,7 +18,7 @@ class MembershipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Membership
         # fields = '__all__'
-        fields=('id','user_id','course','expire_day','times_per_week','max_join_times','already_join_times','requested_join_times','duration','request_time', 'is_approved', 'total_price','attendee_name','attendee_gender','attendee_birthday','course_name','original_price','num_person','discounted_total_price','attendee')
+        fields=('id','user_id','course','expire_day','start_day','minus','times_per_week','max_join_times','already_join_times','requested_join_times','duration','request_time', 'is_approved', 'total_price','attendee_name','attendee_gender','attendee_birthday','course_name','original_price','num_person','discounted_total_price','attendee')
         extra_kwargs = {
             'user_id': {'read_only': True},
             'id': {'read_only': True},

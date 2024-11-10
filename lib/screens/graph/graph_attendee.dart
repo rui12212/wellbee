@@ -64,7 +64,8 @@ class _GraphAttendeePageState extends State<GraphAttendeePage> {
   Future<List<dynamic>?> _fetchAttendee() async {
     try {
       token = await SharedPrefs.fetchAccessToken();
-      var url = Uri.parse('${baseUri}attendances/attendee/my_attendee/');
+      var url =
+          Uri.parse('${baseUri}attendances/attendee/my_attendee/?token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -116,7 +117,7 @@ class _GraphAttendeePageState extends State<GraphAttendeePage> {
                 _Header(),
                 _Question(question: 'Who\'s result?'),
                 Container(
-                  height: 610.h,
+                  height: 610.sp,
                   child: FutureBuilder(
                     future: _fetchAttendee(),
                     builder: (context, snapshot) {

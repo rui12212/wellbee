@@ -70,7 +70,8 @@ class _SurveyAttendeePageState extends State<SurveyAttendeePage> {
   Future<List<dynamic>?> _fetchAttendee() async {
     try {
       token = await SharedPrefs.fetchAccessToken();
-      var url = Uri.parse('${baseUri}attendances/attendee/my_attendee/');
+      var url =
+          Uri.parse('${baseUri}attendances/attendee/my_attendee/?token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
