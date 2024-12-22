@@ -53,7 +53,7 @@ If you request the disclosure, correction, deletion, or suspension of use of you
 
 ### Account Deletion
 
-If you wish to delete your account, please contact us via the phone number provided in the Contact Information section. We have made the account deletion process prominent to ensure ease of access for our users.
+You can delete your account in the application. Go to "User Info"(Right icon of the bottom tab bar) and push "Delete Account". If you agree on the data termination, your account will be deleted.
 
 ### Data Deletion and Retention
 

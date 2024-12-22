@@ -48,9 +48,9 @@ class _Header extends StatelessWidget {
 }
 
 class ReservedPeoplePage extends StatefulWidget {
-  dynamic date;
+  Map<String, dynamic> courseSlot;
 
-  ReservedPeoplePage({Key? key, required this.date}) : super(key: key);
+  ReservedPeoplePage({Key? key, required this.courseSlot}) : super(key: key);
 
   @override
   _ReservedPeoplePageState createState() => _ReservedPeoplePageState();
@@ -86,8 +86,14 @@ class _ReservedPeoplePageState extends State<ReservedPeoplePage> {
       // final String formattedDate =
       //     DateFormat('yyyy-MM-dd').format(selectedDate);
       // print(widget.date);
-      var url = Uri.parse(
-          '${baseUri}reservations/reservation/slots_for_staff/?date=${widget.date}&token=$token');
+      var url = Uri.parse('${baseUri}reservations/reservation/slots_for_staff/')
+          .replace(queryParameters: {
+        'date': widget.courseSlot['date'],
+        'slot_id': widget.courseSlot['id'].toString(),
+        'token': token,
+      });
+
+      // ?date=${widget.date}&token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -99,7 +105,7 @@ class _ReservedPeoplePageState extends State<ReservedPeoplePage> {
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
         if (data.isNotEmpty) {
-          print(data);
+          // print(data);
           return data;
         }
       } else if (response.statusCode >= 400) {

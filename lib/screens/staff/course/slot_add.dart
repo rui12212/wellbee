@@ -106,8 +106,8 @@ class _SlotAddPageState extends State<SlotAddPage> {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
       final String formattedDate = DateFormat('yyyy-MM-dd').format(newDate);
-      int convertedCourseId =
-          IntConverter.convertCourseToNum(widget.courseName);
+      // int convertedCourseId =
+      //     IntConverter.convertCourseToNum(widget.courseName);
 
       var url = Uri.parse('${baseUri}reservations/slot/?token=$token');
       var response = await Future.any([
@@ -118,7 +118,7 @@ class _SlotAddPageState extends State<SlotAddPage> {
             "Content-Type": "application/json"
           },
           body: jsonEncode({
-            "course": convertedCourseId,
+            "course": widget.courseName,
             "date": formattedDate,
             "start_time": selectedStartTime,
             "end_time": selectedEndTime,

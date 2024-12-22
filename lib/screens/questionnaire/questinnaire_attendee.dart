@@ -148,7 +148,7 @@ class _SurveyAttendeePageState extends State<SurveyAttendeePage> {
           child: Column(
             children: [
               _Header(),
-              _Question(question: 'Who will take the survey?'),
+              _Question(question: 'Choose Member'),
               FutureBuilder(
                 future: _fetchAttendee(),
                 builder: (context, snapshot) {

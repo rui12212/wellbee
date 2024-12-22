@@ -12,6 +12,7 @@ import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/membership/membership_attendee.dart';
 import 'package:wellbee/screens/membership/membership_confirm.dart';
 import 'package:wellbee/screens/staff/qr_after_membership/staff_membership_confirm.dart';
+import 'package:wellbee/screens/staff/qr_after_membership/staff_private_membership_confirm.dart';
 import 'package:wellbee/ui_parts/color.dart';
 import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
@@ -55,8 +56,11 @@ class _Question extends StatelessWidget {
           children: [
             Text(question,
                 style: TextStyle(fontSize: 28.h, fontWeight: FontWeight.w300)),
-            Text(name,
-                style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w600))
+            Text(
+              name,
+              style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis,
+            )
           ],
         ));
   }
@@ -77,21 +81,24 @@ class StaffMembershipAddPage extends StatefulWidget {
 }
 
 class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _reasonController = TextEditingController();
-  final TextEditingController _goalController = TextEditingController();
-  final TextEditingController _commentController = TextEditingController();
+  final TextEditingController _discountController = TextEditingController();
 
   String? token = '';
   String selectedCourse = 'Yoga';
-  int selectedTimesPerWeek = 1;
+  int selectedTimes = 1;
   int selectedDuration = 1;
   // late DateTime newDate = DateTime(2000);
-  int selectedPrice = 10;
+  int selectedPrice = 54;
   double selectedDiscountRate = 1.0;
   int selectedNumPerson = 1;
-  int selectedMinus = 0;
+  int selectedOffer = 0;
   late DateTime newDate = DateTime.now();
+  List<DropdownMenuItem<String>> courseDropDownItems = [];
+  bool isFixedPrice = false;
+  int times = 1;
+  int private_total_price = 50;
+  bool is_private = false;
+  bool is_kids = false;
 
   @override
   showSnackBar(color, text) {
@@ -103,16 +110,17 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
   @override
   void initState() {
     super.initState();
+    createCourseDropDown();
     // _fetchMyAllMembershipAdd();
   }
 
-  List<DropdownMenuItem> originalPriceItems = List.generate(15, (index) {
-    int price = (index + 1) * 10;
-    return DropdownMenuItem(
-        value: price,
-        child: Padding(
-            padding: const EdgeInsets.all(10), child: Text('${price}\$')));
-  });
+  // List<DropdownMenuItem> originalPriceItems = List.generate(15, (index) {
+  //   int price = (index + 1) * 10;
+  //   return DropdownMenuItem(
+  //       value: price,
+  //       child: Padding(
+  //           padding: const EdgeInsets.all(10), child: Text('${price}\$')));
+  // });
 
   List<DropdownMenuItem<dynamic>> discountRateItems =
       List.generate(13, (index) {
@@ -141,7 +149,34 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
             child: Text('${discountPercentage.toStringAsFixed(1)}\%')));
   });
 
-  List<DropdownMenuItem> monthItems = List.generate(19, (index) {
+  List<DropdownMenuItem> monthItems = List.generate(4, (index) {
+    List numItems = [
+      1,
+      3,
+      6,
+      12,
+    ];
+    int numMonth = (numItems[index]);
+    return DropdownMenuItem(
+        value: numMonth,
+        child: Padding(
+            padding: const EdgeInsets.all(10), child: Text('$numMonth month')));
+  });
+
+  List<DropdownMenuItem> privateMonthItems = List.generate(3, (index) {
+    List numItems = [
+      1,
+      2,
+      3,
+    ];
+    int numMonth = (numItems[index]);
+    return DropdownMenuItem(
+        value: numMonth,
+        child: Padding(
+            padding: const EdgeInsets.all(10), child: Text('$numMonth month')));
+  });
+
+  List<DropdownMenuItem<int>> privateTimesItems = List.generate(10, (index) {
     List numItems = [
       1,
       2,
@@ -153,58 +188,259 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
       8,
       9,
       10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19,
     ];
-    int numMonth = (numItems[index]);
+    int numTimes = (numItems[index]);
     return DropdownMenuItem(
-        value: numMonth,
+        value: numTimes,
         child: Padding(
-            padding: const EdgeInsets.all(10), child: Text('$numMonth month')));
+            padding: const EdgeInsets.all(10), child: Text('$numTimes time')));
   });
 
-  List<DropdownMenuItem<dynamic>> numPersonItems = List.generate(5, (index) {
-    List numItems = [
-      1,
-      2,
-      3,
-      4,
-      5,
+  // List<DropdownMenuItem<dynamic>> minusItems = List.generate(11, (index) {
+  //   List numItems = [
+  //     0,
+  //     10,
+  //     20,
+  //     30,
+  //     40,
+  //     50,
+  //     60,
+  //     70,
+  //     80,
+  //     90,
+  //     100,
+  //   ];
+  //   int numMinus = (numItems[index]);
+  //   return DropdownMenuItem(
+  //       value: numMinus,
+  //       child: Padding(
+  //           padding: const EdgeInsets.all(10), child: Text('$numMinus')));
+  // });
+
+  Future<List<dynamic>?> _fetchAllCourse() async {
+    try {
+      token = await SharedPrefs.fetchStaffAccessToken();
+      var url = Uri.parse('${baseUri}attendances/course/?token=$token');
+      var response = await Future.any([
+        http.get(url, headers: {
+          "Authorization": 'JWT $token',
+          "Content-Type": "application/json"
+        }),
+        Future.delayed(const Duration(seconds: 15),
+            () => throw TimeoutException("Request timeout"))
+      ]);
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        List courseList = [];
+        if (data.isNotEmpty) {
+          for (int i = 0; i < 14; i++) {
+            courseList.add(data[i]['course_name']);
+          }
+          return courseList;
+        }
+      } else if (response.statusCode >= 400) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Internet Error occurred.')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Something went wrong. Try again later')));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+  Future createCourseDropDown() async {
+    final courseList = await _fetchAllCourse();
+    final int countsCourse = courseList!.length;
+    List<DropdownMenuItem<String>> courseItems =
+        List.generate(countsCourse, (index) {
+      String course = (courseList![index]);
+      return DropdownMenuItem(
+          value: course,
+          child: Padding(
+              padding: const EdgeInsets.all(10), child: Text('$course')));
+    });
+
+    if (mounted) {
+      setState(() {
+        courseDropDownItems = courseItems;
+      });
+    }
+  }
+
+  List<DropdownMenuItem<dynamic>> totalPriceItems = List.generate(5, (index) {
+    List priceItems = [
+      54,
+      144,
+      252,
+      360,
+      135,
     ];
-    int numPerson = (numItems[index]);
+    int priceItem = (priceItems[index]);
     return DropdownMenuItem(
-        value: numPerson,
+        value: priceItem,
         child: Padding(
-            padding: const EdgeInsets.all(10), child: Text('$numPerson')));
+            padding: const EdgeInsets.all(10), child: Text('$priceItem')));
   });
 
-  List<DropdownMenuItem<dynamic>> minusItems = List.generate(11, (index) {
-    List numItems = [
+  List<DropdownMenuItem<dynamic>> offerPriceItems = List.generate(4, (index) {
+    List offerItems = [
       0,
-      10,
-      20,
+      48,
+      42,
       30,
-      40,
-      50,
-      60,
-      70,
-      80,
-      90,
-      100,
     ];
-    int numMinus = (numItems[index]);
+    int offerItem = (offerItems[index]);
+    int month = index == 1
+        ? 3
+        : index == 2
+            ? 6
+            : 12;
     return DropdownMenuItem(
-        value: numMinus,
+        value: offerItem,
         child: Padding(
-            padding: const EdgeInsets.all(10), child: Text('$numMinus')));
+            padding: const EdgeInsets.all(10),
+            child: offerItem == 0
+                ? Text('No Offer')
+                : Text('1month Free($month months course)')));
   });
+
+  List<DropdownMenuItem<dynamic>> kidsOfferPriceItems =
+      List.generate(2, (index) {
+    List offerItems = [
+      0,
+      45,
+    ];
+    int offerItem = (offerItems[index]);
+    return DropdownMenuItem(
+        value: offerItem,
+        child: Padding(
+            padding: EdgeInsets.all(10),
+            child: offerItem == 0
+                ? Text('No Offer')
+                : Text('1month Free(kids course)')));
+  });
+
+  void updatePrice() {
+    if (['Yoga', 'Pilates', 'Zumba'].contains(selectedCourse)) {
+      is_private = false;
+      is_kids = false;
+      switch (selectedDuration) {
+        case 1:
+          selectedPrice = 54;
+          break;
+        case 2:
+          selectedDuration = 1;
+          selectedPrice = 54;
+          break;
+        case 3:
+          selectedPrice = 144;
+          break;
+        case 6:
+          selectedPrice = 252;
+          break;
+        case 12:
+          selectedPrice = 360;
+          break;
+        default:
+          selectedPrice = 54;
+      }
+      isFixedPrice = true;
+      // offer関連のエラー
+    } else if (selectedOffer == 45 &&
+        ['Yoga', 'Pilates', 'Zumba'].contains(selectedCourse)) {
+      is_private = false;
+      is_kids = false;
+      setState(() {
+        selectedCourse = 'Yoga';
+        selectedDuration = 1;
+        selectedPrice = 54;
+        selectedOffer = 0;
+      });
+      showSnackBar(Colors.red, 'Error:Select course correctly');
+    } else if ([
+              48,
+              42,
+              30,
+            ].contains(selectedOffer) &&
+            [
+              'Private Yoga@Studio',
+              'Private Pilates@Studio',
+              'Private Yoga@Home',
+              'Private Pilates@Home',
+            ].contains(selectedCourse) ||
+        [
+              48,
+              42,
+              30,
+            ].contains(selectedOffer) &&
+            [
+              'Kids Zumba',
+              'Kids Karate',
+              'Kids Gym(A)',
+              'Kids Gym(B)',
+              'Kids Yoga KG',
+              'Kids Yoga(A)',
+              'Kids Yoga(B)'
+            ].contains(selectedCourse)) {
+      setState(() {
+        selectedCourse = 'Yoga';
+        selectedDuration = 1;
+        selectedPrice = 54;
+        selectedOffer = 0;
+      });
+      showSnackBar(Colors.red, 'Error:Select course correctly');
+    } else if ([
+      'Kids Zumba',
+      'Kids Karate',
+      'Kids Gym(A)',
+      'Kids Gym(B)',
+      'Kids Yoga KG',
+      'Kids Yoga(A)',
+      'Kids Yoga(B)'
+    ].contains(selectedCourse)) {
+      selectedDuration = 3;
+      selectedPrice = 135;
+      isFixedPrice = true;
+      is_private = false;
+      is_kids = true;
+    } else if ([
+          'Private Yoga@Studio',
+          'Private Pilates@Studio',
+          'Private Yoga@Home',
+          'Private Pilates@Home',
+        ].contains(selectedCourse) &&
+        [6, 12].contains(selectedDuration)) {
+      setState(() {
+        selectedCourse = 'Yoga';
+        selectedDuration = 1;
+        selectedPrice = 54;
+      });
+      showSnackBar(Colors.red, 'Error:Select course correctly');
+    } else if ([
+      'Private Yoga@Studio',
+      'Private Pilates@Studio',
+    ].contains(selectedCourse)) {
+      final monthlyPrice = 50;
+      setState(() {
+        selectedPrice = monthlyPrice * selectedTimes;
+      });
+      isFixedPrice = true;
+      is_private = true;
+    } else if ([
+      'Private Yoga@Home',
+      'Private Pilates@Home',
+    ].contains(selectedCourse)) {
+      final monthlyPrice = 60;
+      setState(() {
+        selectedPrice = monthlyPrice * selectedTimes;
+      });
+      isFixedPrice = true;
+      is_private = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -228,381 +464,6 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                       children: [
                         SizedBox(
                           height: 36.h,
-                        ),
-                        Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Course',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  border:
-                                      Border.all(color: kColorTextDarkGrey)),
-                              child: DropdownButton(
-                                underline: SizedBox.shrink(),
-                                itemHeight: 75.h,
-                                isExpanded: true,
-                                style: TextStyle(
-                                    fontSize: 22.sp, color: Colors.black),
-                                items: [
-                                  DropdownMenuItem(
-                                    value: 'Yoga',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Yoga'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Kids Yoga KG',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Kids Yoga KG'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Kids Yoga(A)',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Kids Yoga(A)'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Kids Yoga(B)',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Kids Yoga(B)'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Pilates',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Pilates'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Zumba',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Zumba'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Dance',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Dance'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Kids Dance',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Kids Dance'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Karate',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Karate'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Kids Karate',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Kids Karate'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Music',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Music'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Kids Music',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Kids Music'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Kids Taiso(A)',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Kids Taiso(A)'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Kids Taiso(B)',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Kids Taiso(B)'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Family Yoga',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Family Yoga'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Family Pilates',
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('Family Pilates'),
-                                    ),
-                                  ),
-                                ],
-                                value: selectedCourse,
-                                onChanged: (String? value) {
-                                  setState(() {
-                                    selectedCourse = value!;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 25.h,
-                        ),
-                        Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Price/Month',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  border:
-                                      Border.all(color: kColorTextDarkGrey)),
-                              child: DropdownButton(
-                                  underline: SizedBox.shrink(),
-                                  itemHeight: 75.h,
-                                  value: selectedPrice,
-                                  isExpanded: true,
-                                  style: TextStyle(
-                                      fontSize: 22.sp, color: Colors.black),
-                                  hint: Text('Select an original price'),
-                                  items: originalPriceItems,
-                                  onChanged: (dynamic newValue) {
-                                    setState(() {
-                                      selectedPrice = newValue as int;
-                                    });
-                                  }),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 25.h,
-                        ),
-                        Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Months',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  border:
-                                      Border.all(color: kColorTextDarkGrey)),
-                              child: DropdownButton(
-                                underline: SizedBox.shrink(),
-                                itemHeight: 75.h,
-                                isExpanded: true,
-                                style: TextStyle(
-                                    fontSize: 22.sp, color: Colors.black),
-                                items: monthItems,
-                                value: selectedDuration,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedDuration = value as int;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 25.h,
-                        ),
-                        Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Times per a week',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  border:
-                                      Border.all(color: kColorTextDarkGrey)),
-                              child: DropdownButton(
-                                underline: SizedBox.shrink(),
-                                itemHeight: 75.h,
-                                isExpanded: true,
-                                style: TextStyle(
-                                    fontSize: 22.sp, color: Colors.black),
-                                items: [
-                                  DropdownMenuItem(
-                                    value: 1,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('1 time in a week'),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 2,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text('2 times in a week'),
-                                    ),
-                                  ),
-                                ],
-                                value: selectedTimesPerWeek,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedTimesPerWeek = value as int;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 25.h,
-                        ),
-                        Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Number of People',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  border:
-                                      Border.all(color: kColorTextDarkGrey)),
-                              child: DropdownButton(
-                                  underline: SizedBox.shrink(),
-                                  isExpanded: true,
-                                  style: TextStyle(
-                                      fontSize: 22.sp, color: Colors.black),
-                                  itemHeight: 75.h,
-                                  value: selectedNumPerson,
-                                  hint: Text('Select number of people'),
-                                  items: numPersonItems,
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      selectedNumPerson = newValue;
-                                    });
-                                  }),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 25.h,
-                        ),
-                        Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Minus(\$)',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  border:
-                                      Border.all(color: kColorTextDarkGrey)),
-                              child: DropdownButton(
-                                  underline: SizedBox.shrink(),
-                                  isExpanded: true,
-                                  style: TextStyle(
-                                      fontSize: 22.sp, color: Colors.black),
-                                  itemHeight: 75.h,
-                                  value: selectedMinus,
-                                  hint: Text('Select an minus amount(\$)'),
-                                  items: minusItems,
-                                  onChanged: (newValue) {
-                                    // print(widget.attendeeList['points']);
-                                    setState(() {
-                                      selectedMinus = newValue;
-                                    });
-                                  }),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 25.h,
-                        ),
-                        Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Discount rate',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  border:
-                                      Border.all(color: kColorTextDarkGrey)),
-                              child: DropdownButton(
-                                  underline: SizedBox.shrink(),
-                                  isExpanded: true,
-                                  style: TextStyle(
-                                      fontSize: 22.sp, color: Colors.black),
-                                  itemHeight: 75.h,
-                                  value: selectedDiscountRate,
-                                  hint: Text('Select an discount rate'),
-                                  items: discountRateItems,
-                                  onChanged: (newValue) {
-                                    // print(widget.attendeeList['points']);
-                                    setState(() {
-                                      selectedDiscountRate = newValue;
-                                    });
-                                  }),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 15.h,
                         ),
                         Column(
                           children: [
@@ -661,45 +522,367 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                           ],
                         ),
                         SizedBox(
+                          height: 20.h,
+                        ),
+                        Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('Course',
+                                    style: TextStyle(
+                                        color: kColorTextDarkGrey,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w500))),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  border:
+                                      Border.all(color: kColorTextDarkGrey)),
+                              child: DropdownButton(
+                                underline: SizedBox.shrink(),
+                                itemHeight: 75.h,
+                                isExpanded: true,
+                                style: TextStyle(
+                                    fontSize: 22.sp, color: Colors.black),
+                                items: courseDropDownItems,
+                                value: selectedCourse,
+                                onChanged: (String? value) {
+                                  setState(() {
+                                    selectedCourse = value!;
+                                    updatePrice();
+                                  });
+                                  if (![
+                                    'Kids Zumba',
+                                    'Kids Karate',
+                                    'Kids Gym(A)',
+                                    'Kids Gym(B)',
+                                    'Kids Yoga KG',
+                                    'Kids Yoga(A)',
+                                    'Kids Yoga(B)'
+                                  ].contains(selectedCourse)) {
+                                    selectedOffer = 0;
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('Months',
+                                    style: TextStyle(
+                                        color: kColorTextDarkGrey,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w500))),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  border:
+                                      Border.all(color: kColorTextDarkGrey)),
+                              child: is_private == false
+                                  ? DropdownButton(
+                                      underline: SizedBox.shrink(),
+                                      itemHeight: 75.h,
+                                      isExpanded: true,
+                                      style: TextStyle(
+                                          fontSize: 22.sp, color: Colors.black),
+                                      items: monthItems,
+                                      value: selectedDuration,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedDuration = value as int;
+                                          updatePrice();
+                                        });
+                                      },
+                                    )
+                                  : DropdownButton(
+                                      underline: SizedBox.shrink(),
+                                      itemHeight: 75.h,
+                                      isExpanded: true,
+                                      style: TextStyle(
+                                          fontSize: 22.sp, color: Colors.black),
+                                      items: privateMonthItems,
+                                      value: selectedDuration,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedDuration = value as int;
+                                        });
+                                      },
+                                    ),
+                            ),
+                          ],
+                        ),
+                        is_private == true
+                            ? Column(
+                                children: [
+                                  SizedBox(
+                                    height: 20.h,
+                                  ),
+                                  Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text('Times',
+                                          style: TextStyle(
+                                              color: kColorTextDarkGrey,
+                                              fontSize: 20.sp,
+                                              fontWeight: FontWeight.w500))),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10)),
+                                        border: Border.all(
+                                            color: kColorTextDarkGrey)),
+                                    child: DropdownButton(
+                                      underline: SizedBox.shrink(),
+                                      itemHeight: 75.h,
+                                      isExpanded: true,
+                                      style: TextStyle(
+                                          fontSize: 22.sp, color: Colors.black),
+                                      items: privateTimesItems,
+                                      value: selectedTimes,
+                                      onChanged: (int? value) {
+                                        setState(() {
+                                          selectedTimes = value!;
+                                          updatePrice();
+                                          // updatePrice();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : SizedBox(),
+                        SizedBox(
+                          height: 25.h,
+                        ),
+                        Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('Price',
+                                    style: TextStyle(
+                                        color: kColorTextDarkGrey,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w500))),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  border:
+                                      Border.all(color: kColorTextDarkGrey)),
+                              child: isFixedPrice == false
+                                  ? DropdownButton(
+                                      underline: SizedBox.shrink(),
+                                      itemHeight: 75.h,
+                                      value: selectedPrice,
+                                      isExpanded: true,
+                                      style: TextStyle(
+                                          fontSize: 22.sp, color: Colors.black),
+                                      hint: Text('Select an original price'),
+                                      items: totalPriceItems,
+                                      onChanged: (dynamic newValue) {
+                                        setState(() {
+                                          selectedPrice = newValue as int;
+                                        });
+                                      })
+                                  : Container(
+                                      width: double.infinity,
+                                      alignment: Alignment.centerLeft,
+                                      height: 75.h,
+                                      child: Text('$selectedPrice\$',
+                                          style: TextStyle(fontSize: 24.h))),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 25.h,
+                        ),
+                        SizedBox(
+                          height: 25.h,
+                        ),
+                        SizedBox(
+                          height: 25.h,
+                        ),
+                        Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('Offer',
+                                    style: TextStyle(
+                                        color: kColorTextDarkGrey,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w500))),
+                            is_private == false
+                                ? Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10)),
+                                        border: Border.all(
+                                            color: kColorTextDarkGrey)),
+                                    child: DropdownButton(
+                                        underline: SizedBox.shrink(),
+                                        isExpanded: true,
+                                        style: TextStyle(
+                                            fontSize: 22.sp,
+                                            color: Colors.black),
+                                        itemHeight: 75.h,
+                                        value: selectedOffer,
+                                        hint:
+                                            Text('Select an minus amount(\$)'),
+                                        items: is_kids == false
+                                            ? offerPriceItems
+                                            : kidsOfferPriceItems,
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            selectedOffer = newValue as int;
+                                            updatePrice();
+                                          });
+                                        }),
+                                  )
+                                : Container(
+                                    width: double.infinity,
+                                    alignment: Alignment.centerLeft,
+                                    height: 75.h,
+                                    child: Text('No Offer',
+                                        style: TextStyle(fontSize: 24.h))),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('Discount(\$)',
+                                    style: TextStyle(
+                                        color: kColorTextDarkGrey,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w500))),
+                            LeftCustomTextBox(
+                              label: '',
+                              hintText: '0',
+                              inputType: TextInputType.number,
+                              controller: _discountController,
+                            ).textFieldDecoration(),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('Discount(%)',
+                                    style: TextStyle(
+                                        color: kColorTextDarkGrey,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w500))),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  border:
+                                      Border.all(color: kColorTextDarkGrey)),
+                              child: DropdownButton(
+                                  underline: SizedBox.shrink(),
+                                  isExpanded: true,
+                                  style: TextStyle(
+                                      fontSize: 22.sp, color: Colors.black),
+                                  itemHeight: 75.h,
+                                  value: selectedDiscountRate,
+                                  hint: Text('Select an discount rate'),
+                                  items: discountRateItems,
+                                  onChanged: (newValue) {
+                                    // print(widget.attendeeList['points']);
+                                    setState(() {
+                                      selectedDiscountRate = newValue;
+                                    });
+                                  }),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
                           height: 52.h,
                         ),
                         FilledButton.icon(
                           onPressed: () {
-                            // Family以外が1人より上なら
-                            if ((selectedCourse != 'Family Yoga' &&
-                                    selectedCourse != 'Family Pilates') &&
-                                selectedNumPerson > 1) {
-                              print(selectedCourse);
-                              // print(selectedNumPerson);
-                              showSnackBar(Colors.red,
-                                  'Only Family Yoga & Family Pilates has more than 1 number of person');
-                              return;
-                              // Familyが1人なら
-                            } else if ((selectedCourse == 'Family Yoga' ||
-                                    selectedCourse == 'Family Pilates') &&
-                                selectedNumPerson == 1) {
-                              // print(selectedCourse);
-                              // print(selectedNumPerson);
-                              showSnackBar(Colors.red,
-                                  'Only Family Yoga & Family Pilates has more than 1 number of person');
-                              return;
-                            } else {
-                              final String formattedDate =
-                                  DateFormat('yyyy-MM-dd').format(newDate);
+                            final discountAmount =
+                                _discountController.text.trim();
+                            int? intDiscountAmount =
+                                int.tryParse(discountAmount);
+                            if (intDiscountAmount == null) {
+                              intDiscountAmount = 0;
+                            }
+                            final String formattedDate =
+                                DateFormat('yyyy-MM-dd').format(newDate);
+
+                            if (is_private == false) {
+                              if (['Yoga', 'Zumba', 'Pilates']
+                                      .contains(selectedCourse) &&
+                                  selectedOffer != 0) {
+                                if (selectedDuration == 1 &&
+                                    [48, 42, 30].contains(selectedOffer)) {
+                                  showSnackBar(Colors.red,
+                                      'Course duration&Offer does NOT match');
+                                  return;
+                                } else if (selectedDuration == 3 &&
+                                    selectedOffer != 48) {
+                                  showSnackBar(Colors.red,
+                                      'Course duration&Offer does NOT match');
+                                  return;
+                                } else if (selectedDuration == 6 &&
+                                    selectedOffer != 42) {
+                                  showSnackBar(Colors.red,
+                                      'Course duration&Offer does NOT match');
+                                  return;
+                                } else if (selectedDuration == 12 &&
+                                    selectedOffer != 30) {
+                                  showSnackBar(Colors.red,
+                                      'Course duration&Offer does NOT match');
+                                  return;
+                                }
+                              }
 
                               Map<dynamic, dynamic> membershipMap = {
                                 'course': selectedCourse,
-                                'original_price': selectedPrice,
-                                'times_per_week': selectedTimesPerWeek,
                                 'duration': selectedDuration,
-                                'num_person': selectedNumPerson,
-                                'minus': selectedMinus,
+                                'total_price': selectedPrice,
+                                'offer': selectedOffer,
+                                'minus': intDiscountAmount,
                                 'discount_rate': selectedDiscountRate,
                                 'start_day': formattedDate.toString(),
                               };
+                              // print(membershipMap);
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
                                       StaffMembershipConfirmPage(
+                                        attendeeList: widget.attendeeList,
+                                        membershipMap: membershipMap,
+                                        userId: widget.userId,
+                                      )));
+                            } else if (is_private == true) {
+                              Map<dynamic, dynamic> membershipMap = {
+                                'course': selectedCourse,
+                                'duration': selectedDuration,
+                                'times': selectedTimes,
+                                'total_price': selectedPrice,
+                                'minus': intDiscountAmount,
+                                'offer': selectedOffer,
+                                'discount_rate': selectedDiscountRate,
+                                'start_day': formattedDate.toString(),
+                              };
+                              // print(membershipMap);
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      StaffPrivateMembershipConfirmPage(
                                         attendeeList: widget.attendeeList,
                                         membershipMap: membershipMap,
                                         userId: widget.userId,

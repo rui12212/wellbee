@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  {{ media }}
+{% endblock %}
+
+{% block content %}
+  <h1>{{ title }}</h1>
+  <form method="post">{% csrf_token %}
+    {{ formset.management_form }}
+    {% for form in formset %}
+      <h3>Slot {{ forloop.counter }}</h3>
+      {{ form.as_p }}
+      <hr style="margin: 20px 0;">
+    {% endfor %}
+    <input type="submit" value="保存">
+  </form>
+{% endblock %}

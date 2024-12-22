@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_week/flutter_calendar_week.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/staff/calendar/calendar_reserved_people.dart';
+import 'package:wellbee/screens/staff/course/calendar_utils.dart';
 import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:http/http.dart' as http;
@@ -47,6 +50,10 @@ class _Header extends StatelessWidget {
   }
 }
 
+final kToday = DateTime.now();
+final kFirstDay = DateTime(kToday.year, kToday.month, kToday.day);
+final kLastDay = DateTime(kToday.year + 1, kToday.month, kToday.day);
+
 class CalendarPage extends StatefulWidget {
   CalendarPage({
     Key? key,
@@ -59,8 +66,11 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   final CalendarWeekController _controller = CalendarWeekController();
   String? token = '';
-  // String formattedStartTime = '';
-  // final String today = DateFormat('yyyy-MM').format(DateTime.now());
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay = DateTime.now();
+  Map<DateTime, List<dynamic>> events = {};
+  Map<DateTime, List<dynamic>> kSlotEvents = {};
 
   @override
   showSnackBar(color, text) {
@@ -72,6 +82,7 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
     super.initState();
+    _fetchAndBuildEvents();
     // fetchedSlotData = _fetchAvailableCourse() as Future<List<dynamic>?>;
   }
 
@@ -83,13 +94,60 @@ class _CalendarPageState extends State<CalendarPage> {
     return dateTimeForMonth;
   }
 
+  Future _fetchAndBuildEvents() async {
+    List<dynamic>? allSlots = await _fetchSlot();
+
+    if (allSlots != null) {
+      setState(() {
+        events.clear();
+        for (var slot in allSlots) {
+          DateTime date = DateTime.parse(slot['date']);
+          // MapのKeyにすでに同じ日付のKeyがあったら、日付：List[slot]あらたに作りなさい
+          if (events[date] != null) {
+            events[date]!.add(slot);
+          } else {
+            // MapのKeyにすでに同じ日付のKeyがなかったら、日付：List[slot]あらたに作りなさい
+            events[date] = [slot];
+          }
+        }
+        if (events == null || events == {}) {
+          kSlotEvents = {};
+        } else {
+          kSlotEvents = LinkedHashMap<DateTime, List<dynamic>>(
+            equals: isSameDay,
+            hashCode: getHashCode,
+          )..addAll(events);
+        }
+      });
+    }
+  }
+
+  List<dynamic> _getEventsForDay(DateTime day) {
+    return kSlotEvents[day] ?? [];
+  }
+
+  Future<List?> fetchSlotsEachDays(DateTime? date) async {
+    final List<dynamic>? allSlots = await _fetchSlot();
+    final formattedDate = DateFormat('yyyy-MM-dd').format(date!);
+    final List slotsForDays = [];
+    if (allSlots!.isNotEmpty) {
+      for (int i = 0; i < allSlots.length; i++) {
+        if (allSlots[i]['date'] == formattedDate) {
+          slotsForDays.add(allSlots[i]);
+        }
+      }
+      return slotsForDays;
+    } else {
+      showSnackBar(Colors.red, 'No slot has been set');
+      return [];
+    }
+  }
+
   Future<List<dynamic>?> _fetchSlot() async {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
-      final String formattedDate =
-          DateFormat('yyyy-MM-dd').format(selectedDate);
-      var url = Uri.parse('${baseUri}reservations/slot/slots_for_calendar/')
-          .replace(queryParameters: {'date': formattedDate, 'token': token});
+      var url = Uri.parse('${baseUri}reservations/slot/all_slots/')
+          .replace(queryParameters: {'token': token});
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -101,7 +159,6 @@ class _CalendarPageState extends State<CalendarPage> {
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
         if (data.isNotEmpty) {
-          print(data);
           return data;
         }
       } else if (response.statusCode >= 400) {
@@ -117,22 +174,6 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
-  // bool checkReservationCapacity(int maxPeople, int reservedPeople) {
-  //   // 予約上限に達したかどうかの確認
-  //   final int remainCapacity = maxPeople - reservedPeople;
-  //   if (remainCapacity > 0) {
-  //     setState(() {
-  //       isAlreadyMax = false;
-  //     });
-  //     return isAlreadyMax;
-  //   } else {
-  //     setState(() {
-  //       isAlreadyMax = true;
-  //     });
-  //     return isAlreadyMax;
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -143,103 +184,94 @@ class _CalendarPageState extends State<CalendarPage> {
           child: Column(
             children: [
               _Header(title: 'Course Calendar'),
-              CalendarWeek(
-                height: 150.h,
-                controller: _controller,
-                pressedDateBackgroundColor: kColorPrimary,
-                dateStyle: TextStyle(
-                  color: Color.fromARGB(255, 92, 88, 88),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.sp,
-                ),
-                dayOfWeekStyle: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16.sp,
-                  color: Color.fromARGB(255, 92, 88, 88),
-                ),
-                weekendsStyle: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 17.sp,
-                  color: Color.fromARGB(255, 92, 88, 88),
-                ),
-                todayDateStyle: TextStyle(
-                    color: Color.fromARGB(255, 92, 88, 88),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18.sp),
-                todayBackgroundColor: Color.fromARGB(255, 178, 222, 217),
-                showMonth: true,
-                minDate: DateTime.now().add(
-                  Duration(days: 0),
-                ),
-                maxDate: DateTime.now().add(
-                  Duration(days: 365),
-                ),
-                onDatePressed: (DateTime datetime) async {
-                  // dynamic fetchedSlotData = _fetchAvailableCourse();
-                  // bool isAlreadyMax = fetchedSlotData['is_max'];
-                  setState(
-                    () {
-                      selectedDate = datetime;
-                    },
-                  );
-                  await _fetchSlot();
-                  setState(
-                    () {},
-                  );
+              TableCalendar(
+                firstDay: kFirstDay,
+                lastDay: kLastDay,
+                focusedDay: _focusedDay,
+                calendarFormat: _calendarFormat,
+                eventLoader: _getEventsForDay,
+                calendarBuilders: CalendarBuilders(
+                    markerBuilder: (context, date, eventsList) {
+                  // print(eventsList.length);
+                  if (eventsList.isNotEmpty && eventsList.length < 4) {
+                    return Positioned(
+                        bottom: 1,
+                        child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: List.generate(eventsList.length, (index) {
+                              return Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 1),
+                                  width: 7.w,
+                                  height: 7.h,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: kColorPrimary));
+                            })));
+                  } else if (eventsList.isNotEmpty && eventsList.length >= 4) {
+                    return Positioned(
+                        bottom: 1,
+                        child: Row(
+                          children: [
+                            Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: List.generate(3, (index) {
+                                  return Container(
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 1),
+                                      width: 7.w,
+                                      height: 7.h,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: kColorPrimary));
+                                })),
+                            Text('...',
+                                style: TextStyle(
+                                    color: kColorPrimary, fontSize: 5.h))
+                          ],
+                        ));
+                  }
+                }),
+                selectedDayPredicate: (day) {
+                  return isSameDay(_selectedDay, day);
                 },
-                onDateLongPressed: (DateTime datetime) {},
-                onWeekChanged: () {
-                  // Do something
+                onDaySelected: (selectedDay, focusedDay) async {
+                  if (!isSameDay(_selectedDay, selectedDay)) {
+                    // Call `setState()` when updating the selected day
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay = focusedDay;
+                    });
+                    await fetchSlotsEachDays(_selectedDay);
+                  }
                 },
-                monthViewBuilder: (DateTime time) => Align(
-                  alignment: FractionalOffset.center,
-                  child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 14),
-                      child: Text(
-                        DateFormat.yMMMM().format(time),
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 92, 88, 88),
-                            fontSize: 18.sp),
-                      )),
-                ),
-                decorations: [
-                  // DecorationItem(
-                  //     decorationAlignment: FractionalOffset.bottomRight,
-                  //     date: DateTime.now(),
-                  //     decoration: Icon(
-                  //       Icons.today,
-                  //       color: Colors.blue,
-                  //     )),
-                  // DecorationItem(
-                  //     // expiredayの表示はここで行う
-                  //     date: DateTime.now().add(Duration(days: 4)),
-                  //     decoration: Text(
-                  //       'Holiday',
-                  //       style: TextStyle(
-                  //         color: Colors.brown,
-                  //         fontWeight: FontWeight.w600,
-                  //       ),
-                  //     )),
-                ],
+                onFormatChanged: (format) {
+                  if (_calendarFormat != format) {
+                    // Call `setState()` when updating calendar format
+                    setState(() {
+                      _calendarFormat = format;
+                    });
+                  }
+                },
+                onPageChanged: (focusedDay) {
+                  // No need to call `setState()` here
+                  _focusedDay = focusedDay;
+                },
               ),
               FutureBuilder(
-                future: _fetchSlot(),
+                future: fetchSlotsEachDays(_selectedDay),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
                       child: CircularProgressIndicator(),
                     );
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data == null) {
                     return Center(
                         child: Text('No slot has been set on this day.'));
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
                   } else {
                     final courseSlotList = snapshot.data!;
-                    return Container(
-                      height: 420.h,
+                    return Expanded(
                       child: ListView.builder(
                         itemCount: courseSlotList.length,
                         itemBuilder: (context, index) {
@@ -277,13 +309,14 @@ class _CalendarPageState extends State<CalendarPage> {
                                   ),
                                   trailing: ElevatedButton(
                                     onPressed: () {
+                                      print(courseSlotList[index]);
                                       Navigator.of(context).push(
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   ReservedPeoplePage(
-                                                      date:
-                                                          courseSlotList[index]
-                                                              ['date'])));
+                                                      courseSlot:
+                                                          courseSlotList[
+                                                              index])));
                                     },
                                     child: Text('Detail',
                                         style: TextStyle(

@@ -110,7 +110,7 @@ class _Ticket extends StatelessWidget {
   late String attendee_name;
   late String course_name;
   late String expire_day;
-  late int times_per_week;
+  late int times;
   late int max_join_times;
   late int already_join_times;
 
@@ -122,7 +122,7 @@ class _Ticket extends StatelessWidget {
     required this.already_join_times,
     required this.max_join_times,
     required this.expire_day,
-    required this.times_per_week,
+    required this.times,
   }) : super(key: key);
 
   @override
@@ -171,13 +171,20 @@ class _Ticket extends StatelessWidget {
                               fontSize: course_name == 'Family Pilates' ||
                                       course_name == 'Family Yoga' ||
                                       course_name == 'Kids Karate' ||
-                                      course_name == 'Kids Taiso(A)' ||
-                                      course_name == 'Kids Taiso(B)' ||
+                                      course_name == 'Kids Gym(A)' ||
+                                      course_name == 'Kids Gym(B)' ||
                                       course_name == 'Kids Yoga(A)' ||
                                       course_name == 'Kids Yoga(B)' ||
-                                      course_name == 'Kids Yoga KG'
-                                  ? 13.h
-                                  : 17.h,
+                                      course_name == 'Kids Yoga KG' ||
+                                      course_name == 'Kids Zumba'
+                                  ? 14.h
+                                  : course_name == 'Private Yoga@Studio' ||
+                                          course_name == 'Private Yoga@Home' ||
+                                          course_name ==
+                                              'Private Pilates@Studio' ||
+                                          course_name == 'Private Pilates@Home'
+                                      ? 12.h
+                                      : 17.h,
                               color: kColorPrimary,
                               fontWeight: FontWeight.bold,
                             ),
@@ -284,7 +291,7 @@ class TicketList extends StatelessWidget {
         course_name: membershipList['course_name'],
         attendee_name: membershipList['attendee_name'],
         expire_day: membershipList['expire_day'],
-        times_per_week: membershipList['times_per_week'],
+        times: membershipList['times'],
         max_join_times: membershipList['max_join_times'],
         already_join_times: membershipList['already_join_times'],
         image: membershipList['course_name'] == 'Yoga' ||
@@ -293,7 +300,7 @@ class TicketList extends StatelessWidget {
                 membershipList['course_name'] == 'Kids Yoga KG'
             ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
             : membershipList['course_name'] == 'Dance' ||
-                    membershipList['course_name'] == 'Kids Dance' ||
+                    membershipList['course_name'] == 'Kids Zumba' ||
                     membershipList['course_name'] == 'Zumba'
                 ? Image.asset('lib/assets/invi_course_pic/invi_dance.png')
                 : membershipList['course_name'] == 'Karate' ||
@@ -303,8 +310,8 @@ class TicketList extends StatelessWidget {
                             membershipList['course_name'] == 'Kids Music'
                         ? Image.asset(
                             'lib/assets/invi_course_pic/invi_music.png')
-                        : membershipList['course_name'] == 'Kids Taiso(A)' ||
-                                membershipList['course_name'] == 'Kids Taiso(B)'
+                        : membershipList['course_name'] == 'Kids Gym(A)' ||
+                                membershipList['course_name'] == 'Kids Gym(B)'
                             ? Image.asset(
                                 'lib/assets/invi_course_pic/male_fitness.png')
                             : membershipList['course_name'] == 'Pilates'
@@ -318,7 +325,20 @@ class TicketList extends StatelessWidget {
                                             'Family Yoga'
                                         ? Image.asset(
                                             'lib/assets/invi_course_pic/invi_family_yoga.png')
-                                        : Image.asset(
-                                            'lib/assets/invi_course_pic/female_fitness.png'));
+                                        : membershipList['course_name'] ==
+                                                    'Private Yoga@Studio' ||
+                                                membershipList['course_name'] ==
+                                                    'Private Yoga@Home'
+                                            ? Image.asset(
+                                                'lib/assets/invi_course_pic/private_yoga.png')
+                                            : membershipList['course_name'] ==
+                                                        'Private Pilates@Studio' ||
+                                                    membershipList[
+                                                            'course_name'] ==
+                                                        'Private Pilates@Home'
+                                                ? Image.asset(
+                                                    'lib/assets/invi_course_pic/private_pilates.png')
+                                                : Image.asset(
+                                                    'lib/assets/invi_course_pic/female_fitness.png'));
   }
 }

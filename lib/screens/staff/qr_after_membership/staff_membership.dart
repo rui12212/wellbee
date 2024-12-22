@@ -120,7 +120,6 @@ class _StaffMembershipPageState extends State<StaffMembershipPage> {
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
         if (data.isNotEmpty) {
-          print(data);
           return data;
         } else if (data.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

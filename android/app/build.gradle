@@ -30,7 +30,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace = "com.wellbee.fitness.app"
+    namespace = "com.wellbee.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = '27.0.12077973'
 
@@ -41,13 +41,13 @@ android {
 
     defaultConfig {
         // TODO: 独自のApplication IDを指定してください (https://developer.android.com/studio/build/application-id.html)。
-        applicationId = "com.wellbee.fitness.app"
+        applicationId = "com.wellbee.app"
         // 以下の値をアプリケーションのニーズに合わせて更新できます。
         // 詳細については、https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration を参照してください。
         minSdk = 21
         targetSdk = 34
-        versionCode = 6
-        versionName = '2.0.0'
+        versionCode = 3
+        versionName = '1.0.0'
     }
 
     signingConfigs {

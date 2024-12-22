@@ -49,11 +49,18 @@ class CourseTime extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(height: 15.h),
           Text(courseName.toString(),
-              style: TextStyle(
-                  fontSize: 28.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white)),
+              style: courseName.length > 12
+                  ? TextStyle(
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)
+                  : TextStyle(
+                      fontSize: 28.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
+          SizedBox(height: 10.h),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -262,6 +269,9 @@ class _HomePageState extends State<HomePage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      SizedBox(
+                                        height: 15.h,
+                                      ),
                                       Text('No Reservation',
                                           style: TextStyle(
                                               fontSize: 28.h,
@@ -329,10 +339,11 @@ class _HomePageState extends State<HomePage> {
                                                           'Kids Yoga KG'
                                                   ? AssetImage(
                                                       'lib/assets/invi_course_pic/invi_yoga.png')
-                                                  : reservation['slot_course_name'] ==
+                                                  : reservation[
+                                                                  'slot_course_name'] ==
                                                               'Dance' ||
                                                           reservation['slot_course_name'] ==
-                                                              'Kids Dance' ||
+                                                              'Kids ' ||
                                                           reservation['slot_course_name'] ==
                                                               'Zumba'
                                                       ? AssetImage(
@@ -351,9 +362,9 @@ class _HomePageState extends State<HomePage> {
                                                               ? AssetImage(
                                                                   'lib/assets/invi_course_pic/invi_music.png')
                                                               : reservation['slot_course_name'] ==
-                                                                          'Kids Taiso(A)' ||
+                                                                          'Kids Gym(A)' ||
                                                                       reservation['slot_course_name'] ==
-                                                                          'Kids Taiso(B)'
+                                                                          'Kids Gym(B)'
                                                                   ? AssetImage(
                                                                       'lib/assets/invi_course_pic/male_fitness.png')
                                                                   : reservation['slot_course_name'] ==
@@ -365,7 +376,11 @@ class _HomePageState extends State<HomePage> {
                                                                           ? AssetImage('lib/assets/invi_course_pic/invi_family_pilates.png')
                                                                           : reservation['slot_course_name'] == 'Family Yoga'
                                                                               ? AssetImage('lib/assets/invi_course_pic/invi_family_yoga.png')
-                                                                              : AssetImage('lib/assets/invi_course_pic/female_fitness.png')),
+                                                                              : reservation['slot_course_name'] == 'Private Yoga@Studio' || reservation['slot_course_name'] == 'Private Yoga@Home'
+                                                                                  ? AssetImage('lib/assets/invi_course_pic/private_yoga.png')
+                                                                                  : reservation['slot_course_name'] == 'Private Pilates@Studio' || reservation['slot_course_name'] == 'Private Pilates@Home'
+                                                                                      ? AssetImage('lib/assets/invi_course_pic/private_pilates.png')
+                                                                                      : AssetImage('lib/assets/invi_course_pic/female_fitness.png')),
                                         ))
                                   ],
                                 );

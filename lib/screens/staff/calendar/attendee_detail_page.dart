@@ -77,37 +77,6 @@ class _AttendeeDetailPageState extends State<AttendeeDetailPage> {
     return dateTimeForMonth;
   }
 
-  // Future<List<dynamic>?> _fetchAvalableSlot() async {
-  //   try {
-  //     token = await SharedPrefs.fetchAccessToken();
-  //     final String formattedDate =
-  //         DateFormat('yyyy-MM-dd').format(selectedDate);
-  //     var url = Uri.parse(
-  //         '${baseUri}reservations/reservation/slots_for_staff/?date=$formattedDate');
-  //     var response = await Future.any([
-  //       http.get(url, headers: {"Authorization": 'JWT $token'}),
-  //       Future.delayed(const Duration(seconds: 15),
-  //           () => throw TimeoutException("Request timeout"))
-  //     ]);
-  //     if (response.statusCode == 200) {
-  //       List<dynamic> data = jsonDecode(response.body);
-  //       if (data.isNotEmpty) {
-  //         print(data);
-  //         return data;
-  //       }
-  //     } else if (response.statusCode >= 400) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text('Internet Error occurred.')));
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //           content: Text('Something went wrong. Try again later')));
-  //     }
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text('Error: $e')));
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

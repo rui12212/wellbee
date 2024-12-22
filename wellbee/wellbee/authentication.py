@@ -1,3 +1,4 @@
+# authentication.py
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import exceptions
 from django.utils.crypto import constant_time_compare

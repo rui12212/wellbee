@@ -8,7 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/staff/auth/staff_top_page.dart';
 import 'package:wellbee/screens/staff/calendar/attendee_detail_page.dart';
+import 'package:wellbee/screens/staff/course/course_month.dart';
 import 'package:wellbee/screens/staff/course/course_slot.dart';
+import 'package:wellbee/screens/staff/course/select_month.dart';
 import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:http/http.dart' as http;
@@ -161,10 +163,11 @@ class _AllCoursePageState extends State<AllCoursePage> {
                                       onPressed: () {
                                         Navigator.of(context).push(
                                             MaterialPageRoute(
-                                                builder: (context) => SlotPage(
-                                                    courseList:
-                                                        fetchedCourseList[
-                                                            index])));
+                                                builder: (context) =>
+                                                    MonthlySlotPage(
+                                                        courseList:
+                                                            fetchedCourseList[
+                                                                index])));
                                       },
                                       child: Text('Detail',
                                           style: TextStyle(

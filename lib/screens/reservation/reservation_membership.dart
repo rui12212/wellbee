@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -8,8 +9,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_calendar_week/flutter_calendar_week.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/home.dart';
+import 'package:wellbee/screens/staff/course/calendar_utils.dart';
 import 'package:wellbee/screens/top_page.dart';
 import 'package:wellbee/ui_parts/color.dart';
 import 'package:wellbee/ui_function/convert.dart';
@@ -32,7 +35,9 @@ class _Header extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
+            style: title.length > 12
+                ? TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold)
+                : TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
           ),
           TextButton(
             style: TextButton.styleFrom(
@@ -62,12 +67,21 @@ class ReservationMembershipPage extends StatefulWidget {
       _ReservationMembershipPageState();
 }
 
+final kToday = DateTime.now();
+final kFirstDay = DateTime(kToday.year, kToday.month, kToday.day);
+final kLastDay = DateTime(kToday.year + 1, kToday.month, kToday.day);
+
 class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
   final CalendarWeekController _controller = CalendarWeekController();
   String? token = '';
   late Future<List<dynamic>?> fetchedSlotData;
   bool isAlreadyMax = false;
   String courseId = '';
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay = DateTime.now();
+  Map<DateTime, List<dynamic>> events = {};
+  Map<DateTime, List<dynamic>> kSlotEvents = {};
   // String formattedStartTime = '';
   // final String today = DateFormat('yyyy-MM').format(DateTime.now());
 
@@ -81,6 +95,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
   @override
   void initState() {
     super.initState();
+    _fetchAndBuildEvents();
     // fetchedSlotData = _fetchAvailableCourse() as Future<List<dynamic>?>;
   }
 
@@ -92,18 +107,19 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
     return dateTimeForMonth;
   }
 
-  Future<List<dynamic>?> _fetchAvailableCourse() async {
+  List<dynamic> _getEventsForDay(DateTime day) {
+    return kSlotEvents[day] ?? [];
+  }
+
+  Future<List<dynamic>?> _fetchEachCourseSlots(String courseName) async {
     try {
       token = await SharedPrefs.fetchAccessToken();
-      final String course = widget.membershipList['course_name'];
-      final String formattedDate =
-          DateFormat('yyyy-MM-dd').format(selectedDate);
-      var url = Uri.parse('${baseUri}reservations/slot/course_slots/')
+      var url = Uri.parse('${baseUri}reservations/slot/each_course_slots/')
           .replace(queryParameters: {
-        'course_name': course,
-        'date': formattedDate,
         'token': token,
+        'course_name': widget.membershipList['course_name'],
       });
+      // print(widget.courseList['course_name']);
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',
@@ -115,7 +131,6 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
         if (data.isNotEmpty) {
-          // print(data);
           return data;
         }
       } else if (response.statusCode >= 400) {
@@ -177,6 +192,21 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
     }
   }
 
+  Future<List?> fetchSlotsEachDays(String course, DateTime? date) async {
+    final List<dynamic>? allSlots = await _fetchEachCourseSlots(course);
+    final String formattedDate = DateFormat('yyyy-MM-dd').format(date!);
+    final slotList = [];
+
+    for (int i = 0; i < allSlots!.length; i++) {
+      if (allSlots[i]['date'] == formattedDate) {
+        slotList.add(allSlots[i]);
+      } else {
+        continue;
+      }
+    }
+    return slotList;
+  }
+
   bool checkReservationCapacity(int maxPeople, int reservedPeople) {
     // 予約上限に達したかどうかの確認
     final int remainCapacity = maxPeople - reservedPeople;
@@ -193,6 +223,35 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
     }
   }
 
+  Future _fetchAndBuildEvents() async {
+    List<dynamic>? allSlots =
+        await _fetchEachCourseSlots(widget.membershipList['course_name']);
+
+    if (allSlots != null) {
+      setState(() {
+        events.clear();
+        for (var slot in allSlots) {
+          DateTime date = DateTime.parse(slot['date']);
+          // MapのKeyにすでに同じ日付のKeyがあったら、日付：List[slot]あらたに作りなさい
+          if (events[date] != null) {
+            events[date]!.add(slot);
+          } else {
+            // MapのKeyにすでに同じ日付のKeyがなかったら、日付：List[slot]あらたに作りなさい
+            events[date] = [slot];
+          }
+        }
+        if (events == null || events == {}) {
+          kSlotEvents = {};
+        } else {
+          kSlotEvents = LinkedHashMap<DateTime, List<dynamic>>(
+            equals: isSameDay,
+            hashCode: getHashCode,
+          )..addAll(events);
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -203,84 +262,83 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
           child: Column(
             children: [
               _Header(title: '${widget.membershipList['course_name']} '),
-              CalendarWeek(
-                height: 150.h,
-                controller: _controller,
-                pressedDateBackgroundColor: kColorPrimary,
-                dateStyle: TextStyle(
-                  color: Color.fromARGB(255, 92, 88, 88),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.sp,
-                ),
-                dayOfWeekStyle: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16.sp,
-                  color: Color.fromARGB(255, 92, 88, 88),
-                ),
-                weekendsStyle: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 17.sp,
-                  color: Color.fromARGB(255, 92, 88, 88),
-                ),
-                todayDateStyle: TextStyle(
-                    color: Color.fromARGB(255, 92, 88, 88),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18.sp),
-                todayBackgroundColor: Color.fromARGB(255, 178, 222, 217),
-                showMonth: true,
-                minDate: DateTime.now().add(
-                  Duration(days: 0),
-                ),
-                maxDate: DateTime.now().add(
-                  Duration(days: 365),
-                ),
-                onDatePressed: (DateTime datetime) async {
-                  // bool isAlreadyMax = fetchedSlotData['is_max'];
-                  setState(
-                    () {
-                      selectedDate = datetime;
-                    },
-                  );
+              TableCalendar(
+                firstDay: kFirstDay,
+                lastDay: kLastDay,
+                focusedDay: _focusedDay,
+                calendarFormat: _calendarFormat,
+                eventLoader: _getEventsForDay,
+                calendarBuilders: CalendarBuilders(
+                    markerBuilder: (context, date, eventsList) {
+                  // print(eventsList.length);
+                  if (eventsList.isNotEmpty && eventsList.length < 4) {
+                    return Positioned(
+                        bottom: 1,
+                        child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: List.generate(eventsList.length, (index) {
+                              return Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 1),
+                                  width: 7.w,
+                                  height: 7.h,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: kColorPrimary));
+                            })));
+                  } else if (eventsList.isNotEmpty && eventsList.length >= 4) {
+                    return Positioned(
+                        bottom: 1,
+                        child: Row(
+                          children: [
+                            Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: List.generate(3, (index) {
+                                  return Container(
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 1),
+                                      width: 7.w,
+                                      height: 7.h,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: kColorPrimary));
+                                })),
+                            Text('...',
+                                style: TextStyle(
+                                    color: kColorPrimary, fontSize: 5.h))
+                          ],
+                        ));
+                  }
+                }),
+                selectedDayPredicate: (day) {
+                  return isSameDay(_selectedDay, day);
                 },
-                onDateLongPressed: (DateTime datetime) {},
-                onWeekChanged: () {
-                  // Do something
+                onDaySelected: (selectedDay, focusedDay) async {
+                  if (!isSameDay(_selectedDay, selectedDay)) {
+                    // Call `setState()` when updating the selected day
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay = focusedDay;
+                    });
+                    await fetchSlotsEachDays(
+                        widget.membershipList['course_name'], _selectedDay);
+                  }
                 },
-                monthViewBuilder: (DateTime time) => Align(
-                  alignment: FractionalOffset.center,
-                  child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 14),
-                      child: Text(
-                        DateFormat.yMMMM().format(time),
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 92, 88, 88),
-                            fontSize: 22.sp),
-                      )),
-                ),
-                decorations: [
-                  // DecorationItem(
-                  //     decorationAlignment: FractionalOffset.bottomRight,
-                  //     date: DateTime.now(),
-                  //     decoration: Icon(
-                  //       Icons.today,
-                  //       color: Colors.blue,
-                  //     )),
-                  // DecorationItem(
-                  //     // expiredayの表示はここで行う
-                  //     date: DateTime.now().add(Duration(days: 4)),
-                  //     decoration: Text(
-                  //       'Holiday',
-                  //       style: TextStyle(
-                  //         color: Colors.brown,
-                  //         fontWeight: FontWeight.w600,
-                  //       ),
-                  //     )),
-                ],
+                onFormatChanged: (format) {
+                  if (_calendarFormat != format) {
+                    // Call `setState()` when updating calendar format
+                    setState(() {
+                      _calendarFormat = format;
+                    });
+                  }
+                },
+                onPageChanged: (focusedDay) {
+                  // No need to call `setState()` here
+                  _focusedDay = focusedDay;
+                },
               ),
               FutureBuilder(
-                future: _fetchAvailableCourse(),
+                future: fetchSlotsEachDays(
+                    widget.membershipList['course_name'], _selectedDay),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -297,7 +355,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                   } else {
                     final courseSlotList = snapshot.data!;
                     return Container(
-                      height: 420.h,
+                      height: 280.h,
                       child: ListView.builder(
                         itemCount: courseSlotList.length,
                         itemBuilder: (context, index) {

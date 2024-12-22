@@ -20,79 +20,79 @@ class IntConverter {
     }
   }
 
-  static convertNumToCourse(int num) {
-    switch (num) {
-      case 1:
-        return 'Yoga';
-      case 2:
-        return 'Kids Yoga(A)';
-      case 3:
-        return 'Zumba';
-      case 4:
-        return 'Dance';
-      case 5:
-        return 'Kids Dance';
-      case 6:
-        return 'Karate';
-      case 7:
-        return 'Kids Karate';
-      case 8:
-        return 'Kids Taiso(A)';
-      case 9:
-        return 'Music';
-      case 10:
-        return 'Kids Music';
-      case 11:
-        return 'Pilates';
-      case 12:
-        return 'Family Pilates';
-      case 13:
-        return 'Family Yoga';
-      case 14:
-        return 'Kids Taiso(B)';
-      case 15:
-        return 'Kids Yoga(B)';
-      case 16:
-        return 'Kids Yoga KG';
-    }
-  }
+  // static convertNumToCourse(int num) {
+  //   switch (num) {
+  //     case 1:
+  //       return 'Yoga';
+  //     case 2:
+  //       return 'Kids Yoga(A)';
+  //     case 3:
+  //       return 'Zumba';
+  //     case 4:
+  //       return 'Dance';
+  //     case 5:
+  //       return 'Kids Dance';
+  //     case 6:
+  //       return 'Karate';
+  //     case 7:
+  //       return 'Kids Karate';
+  //     case 8:
+  //       return 'Kids Taiso(A)';
+  //     case 9:
+  //       return 'Music';
+  //     case 10:
+  //       return 'Kids Music';
+  //     case 11:
+  //       return 'Pilates';
+  //     case 12:
+  //       return 'Family Pilates';
+  //     case 13:
+  //       return 'Family Yoga';
+  //     case 14:
+  //       return 'Kids Taiso(B)';
+  //     case 15:
+  //       return 'Kids Yoga(B)';
+  //     case 16:
+  //       return 'Kids Yoga KG';
+  //   }
+  // }
 
-  static convertCourseToNum(String course) {
-    switch (course) {
-      case 'Yoga':
-        return 1;
-      case 'Kids Yoga(A)':
-        return 2;
-      case 'Zumba':
-        return 3;
-      case 'Dance':
-        return 4;
-      case 'Kids Dance':
-        return 5;
-      case 'Karate':
-        return 6;
-      case "Kids Karate":
-        return 7;
-      case 'Kids Taiso(A)':
-        return 8;
-      case 'Music':
-        return 9;
-      case 'Kids Music':
-        return 10;
-      case 'Pilates':
-        return 11;
-      case 'Family Pilates':
-        return 12;
-      case 'Family Yoga':
-        return 13;
-      case 'Kids Taiso(B)':
-        return 14;
-      case 'Kids Yoga(B)':
-        return 15;
-      case 'Kids Yoga KG':
-        return 16;
-    }
-  }
+  // static convertCourseToNum(String course) {
+  //   switch (course) {
+  //     case 'Yoga':
+  //       return 1;
+  //     case 'Kids Yoga(A)':
+  //       return 2;
+  //     case 'Zumba':
+  //       return 3;
+  //     case 'Dance':
+  //       return 4;
+  //     case 'Kids Dance':
+  //       return 5;
+  //     case 'Karate':
+  //       return 6;
+  //     case "Kids Karate":
+  //       return 7;
+  //     case 'Kids Taiso(A)':
+  //       return 8;
+  //     case 'Music':
+  //       return 9;
+  //     case 'Kids Music':
+  //       return 10;
+  //     case 'Pilates':
+  //       return 11;
+  //     case 'Family Pilates':
+  //       return 12;
+  //     case 'Family Yoga':
+  //       return 13;
+  //     case 'Kids Taiso(B)':
+  //       return 14;
+  //     case 'Kids Yoga(B)':
+  //       return 15;
+  //     case 'Kids Yoga KG':
+  //       return 16;
+  //   }
+  // }
 
   static String formatTime(dynamic time) {
     if (time is String) {

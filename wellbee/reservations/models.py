@@ -53,7 +53,7 @@ class Slot(models.Model):
        return f"{self.date} - {self.course} - {self.start_time} - {self.end_time}"
 
 class Reservation(models.Model):
-    membership = models.ForeignKey(Membership, verbose_name='membership', on_delete=models.PROTECT)
+    membership = models.ForeignKey(Membership, verbose_name='membership', on_delete=models.CASCADE)
     date = models.DateField(verbose_name='date', null=False, blank=False)
     slot =  models.ForeignKey(Slot, verbose_name='slot', on_delete=models.PROTECT)
     attended = models.BooleanField(verbose_name='attended', default=False, blank=False, null=False)
@@ -62,7 +62,8 @@ class Reservation(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Reservation by {self.membership.attendee.name} for {self.slot}"
+        name = self.membership.attendee.name if self.membership.attendee and self.membership.attendee.name else "None"
+        return f"Reservation by {name} for {self.slot}"
 
 @receiver(pre_save, sender=Reservation)
 def set_date(sender, instance, **kwargs):
@@ -75,36 +76,34 @@ def set_start_end_time(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Reservation)
 def set_requested_join_times(sender, instance, created, **kwargs):
-    if instance.membership.requested_join_times < instance.membership.max_join_times:
-            if created:
+    if created:
+      if instance.membership.requested_join_times < instance.membership.max_join_times:
              instance.membership.requested_join_times += 1
-             instance.membership.save()
-    else:
-        raise ValidationError('Reached to max times to request reservation')
+             instance.membership.save() 
+      else:
+         raise ValidationError('Reached to max times to request reservation')
 
 @receiver(post_save, sender=Reservation)
 def add_reserved_people(sender, instance, created, **kwargs):
-    if instance.slot.reserved_people <= 24:
-        if instance.slot.course_id == 12 or instance.slot.course_id == 13:
-            instance.slot.reserved_people += 5
-        else:
+    if created:
+      if instance.slot.reserved_people < instance.slot.max_people:
           instance.slot.reserved_people += 1
-        instance.slot.save()    
+          instance.slot.save()
     # createされなかったら＝19以下ではなかったらとなる。両方必要
-    else:
-        raise ValueError("Reservation reached to max number")
+      else:
+          raise ValueError("Reservation reached to max number")
     # raiseを書かないと、エラーが発生しない。数字だけはインクリメントされて、userに通知がなく不親切
-    
+
 @receiver(post_save, sender=Reservation)
 def set_is_max_true(sender, instance, created, **kwargs):
-    if instance.slot.reserved_people == 25:
+    if instance.slot.reserved_people == instance.slot.max_people:
         instance.slot.is_max = True
         instance.slot.save()
 
 
 @receiver(pre_save, sender=Reservation)
 def set_is_max_false(sender, instance, **kwargs):
-    if instance.slot.reserved_people <= 24:
+    if instance.slot.reserved_people <= instance.slot.max_people-1:
         instance.slot.is_max = False
         instance.slot.save()
 
@@ -112,11 +111,8 @@ def set_is_max_false(sender, instance, **kwargs):
 def update_reserved_people_on_delete(sender, instance, **kwargs):
     slot = instance.slot
     if slot.reserved_people > 0:
-        if instance.slot.course_id == 12 or instance.slot.course_id == 13:
-            instance.slot.reserved_people -= 5
-        else:
-            slot.reserved_people -= 1
-        if slot.reserved_people <= 24:
+        slot.reserved_people -= 1
+        if slot.reserved_people <= instance.slot.max_people-1:
             slot.is_max = False
         slot.save()
 

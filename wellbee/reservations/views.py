@@ -21,6 +21,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import make_aware
 from datetime import timedelta
 import pytz
+from dateutil.relativedelta import relativedelta
+
+now_utc = timezone.now()
+local_timezone = pytz.timezone('Africa/Nairobi')
+now_local = now_utc.astimezone(local_timezone)
+today_date = now_local.date()
+today_hour = now_local.time()
 
 # admin用。削除はできないようにしたい。is_activeをFalseにする仕様にする
 class SlotViewSet(viewsets.ModelViewSet):
@@ -28,6 +35,18 @@ class SlotViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.SlotSerializer
     
     def get_queryset(self):
+        start_date = today_date - relativedelta(months=1)
+        end_date = today_date + relativedelta(years=1)
+
+        if self.action == 'fetch_all_slots':
+            slots = Slot.objects.filter(
+              date__gte = start_date,
+              date__lte = end_date,
+              is_cancelled =False
+            ).order_by('date', 'start_time')
+            
+            return slots
+
         if self.action =='fetch_slots_for_calendar':
             
             date_str = self.request.query_params.get('date')
@@ -39,7 +58,7 @@ class SlotViewSet(viewsets.ModelViewSet):
             except ValueError:
               return Slot.objects.none()
             
-            slots =  slots = Slot.objects.filter(
+            slots = Slot.objects.filter(
                   date = query_date,
                   ).order_by('course__course_name','start_time')
             return slots
@@ -49,13 +68,14 @@ class SlotViewSet(viewsets.ModelViewSet):
             date = self.request.query_params.get('date')
             slots = Slot.objects.filter(course__course_name = course_name, date = date).order_by('date','start_time')
             return slots
+        
+        if self.action == 'fetch_each_course_slots':
+            course_name = self.request.query_params.get('course_name')
+            slots = Slot.objects.filter(course__course_name = course_name).order_by('date','start_time')
+            return slots
 
         if self.action == 'fetch_course_slots':
-          now_utc = timezone.now()
-          local_timezone = pytz.timezone('Africa/Nairobi')
-          now_local = now_utc.astimezone(local_timezone)
-          today_date = now_local.date()
-          today_hour = now_local.time()
+          
 
           course_name = self.request.query_params.get('course_name')
            # dateパラメータを取得してタプルではなく文字列で扱う
@@ -101,6 +121,12 @@ class SlotViewSet(viewsets.ModelViewSet):
         slot = self.get_queryset()
         slot_serializer = serializers.SlotSerializer(slot,many=True)
         return Response(slot_serializer.data)
+    
+    @action(detail=False, methods=['get'], permission_classes = [SlotPermission], url_path='each_course_slots')
+    def fetch_each_course_slots(self, request):
+        slot = self.get_queryset()
+        slot_serializer = serializers.SlotSerializer(slot,many=True)
+        return Response(slot_serializer.data)
         
     @action (detail=False, methods=['get'],
              permission_classes= [SlotPermission],
@@ -117,22 +143,30 @@ class SlotViewSet(viewsets.ModelViewSet):
         slot_serializer = serializers.SlotSerializer(slot,many=True)
         return Response(slot_serializer.data)
     
+    @action(detail=False, methods=['get'], permission_classes = [SlotPermission], url_path='all_slots')
+    def fetch_all_slots(self, request):
+        slot = self.get_queryset()
+        slot_serializer = serializers.SlotSerializer(slot,many=True)
+        return Response(slot_serializer.data)
+    
     def perform_create(self,request):
         data = self.request.data
 
-        fetched_course_id = data.get('course')
+        fetched_course = data.get('course')
         fetched_date = data.get('date')
         fetched_start_time = data.get('start_time')
         fetched_end_time = data.get('end_time')
+        fetched_max_people = data.get('max_people')
 
-        course_id = get_object_or_404(Course, id = fetched_course_id)
+        course = get_object_or_404(Course, course_name = fetched_course)
 
         try:
             slot = Slot.objects.create(
-                course = course_id,
+                course = course,
                 date = fetched_date,
                 start_time = fetched_start_time,
-                end_time = fetched_end_time
+                end_time = fetched_end_time,
+                max_people = fetched_max_people,
             )
             serializer = self.get_serializer(slot)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -320,6 +354,8 @@ class ReservationViewSet(viewsets.ModelViewSet):
             today_date = now_local.date()
             today_hour = now_local.time()
             staff = self.request.user
+            fetched_slot_id = self.request.query_params.get('slot_id')
+            slot_id = get_object_or_404(Slot, id=fetched_slot_id)
 
             date_str = self.request.query_params.get('date')
             if isinstance(date_str, (tuple, list)):
@@ -330,6 +366,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
               return Slot.objects.none()
 
             reservations = Reservation.objects.filter(
+                slot = slot_id,
                 date = query_date
                      ).order_by('date','slot__start_time').annotate(
                         slot_course_name=F('slot__course__course_name'),

@@ -32,19 +32,6 @@ environ.Env.read_env(BASE_DIR / '.env')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-# pro
-DEBUG = env('DEBUG')
-
-# DEBUG = True
-
-# ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
-
-# dev
-# ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
-
-# pro
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 INSTALLED_APPS = [
     'rest_framework',
@@ -79,7 +66,7 @@ ROOT_URLCONF = 'wellbee.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -98,39 +85,44 @@ WSGI_APPLICATION = 'wellbee.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'wellbee',
-#         'USER': 'root',
-#         'PASSWORD': 'Kruike221',
-#         'HOST': 'localhost',
-#         'PORT': '3306'
-#     }
-# }
-
-# pro
+# -----------Dev------------
+# dev
+DEBUG = True
+ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
 DATABASES = {
     'default': {
-        'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.mysql'),
-        'NAME': env('DATABASE_NAME'),
-        'USER': env('DATABASE_USER'),
-        'PASSWORD': env('DATABASE_PASSWORD'),
-        'HOST': env('DATABASE_HOST'),
-        'PORT': env('DATABASE_PORT', default='3306'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'wellbee',
+        'USER': 'root',
+        'PASSWORD': 'Kruike221',
+        'HOST': 'localhost',
+        'PORT': '3306'
     }
 }
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+# -----------PRODUCTION----------
+# SECURITY WARNING: don't run with debug turned on in production!
+# pro
+# DEBUG = env('DEBUG')
+# ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # DATABASES = {
 #     'default': {
-#         'ENGINE':'django.db.backends.mysql',
-#         'NAME': 'wellbee_aws_db',
-#         'USER': 'admin',
-#         'PASSWORD': 'yuiyuiyui7S',
-#         'HOST': 'wellbee-rds-db.cfaq804m48c5.me-south-1.rds.amazonaws.com',
-#         'PORT': 3306,
+#         'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.mysql'),
+#         'NAME': env('DATABASE_NAME'),
+#         'USER': env('DATABASE_USER'),
+#         'PASSWORD': env('DATABASE_PASSWORD'),
+#         'HOST': env('DATABASE_HOST'),
+#         'PORT': env('DATABASE_PORT', default='3306'),
 #     }
 # }
+# CORS_ALLOWED_ORIGINS = [
+#     env("CORS_ALLOWED_HOSTS"),
+# ]
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -194,17 +186,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
 
 ACCOUNT_AUTHENTICATION_METHOD = 'phone_number' 
-
-# セキュリティガバガバ
-# CORS_ALLOW_ALL_ORIGINS = True
-
-CORS_ALLOWED_ORIGINS = [
-    # pro
-    env("CORS_ALLOWED_HOSTS"),
-#     # "https://another-trusted-domain.com",
-#     # dev
-#     "http://localhost:3000",  # 開発時のフロントエンド
-]
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')

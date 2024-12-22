@@ -38,6 +38,7 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   title,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 30.h, fontWeight: FontWeight.bold),
                 ),
                 TextButton(
@@ -140,7 +141,7 @@ class _StaffAttendeeDetailPageState extends State<StaffAttendeeDetailPage> {
             child: Column(
               children: [
                 _Header(
-                  title: '${widget.attendeeList['name']}',
+                  title: 'Goal of Member',
                   subtitle: 'Goal & Reason of joining',
                   userId: widget.attendeeList['user'],
                 ),

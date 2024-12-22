@@ -151,6 +151,10 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
         TextEditingController(text: widget.attendeeList['goal'] ?? '');
     _commentController =
         TextEditingController(text: widget.attendeeList['any_comment'] ?? '');
+
+    setState(() {
+      isSelectedValue = widget.attendeeList['gender'];
+    });
   }
 
   @override
@@ -167,7 +171,7 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
 
   @override
   Widget build(BuildContext context) {
-    isSelectedValue = widget.attendeeList['gender'];
+    // isSelectedValue = widget.attendeeList['gender'];
     return Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(

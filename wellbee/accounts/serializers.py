@@ -9,7 +9,7 @@ from django.contrib.auth.password_validation import validate_password
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields=('id', 'phone_number','password','points','is_active')
+        fields=('id', 'phone_number','password','points',)
         extra_kwargs= {'password': {'write_only': True}}
     
     def create(self,validated_data):

@@ -52,8 +52,11 @@ class _Question extends StatelessWidget {
           children: [
             Text(question,
                 style: TextStyle(fontSize: 28.h, fontWeight: FontWeight.w300)),
-            Text(name,
-                style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w600))
+            Text(
+              name,
+              style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis,
+            )
           ],
         ));
   }
@@ -98,13 +101,12 @@ class _StaffMembershipConfirmPageState
             body: jsonEncode({
               'user': widget.attendeeList['user_id'],
               'attendee': widget.attendeeList['id'],
-              'course': IntConverter.convertCourseToNum(
-                  widget.membershipMap['course']),
-              'original_price': widget.membershipMap['original_price'],
-              'times_per_week': widget.membershipMap['times_per_week'],
+              'course': widget.membershipMap['course'],
+              'total_price': widget.membershipMap['total_price'],
               'duration': widget.membershipMap['duration'],
-              'num_person': widget.membershipMap['num_person'],
+              'offer': widget.membershipMap['offer'],
               'minus': widget.membershipMap['minus'],
+              'times': 1,
               'start_day': widget.membershipMap['start_day'],
               'discount_rate': widget.membershipMap['discount_rate'],
             }),
@@ -137,18 +139,20 @@ class _StaffMembershipConfirmPageState
     }
   }
 
-  calcTotalPrice() {
-    int value = (widget.membershipMap['original_price'] *
-            widget.membershipMap['times_per_week'] *
-            widget.membershipMap['duration'] *
-            widget.membershipMap['num_person']) -
-        widget.membershipMap['minus'];
-    totalPrice = value;
-    return totalPrice;
-  }
+  // calcTotalPrice() {
+  //   int value = (widget.membershipMap['original_price'] *
+  //           widget.membershipMap['times_per_week'] *
+  //           widget.membershipMap['duration'] *
+  //           widget.membershipMap['num_person']) -
+  //       widget.membershipMap['minus'];
+  //   totalPrice = value;
+  //   return totalPrice;
+  // }
 
-  calcFinalDiscountedPrice(int int) {
-    final value = int * widget.membershipMap['discount_rate'];
+  calcFinalDiscountedPrice() {
+    final value = (widget.membershipMap['total_price'] -
+            (widget.membershipMap['offer'] + widget.membershipMap['minus'])) *
+        (widget.membershipMap['discount_rate']);
     final convertedValue = value.toInt();
     finalPrice = convertedValue;
   }
@@ -156,8 +160,7 @@ class _StaffMembershipConfirmPageState
   @override
   void initState() {
     super.initState();
-    totalPrice = calcTotalPrice();
-    calcFinalDiscountedPrice(totalPrice);
+    calcFinalDiscountedPrice();
   }
 
   @override
@@ -217,14 +220,6 @@ class _StaffMembershipConfirmPageState
                             height: 5.h,
                           ),
                           _DetailRow(
-                            title: 'Price per Month:',
-                            value:
-                                '${widget.membershipMap['original_price']} \$',
-                          ),
-                          SizedBox(
-                            height: 5.h,
-                          ),
-                          _DetailRow(
                             title: 'Duration:',
                             value: '${widget.membershipMap['duration']} month',
                           ),
@@ -232,31 +227,8 @@ class _StaffMembershipConfirmPageState
                             height: 5.h,
                           ),
                           _DetailRow(
-                            title: 'Times Per Week:',
-                            value:
-                                '${widget.membershipMap['times_per_week']} time',
-                          ),
-                          SizedBox(
-                            height: 5.h,
-                          ),
-                          _DetailRow(
-                            title: 'Number of People:',
-                            value:
-                                '${widget.membershipMap['num_person']} people',
-                          ),
-                          SizedBox(
-                            height: 5.h,
-                          ),
-                          _DetailRow(
-                            title: 'Minus(\$):',
-                            value: '${widget.membershipMap['minus']} \$',
-                          ),
-                          SizedBox(
-                            height: 5.h,
-                          ),
-                          _DetailRow(
                             title: 'Total Price:',
-                            value: '${totalPrice}\$',
+                            value: '${widget.membershipMap['total_price']} \$',
                           ),
                           SizedBox(
                             height: 10.h,
@@ -266,7 +238,21 @@ class _StaffMembershipConfirmPageState
                             height: 10.h,
                           ),
                           _SumDetailRow(
-                            title: 'Discount Rate:',
+                            title: 'Special Offer:',
+                            value: '-${widget.membershipMap['offer']}\$',
+                          ),
+                          SizedBox(
+                            height: 5.h,
+                          ),
+                          _SumDetailRow(
+                            title: 'Discount(\$):',
+                            value: '-${widget.membershipMap['minus']} \$',
+                          ),
+                          SizedBox(
+                            height: 5.h,
+                          ),
+                          _SumDetailRow(
+                            title: 'Discount(%):',
                             value:
                                 '${100 - widget.membershipMap['discount_rate'] * 100}\%',
                           ),
@@ -283,10 +269,6 @@ class _StaffMembershipConfirmPageState
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      print(
-                        IntConverter.convertCourseToNum(
-                            widget.membershipMap['course']),
-                      );
                       CustomAwesomeDialogue(
                         titleText: 'Check out',
                         desc:

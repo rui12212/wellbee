@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from django.db.models import F,Q
 from django.db.models import OuterRef, Subquery
 from django.utils import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta
 import pytz
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import ValidationError
@@ -27,56 +27,74 @@ class MembershipViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # staff_user = request.user
         data = self.request.data
-
         customer_user_id = data.get('user')
         attendee_id = data.get('attendee')
-        course_id = data.get('course')
-        original_price =data.get('original_price')
-        times_per_week = data.get('times_per_week')
+        fetched_course = data.get('course')
         duration = data.get('duration')
-        num_person=data.get('num_person')
         minus = data.get('minus')
         discount_rate=data.get('discount_rate')
-            
+        fetched_offer=data.get('offer')
+        fetched_total_price=data.get('total_price')
+        start_date_str = data.get('start_day')
+        fetched_times = data.get('times')
+
         customer_user = get_object_or_404(User, id =customer_user_id)
         attendee = get_object_or_404(Attendee, id =attendee_id)
-        course=get_object_or_404(Course,id=course_id)
+        course=get_object_or_404(Course,course_name=fetched_course)
 
         try:
-            original_price = int(original_price)
-            times_per_week= int(times_per_week)
+            start_date = datetime.strptime(start_date_str,'%Y-%m-%d').date()
+        except(ValueError, TypeError) as e:
+            return Response(
+                {'error': f'start_day\'s type is not valid:{e}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # add
+            total_price = int(fetched_total_price)
             duration = int(duration)
-            num_person=int(num_person)
             minus=int(minus)
+            offer=int(fetched_offer)
             discount_rate=float(discount_rate)
+            times=int(fetched_times)
+
         except (ValueError, TypeError) as e:
             return Response({'error': '${e}: Invalid input types.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        membership = Membership.objects.create(
+        
+        if course.is_private == False:
+         membership = Membership.objects.create(
                 user_id = customer_user.id,
                 attendee_id=attendee.id,
                 course=course,
-                original_price= original_price,
-                times_per_week=times_per_week,
                 duration=duration,
-                num_person = num_person,
                 minus=minus,
+                times=times,
+                offer=offer,
+                start_day=start_date,
                 discount_rate=discount_rate,
+                total_price = total_price,
+             )
+        elif course.is_private == True:
+          membership = Membership.objects.create(
+                user_id = customer_user.id,
+                attendee_id=attendee.id,
+                course=course,
+                duration=duration,
+                minus=minus,
+                start_day=start_date,
+                discount_rate=discount_rate,
+                total_price = total_price,
+                times=times,
+                offer = offer
             )
         serializer = self.get_serializer(membership)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-        # except User.DoesNotExist:
-        #     return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        # except Attendee.DoesNotExist:
-        #     return Response({"error": "Attendee not found"}, status=status.HTTP_404_NOT_FOUND)
-        # except Course.DoesNotExist:
-        #     return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
-        # except Exception as e:
-        #     return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
  
     def get_queryset(self):
+        if self.action == 'fetch_closest_membership':
+            memberships = Membership.objects.all()
+            return memberships
         if self.action == 'fetch_available_membership':
             memberships = Membership.objects.all()
             return  memberships
@@ -91,22 +109,27 @@ class MembershipViewSet(viewsets.ModelViewSet):
         else:
             return super().get_queryset()
         
-    # @action(detail=False, methods=['get'],permission_classes=[MembershipPermission],url_path='my_id')
-    # def fetch_my_id(self,request):
-    #     my_id = Membership.objects.filter(
-    #         user = request.user
-    #     ).annotate(
-    #         user_id = F('user__id')
-    #     )
-    #     serializer = serializers.MembershipSerializer(my_id, many=True)
-    #     return Response(serializer.data)
-    
+    @action(detail=False, methods=['get'],permission_classes=[MembershipPermission],url_path='closest_membership')
+    def fetch_closest_membership(self,request):
+        now_utc = timezone.now()
+        local_timezone = pytz.timezone('Africa/Nairobi')
+        now_local = now_utc.astimezone(local_timezone)
+        today_date = now_local.date()
+        user_id = self.request.query_params.get('user_id')
+
+        memberships = Membership.objects.filter(
+            user = user_id,
+            expire_day__gte = today_date
+        ).order_by('expire_day').first()
+        serializer = self.get_serializer(memberships)
+        return Response(serializer.data)
+
+
     @action(detail=False, methods=['get'],permission_classes=[MembershipPermission],url_path='my_all_membership')
     def fetch_my_all_membership(self,request):
         now_utc = timezone.now()
         local_timezone = pytz.timezone('Africa/Nairobi')
         now_local = now_utc.astimezone(local_timezone)
-
         today_date = now_local.date()
         # today_hour = now_local.hour()
 
@@ -159,8 +182,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
 class AttendeeViewSet(viewsets.ModelViewSet):
     queryset=Attendee.objects.all()
     serializer_class=serializers.AttendeeSerializer
-    permission_classes = [AttendeePermission]
-
+    # permission_classes = [AttendeePermission]
 
     def get_queryset(self):
         if self.action == 'fetch_my_attendee':
@@ -172,8 +194,21 @@ class AttendeeViewSet(viewsets.ModelViewSet):
         elif self.action == 'fetch_first_page_attendee':
             attendee = Attendee.objects.all()
             return attendee
+        elif self.action == 'fetch_first_attendee':
+            attendee = Attendee.objects.all()
+            return attendee
         else:
             return Attendee.objects.all()
+        
+    @action(detail=False, methods=['get'], url_path='first_attendee',permission_classes=[AllowAny])
+    def fetch_first_attendee(self,request):
+       user_id = self.request.query_params.get('user_id')
+       attendees=Attendee.objects.filter(user = user_id).annotate(
+            user_phone = F('user__phone_number')
+        ).order_by('created_date').first()
+       serializer = self.get_serializer(attendees)
+       return Response(serializer.data,status=status.HTTP_200_OK)
+        
         
     @action(detail=False, methods=['get'],url_path='first_page_attendee', permission_classes = [AllowAny])
     def fetch_first_page_attendee(self, request):
@@ -182,7 +217,7 @@ class AttendeeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data,status=status.HTTP_200_OK)
         
     
-    @action(detail=False, methods=['get'],url_path='my_attendee/')
+    @action(detail=False, methods=['get'],url_path='my_attendee')
     def fetch_my_attendee(self, request):
         latest_survey = BaseBodySurvey.objects.filter(
             attendee__user = request.user
@@ -284,9 +319,20 @@ class CheckInViewSet(viewsets.ModelViewSet):
     permission_classes = [CheckInPermission]
 
     def get_queryset(self):
-        # このuserProfileの中には自分のid情報が入っているから、ここに合うもののみ持ってこれる＋情報の変更ができる
-        return self.queryset
+         if self.action == 'fetch_staff_checkin':
+            check_in = CheckIn.objects.all()
+            return check_in
+         
+    @action(detail=False,methods=['get'],url_path='staff_checkin')
+    def fetch_staff_checkin(self,request):
+        user_id = self.request.query_params.get('user_id')
+        last_checkin = CheckIn.objects.filter(
+            reservation__membership__user = user_id
+        ).reverse().first()
+        serializer = self.get_serializer(last_checkin)
+        return Response(serializer.data,status=status.HTTP_200_OK)
     
+
     def perform_create(self, serializer):
        data = self.request.data
        checked_user = self.request.user

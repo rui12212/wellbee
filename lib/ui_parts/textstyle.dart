@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:wellbee/ui_parts/color.dart';
 
@@ -52,6 +53,78 @@ class CustomTextBox<Widget> {
       textAlign: TextAlign.center,
       controller: controller,
       style: const TextStyle(color: ThemeColors.letterColor, fontSize: 15),
+      decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(color: ThemeColors.letterColor),
+          hintText: hintText,
+          hintStyle: const TextStyle(color: ThemeColors.letterColor),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: kColorPrimary)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: ThemeColors.letterColor),
+          )),
+      obscureText: false,
+    );
+  }
+
+  phoneFieldDecoration() {
+    return IntlPhoneField(
+      controller: controller,
+      decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(color: ThemeColors.letterColor),
+          hintText: hintText,
+          hintStyle: const TextStyle(color: ThemeColors.letterColor),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: kColorPrimary)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: ThemeColors.letterColor),
+          )),
+      initialCountryCode: 'IQ',
+      onChanged: (phone) {
+        // print(phone.completeNumber);
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return textFieldDecoration();
+  }
+}
+
+class LeftCustomTextBox<Widget> {
+  final String label;
+  final String hintText;
+  final TextEditingController? controller;
+  final Function? function;
+  final TextInputType? inputType;
+  // dynamic inputValue;
+
+  LeftCustomTextBox({
+    required this.label,
+    required this.hintText,
+    this.controller,
+    this.function,
+    this.inputType,
+    // this.inputValue,
+  });
+
+  // CustomTextBox(label: 'Mobile Number', hintText: '11 digits number')
+
+  textFieldDecoration() {
+    // return がないと、何も表示されない
+    return TextField(
+      keyboardType: inputType,
+      textAlign: TextAlign.left,
+      controller: controller,
+      style: TextStyle(color: ThemeColors.letterColor, fontSize: 22.h),
       decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: ThemeColors.letterColor),

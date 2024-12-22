@@ -15,23 +15,25 @@ class Course(models.Model):
     COURSE_NAME=(
         # ('Trial Yoga', 'Trial Yoga'),
         ('Yoga','Yoga'),
-        ('Kids Yoga(A)','Kids Yoga(A)'),
         ('Zumba','Zumba'),
-        ('Dance', 'Dance'),
-        ('Kids Dance', 'Kids Dance'),
-        ('Karate','Karate'),
-        ('Kids Karate','Kids Karate'),
-        ('Kids Taiso(A)','Kids Taiso(A)'),
-        ('Music', 'Music'),
-        ('Kids Music','Kids Music'),
         ('Pilates','Pilates'),
-        ('Family Pilates','Family Pilates'),
-        ('Family Yoga','Family Yoga'),
-        ('Kids Taiso(B)','Kids Taiso(B)'),
+        ('Kids Yoga(A)','Kids Yoga(A)'),
+        ('Kids Yoga(B)','Kids Yoga(B)'),
         ('Kids Yoga KG', 'Kids Yoga KG'),
-        ('Kids Yoga(B)','Kids Yoga(B)')
+        # DBで変更
+        ('Kids Zumba', 'Kids Zumba'),
+        ('Kids Karate','Kids Karate'),
+        # DBで変更
+        ('Kids Gym(A)','Kids Gym(A)'),
+        ('Kids Gym(B)','Kids Gym(B)'),
+        
+        ('Private Yoga@Studio', 'Private Yoga@Studio'),
+        ('Private Yoga@Home', 'Private Yoga@Home'),
+        ('Private Pilates@Studio', 'Private Pilates@Studio'),
+        ('Private Pilates@Home', 'Private Pilates@Home'),
     )
-    course_name=models.CharField(verbose_name="course_name", choices=COURSE_NAME,max_length=20, default='Yoga',blank=False, null=False)
+    course_name=models.CharField(verbose_name="course_name", choices=COURSE_NAME,max_length=25, default='Yoga',blank=False, null=False)
+    is_private=models.BooleanField(verbose_name='is_private', default=False, null=False, blank=False)
     
 
     def __str__(self):
@@ -43,7 +45,7 @@ class Attendee(models.Model):
         ('female', 'female'),
         ('Not specified', 'Not specified')
     )
-     user=models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='user', on_delete=models.SET_NULL, null=False, blank=False)
+     user=models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='user', on_delete=models.SET_NULL, null=True, blank=False)
      name=models.CharField(verbose_name="name", null=False, blank=False, max_length=50)
      gender=models.CharField(verbose_name='gender', max_length=20, choices=GENDER,blank= False, null=False,)
      date_of_birth=models.DateField(verbose_name="date_of_birth",null=False,)
@@ -70,72 +72,73 @@ def get_today():
     return timezone.now().date()
 
 class Membership(models.Model):
-    ORIGINAL_PRICE=(
-        (10,'10$'),
-        (20,'20$'),
-        (30,'30$'),
-        (40,'40$'),
-        (50,'50$'),
-        (60,'60$'),
-        (70,'70$'),
-        (80,'80$'),
-        (90,'90$'),
-        (100,'100$'),
-        (110,'110$'),
-        (120,'120$'),
-        (130,'130$'),
-        (140,'140$'),
-        (150,'150$'),
-    )
+    # ORIGINAL_PRICE=(
+    #     (10,'10$'),
+    #     (20,'20$'),
+    #     (30,'30$'),
+    #     (40,'40$'),
+    #     (50,'50$'),
+    #     (60,'60$'),
+    #     (70,'70$'),
+    #     (80,'80$'),
+    #     (90,'90$'),
+    #     (100,'100$'),
+    #     (110,'110$'),
+    #     (120,'120$'),
+    #     (130,'130$'),
+    #     (140,'140$'),
+    #     (150,'150$'),
+    # )
     # ('DBに登録する値', 'Web上に表示するなどわかりやすい値')
-    TIMES_PER_WEEK=(
-        (1,'1 time'),
-        (2,'2 times'),
-    )
+
+    # TIMES_PER_WEEK=(
+    #     (1,'1 time'),
+    #     (2,'2 times'),
+    # )
     
     DURATION=(
         (1, '1 month'),
         (2, '2 months'),
         (3, '3 months'),
-        (4, '4 months'),
-        (5, '5 month'),
+        # (4, '4 months'),
+        # (5, '5 month'),
         (6, '6 months'),
-        (7, '7 months'),
-        (8, '8 months'),
-        (9, '9 months'),
-        (10, '10 months'),
-        (11, '11 months'),
+        # (7, '7 months'),
+        # (8, '8 months'),
+        # (9, '9 months'),
+        # (10, '10 months'),
+        # (11, '11 months'),
         (12, '1 year'),
-        (13, '13 months'),
-        (14, '14 months'),
-        (15, '15 months'),
-        (16, '16 months'),
-        (17, '17 months'),
-        (18, '1 year 6 months'),
-        (19, '19 months'),
+        # (13, '13 months'),
+        # (14, '14 months'),
+        # (15, '15 months'),
+        # (16, '16 months'),
+        # (17, '17 months'),
+        # (18, '1 year 6 months'),
+        # (19, '19 months'),
     )
 
-    NUM_PERSON=(
-        (1,'1'),
-        (2,'2'),
-        (3,'3'),
-        (4,'4'),
-        (5,'5'),
-    )
+    # NUM_PERSON=(
+    #     (1,'1'),
+    #     (2,'2'),
+    #     (3,'3'),
+    #     (4,'4'),
+    #     (5,'5'),
+    # )
 
-    MINUS=(
-        (0,'0'),
-        (10,'10'),
-        (20,'20'),
-        (30,'30'),
-        (40,'40'),
-        (50,'50'),
-        (60,'60'),
-        (70,'70'),
-        (80,'80'),
-        (90,'90'),
-        (100,'100'),
-    )
+    # MINUS=(
+        # (0,'0'),
+        # (10,'10'),
+        # (20,'20'),
+        # (30,'30'),
+        # (40,'40'),
+        # (50,'50'),
+        # (60,'60'),
+        # (70,'70'),
+        # (80,'80'),
+        # (90,'90'),
+        # (100,'100'),
+    # )
 
     DISCOUNT_RATE=( 
         (1.0, 'No Discount'),
@@ -153,18 +156,28 @@ class Membership(models.Model):
         (0.4, '60% OFF'),
     )
 
+    OFFER=(
+        (0,'No offer'),
+        (48,'1 month free(3 months)'),
+        (42,'1 month free(6 months)'),
+        (30,'1 month free(12 months)'),
+        (45,'1 month free(Kids 3 months)'),
+    )
+
     user = models.ForeignKey(User, verbose_name='user',on_delete=models.SET_NULL, null=True)
 
     attendee = models.ForeignKey(Attendee,verbose_name='attendee', on_delete=models.SET_NULL,null=True, blank=False)
     course = models.ForeignKey(Course,on_delete=models.CASCADE, null=True)
-    original_price=models.IntegerField(verbose_name="original_price", choices=ORIGINAL_PRICE, blank= False, null=False)
-    times_per_week= models.IntegerField(verbose_name="times_per_week", choices=TIMES_PER_WEEK,blank= False, null=False)
-    num_person = models.IntegerField(verbose_name='num_person', choices=NUM_PERSON, blank=False, null=False)
+    # modify to default setting
+    times= models.IntegerField(verbose_name="times",default=1,blank= False, null=False)
+    # modify to default setting
+    num_person = models.IntegerField(verbose_name='num_person', default=1, blank=False, null=False)
     duration=models.IntegerField(verbose_name="duration", choices=DURATION,blank= False, null=False,)
-    minus=models.IntegerField(verbose_name="minus", choices=MINUS,default=0,blank= False, null=False)  
+    offer = models.IntegerField(verbose_name="offer", choices=OFFER, blank=True, null=True,default=0)
+    minus=models.IntegerField(verbose_name="minus",default=0,blank= False, null=False)  
     is_approved=models.BooleanField(verbose_name='is_approved', default=True)
-    total_price =models.IntegerField(verbose_name='total_price',blank= False, null=True,)
-    discount_rate=models.FloatField(verbose_name="discount_rate", choices=DISCOUNT_RATE,blank= False, null=False,)
+    total_price =models.IntegerField(verbose_name='total_price',blank= False, null=False)
+    discount_rate=models.FloatField(verbose_name="discount_rate", choices=DISCOUNT_RATE,blank= False, null=False)
     discounted_total_price=models.IntegerField(verbose_name='discounted_total_price',blank= False, null=True)
     max_join_times = models.IntegerField(verbose_name='max_join_times', blank=False, null=True)
     requested_join_times = models.IntegerField(verbose_name='requested_join_times', blank=False, null=True,default=0)
@@ -175,21 +188,28 @@ class Membership(models.Model):
     expire_day=models.DateField(verbose_name='expire_day',blank=False, null=False, default=get_today) 
     is_expired=models.BooleanField(verbose_name='is_expired', default=False)
     def __str__(self):
-        # return str(self.attendee.name)
-        return f"{self.attendee.name} - {self.course}"
-    
-@receiver(pre_save, sender=Membership)
-def set_total_price(sender, instance, **kwargs):
-    instance.total_price = int(instance.original_price * instance.times_per_week * instance.duration * instance.num_person) - int(instance.minus)
+        name = self.attendee.name if self.attendee and self.attendee.name else "None"
+        return f"{name} - {self.course}"
 
+# delete
+# @receiver(pre_save, sender=Membership)
+# def set_total_price(sender, instance, **kwargs):
+#     instance.total_price = int(instance.original_price * instance.times_per_week * instance.duration * instance.num_person) - int(instance.minus)
+
+# -minusを追加
 @receiver(pre_save, sender=Membership)
 def set_discounted_total_price(sender, instance, **kwargs):
         # ポイント使用前金額計算＝オリジナルの合計金額からディスカウントをする
-        instance.discounted_total_price = int(instance.total_price * instance.discount_rate)
+        instance.discounted_total_price = ((instance.total_price - (instance.minus + instance.offer))) * instance.discount_rate
+
 
 @receiver(pre_save, sender=Membership)
 def set_max_join_times(sender, instance, **kwargs):
-    instance.max_join_times = int(instance.times_per_week * instance.duration * 4)
+    # もしCourseがPrivateでなかったら
+    if instance.course and not instance.course.is_private:
+        instance.max_join_times = int(instance.times * instance.duration * 4)
+    else:
+        instance.max_join_times = int(instance.times)
 
 # ここ変更
 @receiver(pre_save, sender=Membership)
@@ -197,7 +217,8 @@ def set_expire_day(sender, instance, **kwargs):
     if instance.start_day:
         instance.expire_day = (instance.start_day + relativedelta(months=instance.duration))
     else:
-        instance.expire_day = (timezone.localdate() + relativedelta(months=instance.duration)).date()
+        instance.expire_day = (timezone.localdate() + relativedelta(months=instance.duration))
+
 
 
 # @receiver(pre_save, sender=Payment)
@@ -226,7 +247,7 @@ class CheckIn(models.Model):
     )
     # membership=models.ForeignKey(Membership, verbose_name="membership",on_delete=models.PROTECT)
     checked_by=models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='checked_by', on_delete=models.PROTECT)
-    reservation = models.OneToOneField('reservations.Reservation',  verbose_name='reservation', on_delete=models.PROTECT,null=False,blank=False)
+    reservation = models.OneToOneField('reservations.Reservation',  verbose_name='reservation', on_delete=models.CASCADE,null=False,blank=False)
     num_person = models.IntegerField(verbose_name='num_person',choices=NUM_PERSON,null=False,blank=False)
     created_at= models.DateTimeField(verbose_name='date',auto_now_add=True,null=False, blank=False)
 

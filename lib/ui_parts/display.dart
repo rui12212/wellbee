@@ -621,13 +621,22 @@ class _ReservationTicket extends StatelessWidget {
                                   fontSize: course_name == 'Family Pilates' ||
                                           course_name == 'Family Yoga' ||
                                           course_name == 'Kids Karate' ||
-                                          course_name == 'Kids Taiso(A)' ||
-                                          course_name == 'Kids Taiso(B)' ||
+                                          course_name == 'Kids Gym(A)' ||
+                                          course_name == 'Kids Gym(B)' ||
                                           course_name == 'Kids Yoga(A)' ||
                                           course_name == 'Kids Yoga(B)' ||
-                                          course_name == 'Kids Yoga KG'
-                                      ? 15.h
-                                      : 18.h,
+                                          course_name == 'Kids Yoga KG' ||
+                                          course_name == 'Kids Zumba'
+                                      ? 14.h
+                                      : course_name == 'Private Yoga@Studio' ||
+                                              course_name ==
+                                                  'Private Yoga@Home' ||
+                                              course_name ==
+                                                  'Private Pilates@Studio' ||
+                                              course_name ==
+                                                  'Private Pilates@Home'
+                                          ? 12.h
+                                          : 17.h,
                                   color: kColorTextDark,
                                   // fontWeight: FontWeight.bold,
                                 ),
@@ -739,7 +748,7 @@ class ReservationTicketList extends StatelessWidget {
                 reservationList['slot_course_name'] == 'Kids Yoga KG'
             ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
             : reservationList['slot_course_name'] == 'Dance' ||
-                    reservationList['slot_course_name'] == 'Kids Dance' ||
+                    reservationList['slot_course_name'] == 'Kids Zumba' ||
                     reservationList['slot_course_name'] == 'Zumba'
                 ? Image.asset('lib/assets/invi_course_pic/invi_dance.png')
                 : reservationList['slot_course_name'] == 'Karate' ||
@@ -749,10 +758,9 @@ class ReservationTicketList extends StatelessWidget {
                             reservationList['slot_course_name'] == 'Kids Music'
                         ? Image.asset(
                             'lib/assets/invi_course_pic/invi_music.png')
-                        : reservationList['slot_course_name'] ==
-                                    'Kids Taiso(A)' ||
+                        : reservationList['slot_course_name'] == 'Kids Gym(A)' ||
                                 reservationList['slot_course_name'] ==
-                                    'Kids Taiso(B)'
+                                    'Kids Gym(B)'
                             ? Image.asset(
                                 'lib/assets/invi_course_pic/male_fitness.png')
                             : reservationList['slot_course_name'] == 'Pilates'
@@ -766,8 +774,20 @@ class ReservationTicketList extends StatelessWidget {
                                             'Family Yoga'
                                         ? Image.asset(
                                             'lib/assets/invi_course_pic/invi_family_yoga.png')
-                                        : Image.asset(
-                                            'lib/assets/invi_course_pic/female_fitness.png'));
+                                        : reservationList['slot_course_name'] ==
+                                                    'Private Yoga@Studio' ||
+                                                reservationList['slot_course_name'] ==
+                                                    'Private Yoga@Home'
+                                            ? Image.asset(
+                                                'lib/assets/invi_course_pic/private_yoga.png')
+                                            : reservationList['slot_course_name'] ==
+                                                        'Private Pilates@Studio' ||
+                                                    reservationList['slot_course_name'] ==
+                                                        'Private Pilates@Home'
+                                                ? Image.asset(
+                                                    'lib/assets/invi_course_pic/private_pilates.png')
+                                                : Image.asset(
+                                                    'lib/assets/invi_course_pic/female_fitness.png'));
   }
 }
 
@@ -793,7 +813,7 @@ class PastReservationTicketList extends StatelessWidget {
                 reservationList['slot_course_name'] == 'Kids Yoga KG'
             ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
             : reservationList['slot_course_name'] == 'Dance' ||
-                    reservationList['slot_course_name'] == 'Kids Dance' ||
+                    reservationList['slot_course_name'] == 'Kids Zumba' ||
                     reservationList['slot_course_name'] == 'Zumba'
                 ? Image.asset('lib/assets/invi_course_pic/invi_dance.png')
                 : reservationList['slot_course_name'] == 'Karate' ||
@@ -803,10 +823,9 @@ class PastReservationTicketList extends StatelessWidget {
                             reservationList['slot_course_name'] == 'Kids Music'
                         ? Image.asset(
                             'lib/assets/invi_course_pic/invi_music.png')
-                        : reservationList['slot_course_name'] ==
-                                    'Kids Taiso(A)' ||
+                        : reservationList['slot_course_name'] == 'Kids Gym(A)' ||
                                 reservationList['slot_course_name'] ==
-                                    'Kids Taiso(B)'
+                                    'Kids Gym(B)'
                             ? Image.asset(
                                 'lib/assets/invi_course_pic/male_fitness.png')
                             : reservationList['slot_course_name'] == 'Pilates'
@@ -820,8 +839,20 @@ class PastReservationTicketList extends StatelessWidget {
                                             'Family Yoga'
                                         ? Image.asset(
                                             'lib/assets/invi_course_pic/invi_family_yoga.png')
-                                        : Image.asset(
-                                            'lib/assets/invi_course_pic/female_fitness.png'));
+                                        : reservationList['slot_course_name'] ==
+                                                    'Private Yoga@Studio' ||
+                                                reservationList['slot_course_name'] ==
+                                                    'Private Yoga@Home'
+                                            ? Image.asset(
+                                                'lib/assets/invi_course_pic/private_yoga.png')
+                                            : reservationList['slot_course_name'] ==
+                                                        'Private Pilates@Studio' ||
+                                                    reservationList['slot_course_name'] ==
+                                                        'Private Pilates@Home'
+                                                ? Image.asset(
+                                                    'lib/assets/invi_course_pic/private_pilates.png')
+                                                : Image.asset(
+                                                    'lib/assets/invi_course_pic/female_fitness.png'));
   }
 }
 
@@ -895,13 +926,22 @@ class _PastReservationTicket extends StatelessWidget {
                                   fontSize: course_name == 'Family Pilates' ||
                                           course_name == 'Family Yoga' ||
                                           course_name == 'Kids Karate' ||
-                                          course_name == 'Kids Taiso(A)' ||
-                                          course_name == 'Kids Taiso(B)' ||
+                                          course_name == 'Kids Gym(A)' ||
+                                          course_name == 'Kids Gym(B)' ||
                                           course_name == 'Kids Yoga(A)' ||
                                           course_name == 'Kids Yoga(B)' ||
-                                          course_name == 'Kids Yoga KG'
+                                          course_name == 'Kids Yoga KG' ||
+                                          course_name == 'Kids Zumba'
                                       ? 14.h
-                                      : 16.h,
+                                      : course_name == 'Private Yoga@Studio' ||
+                                              course_name ==
+                                                  'Private Yoga@Home' ||
+                                              course_name ==
+                                                  'Private Pilates@Studio' ||
+                                              course_name ==
+                                                  'Private Pilates@Home'
+                                          ? 12.h
+                                          : 17.h,
                                   color: kColorTextDark,
                                   // fontWeight: FontWeight.bold,
                                 ),

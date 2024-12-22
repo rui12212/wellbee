@@ -32,7 +32,9 @@ class _Header extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+            style: title.length > 12
+                ? TextStyle(fontSize: 21.sp, fontWeight: FontWeight.bold)
+                : TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
           ),
           TextButton(
             style: TextButton.styleFrom(
