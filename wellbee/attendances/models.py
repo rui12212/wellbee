@@ -187,6 +187,7 @@ class Membership(models.Model):
     start_day = models.DateField(verbose_name='start_day',blank= False, null=True)
     expire_day=models.DateField(verbose_name='expire_day',blank=False, null=False, default=get_today) 
     is_expired=models.BooleanField(verbose_name='is_expired', default=False)
+    last_check_in = models.DateField(verbose_name='last_check_in', blank=False, null=False, default=get_today)
     def __str__(self):
         name = self.attendee.name if self.attendee and self.attendee.name else "None"
         return f"{name} - {self.course}"
@@ -278,3 +279,9 @@ def set_boolean_reservation(sender, created, instance, **kwargs):
     if created:
         instance.reservation.attended = True
         instance.reservation.save()
+
+@receiver(post_save, sender=CheckIn)
+def set_last_check_in(sender, created, instance, **kwargs):
+    if created:
+        instance.reservation.membership.last_check_in = instance.created_at
+        instance.reservation.membership.save()

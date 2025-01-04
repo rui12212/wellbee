@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_calendar_week/flutter_calendar_week.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -12,8 +13,8 @@ import 'package:wellbee/screens/staff/calendar/calendar_reserved_people.dart';
 import 'package:wellbee/screens/staff/course/calendar_utils.dart';
 import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
-import 'package:http/http.dart' as http;
 import 'package:wellbee/ui_parts/color.dart';
+import 'package:http/http.dart' as http;
 
 class _Header extends StatelessWidget {
   String title;
@@ -32,18 +33,18 @@ class _Header extends StatelessWidget {
             title,
             style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
           ),
-          TextButton(
-            style: TextButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shape: const CircleBorder(
-                    side: BorderSide(
-                        color: Color.fromARGB(255, 206, 204, 204), width: 5))),
-            child: const Icon(Icons.chevron_left,
-                color: Color.fromARGB(255, 155, 152, 152)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          )
+          // TextButton(
+          //   style: TextButton.styleFrom(
+          //       backgroundColor: Colors.transparent,
+          //       shape: const CircleBorder(
+          //           side: BorderSide(
+          //               color: Color.fromARGB(255, 206, 204, 204), width: 5))),
+          //   child: const Icon(Icons.chevron_left,
+          //       color: Color.fromARGB(255, 155, 152, 152)),
+          //   onPressed: () {
+          //     Navigator.of(context).pop();
+          //   },
+          // )
         ],
       ),
     );
@@ -54,16 +55,16 @@ final kToday = DateTime.now();
 final kFirstDay = DateTime(kToday.year, kToday.month, kToday.day);
 final kLastDay = DateTime(kToday.year + 1, kToday.month, kToday.day);
 
-class CalendarPage extends StatefulWidget {
-  CalendarPage({
+class UserCalendarPage extends StatefulWidget {
+  UserCalendarPage({
     Key? key,
   }) : super(key: key);
 
   @override
-  _CalendarPageState createState() => _CalendarPageState();
+  _UserCalendarPageState createState() => _UserCalendarPageState();
 }
 
-class _CalendarPageState extends State<CalendarPage> {
+class _UserCalendarPageState extends State<UserCalendarPage> {
   final CalendarWeekController _controller = CalendarWeekController();
   String? token = '';
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -145,7 +146,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Future<List<dynamic>?> _fetchSlot() async {
     try {
-      token = await SharedPrefs.fetchStaffAccessToken();
+      token = await SharedPrefs.fetchAccessToken();
       var url = Uri.parse('${baseUri}reservations/slot/all_slots/')
           .replace(queryParameters: {'token': token});
       var response = await Future.any([
@@ -280,145 +281,37 @@ class _CalendarPageState extends State<CalendarPage> {
                               courseSlotList[index]['start_time']);
                           String formattedEndTime = IntConverter.formatTime(
                               courseSlotList[index]['end_time']);
-                          final bool is_cancelled =
-                              courseSlotList[index]['is_cancelled'];
                           return Container(
                             height: 100.h,
-                            child: is_cancelled == true
-                                ? Column(
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Stack(
-                                        children: [
-                                          Container(
-                                            height: 90.h,
-                                            alignment: Alignment.center,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text('Slot was cancelled',
-                                                    style: TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 86, 82, 82),
-                                                        fontSize: 18.sp,
-                                                        fontWeight:
-                                                            FontWeight.w700)),
-                                              ],
-                                            ),
-                                          ),
-                                          Opacity(
-                                            opacity: 0.4,
-                                            child: Container(
-                                              height: 85.h,
-                                              decoration: BoxDecoration(
-                                                border: Border(
-                                                  bottom: BorderSide(
-                                                    color: Colors.black, // 線の色
-                                                    width: 0.2, // 線の太さ
-                                                  ),
-                                                ),
-                                              ),
-                                              child: ListTile(
-                                                title: Container(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                          courseSlotList[index][
-                                                              'slot_course_name'],
-                                                          style: TextStyle(
-                                                              fontSize: 18.sp)),
-                                                      Text(
-                                                          '$formattedStartTime - $formattedEndTime',
-                                                          style: TextStyle(
-                                                              fontSize: 16.sp)),
-                                                    ],
-                                                  ),
-                                                ),
-                                                subtitle: Row(
-                                                  children: [
-                                                    Text('Reservation:'),
-                                                    Text(
-                                                        '${courseSlotList[index]['reserved_people']}/${courseSlotList[index]['max_people']}'),
-                                                  ],
-                                                ),
-                                                trailing: ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).push(
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                ReservedPeoplePage(
-                                                                    courseSlot:
-                                                                        courseSlotList[
-                                                                            index])));
-                                                  },
-                                                  child: Text('Detail',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          color:
-                                                              kColorPrimary)),
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      // Divider(
-                                      //     thickness: 0.2,
-                                      //     color: kColorTextDarkGrey),
-                                    ],
-                                  )
-                                : Column(
-                                    children: [
-                                      ListTile(
-                                        title: Container(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                  courseSlotList[index]
-                                                      ['slot_course_name'],
-                                                  style: TextStyle(
-                                                      fontSize: 18.sp)),
-                                              Text(
-                                                  '$formattedStartTime - $formattedEndTime',
-                                                  style: TextStyle(
-                                                      fontSize: 16.sp)),
-                                            ],
-                                          ),
-                                        ),
-                                        subtitle: Row(
-                                          children: [
-                                            Text('Reservation:'),
-                                            Text(
-                                                '${courseSlotList[index]['reserved_people']}/${courseSlotList[index]['max_people']}'),
-                                          ],
-                                        ),
-                                        trailing: ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        ReservedPeoplePage(
-                                                            courseSlot:
-                                                                courseSlotList[
-                                                                    index])));
-                                          },
-                                          child: Text('Detail',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  color: kColorPrimary)),
-                                        ),
-                                      ),
-                                      Divider(
-                                          thickness: 0.2,
-                                          color: kColorTextDarkGrey),
+                                      Text(
+                                          '$formattedStartTime - $formattedEndTime',
+                                          style: TextStyle(fontSize: 18.sp)),
                                     ],
                                   ),
+                                  subtitle: Row(
+                                    children: [
+                                      Text('Reservation:',
+                                          style: TextStyle(fontSize: 14.h)),
+                                      Text(
+                                          '${courseSlotList[index]['reserved_people']}/${courseSlotList[index]['max_people']}',
+                                          style: TextStyle(fontSize: 16.h)),
+                                    ],
+                                  ),
+                                  trailing: Text(
+                                      courseSlotList[index]['slot_course_name'],
+                                      style: TextStyle(fontSize: 18.sp)),
+                                ),
+                                Divider(
+                                    thickness: 0.2, color: kColorTextDarkGrey),
+                              ],
+                            ),
                           );
                         },
                       ),

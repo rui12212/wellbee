@@ -21,3 +21,17 @@ final isNearlyExpired = StateProvider<bool>((ref) {
 final isWithInOneWeek = StateProvider<bool>((ref) {
   return false;
 });
+
+final isExpireDaySelectedProvider = StateProvider<bool>(
+  (ref) {
+    return true;
+  },
+);
+
+final isExpireWithin2WeekProvider = StateProvider<bool>((ref) {
+  return false;
+});
+
+final isLastCheckInOver2WeekProvider = StateProvider<bool>((ref) {
+  return false;
+});

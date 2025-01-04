@@ -24,7 +24,7 @@ class MembershipPermission(BasePermission):
         if view.action in ['list', 'retrieve']:
             return (request.user and request.user.is_authenticated) or request.user.is_staff==1
         # アクションがmy_reservationだった場合
-        if view.action  == 'fetch_available_membership' or view.action == 'fetch_my_all_membership' or view.action == 'fetch_membership_by_staff' or view.action == 'fetch_closest_membership':
+        if view.action  == 'fetch_available_membership' or view.action == 'fetch_my_all_membership' or view.action == 'fetch_membership_by_staff' or view.action == 'fetch_closest_membership' or view.action == 'fetch_course_membership':
             return (request.user and request.user.is_authenticated) or request.user.is_staff==1
         if view.action in ['create','partial_update','update', 'destroy',]:
             return (request.user and request.user.is_authenticated) or request.user.is_staff==1

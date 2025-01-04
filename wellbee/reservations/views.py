@@ -42,7 +42,6 @@ class SlotViewSet(viewsets.ModelViewSet):
             slots = Slot.objects.filter(
               date__gte = start_date,
               date__lte = end_date,
-              is_cancelled =False
             ).order_by('date', 'start_time')
             
             return slots

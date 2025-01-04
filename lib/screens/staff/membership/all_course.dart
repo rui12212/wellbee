@@ -8,14 +8,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/staff/auth/staff_top_page.dart';
-import 'package:wellbee/screens/staff/calendar/attendee_detail_page.dart';
 import 'package:wellbee/screens/staff/course/course_month.dart';
-import 'package:wellbee/screens/staff/course/course_slot.dart';
-import 'package:wellbee/screens/staff/course/select_month.dart';
+import 'package:wellbee/screens/staff/membership/check_expire.dart';
 import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:http/http.dart' as http;
-import 'package:wellbee/ui_parts/color.dart';
 
 class _Header extends StatelessWidget {
   String title;
@@ -56,16 +53,17 @@ class _Header extends StatelessWidget {
   }
 }
 
-class AllCoursePage extends StatefulWidget {
-  AllCoursePage({
+class MembershipAllCoursePage extends StatefulWidget {
+  MembershipAllCoursePage({
     Key? key,
   }) : super(key: key);
 
   @override
-  _AllCoursePageState createState() => _AllCoursePageState();
+  _MembershipAllCoursePageState createState() =>
+      _MembershipAllCoursePageState();
 }
 
-class _AllCoursePageState extends State<AllCoursePage> {
+class _MembershipAllCoursePageState extends State<MembershipAllCoursePage> {
   final CalendarWeekController _controller = CalendarWeekController();
   String? token = '';
 
@@ -121,7 +119,7 @@ class _AllCoursePageState extends State<AllCoursePage> {
           padding: EdgeInsets.all(15),
           child: Column(
             children: [
-              _Header(title: 'All Course'),
+              _Header(title: 'Check Membership'),
               FutureBuilder(
                   future: _fetchAllCourse(),
                   builder: (context, snapshot) {
@@ -151,10 +149,11 @@ class _AllCoursePageState extends State<AllCoursePage> {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                MonthlySlotPage(
-                                                    courseList:
+                                                CheckMembershipPage(
+                                                    courseName:
                                                         fetchedCourseList[
-                                                            index])));
+                                                            index]
+                                                            ['course_name'])));
                                   },
                                   child: _buildGridItem(
                                       title: fetchedCourseList[index]

@@ -1,7 +1,10 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wellbee/ui_function/provider.dart';
 import 'package:wellbee/ui_parts/color.dart';
 
 class _TicketShapeBorder extends ShapeBorder {
@@ -342,3 +345,261 @@ class TicketList extends StatelessWidget {
                                                     'lib/assets/invi_course_pic/female_fitness.png'));
   }
 }
+
+class _MembershipTicket extends StatelessWidget {
+  final Widget image;
+  late String attendee_name;
+  late String course_name;
+  late int duration;
+  late String last_check_in;
+  late String expire_day;
+  late int times;
+  late int max_join_times;
+  late int already_join_times;
+  late Color colorForExpireDay;
+  late Color colorForLastCheckIn;
+
+  _MembershipTicket({
+    Key? key,
+    required this.image,
+    required this.attendee_name,
+    required this.course_name,
+    required this.duration,
+    required this.already_join_times,
+    required this.max_join_times,
+    required this.last_check_in,
+    required this.expire_day,
+    required this.times,
+    required this.colorForExpireDay,
+    required this.colorForLastCheckIn,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 128.h,
+      decoration: ShapeDecoration(
+        color: Colors.white,
+        shape: _TicketShapeBorder(width: 1, radius: 16.0),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Container(
+                  height: 80.h,
+                  // padding: EdgeInsets.all(24),
+                  child: image,
+                ),
+                Container(
+                    child: Column(
+                  children: [
+                    Text('$duration month', style: TextStyle(fontSize: 16.h)),
+                  ],
+                )),
+              ],
+            ),
+          ),
+          Container(
+            width: 1,
+            height: double.infinity,
+            margin: EdgeInsets.symmetric(vertical: 8.0.h),
+            color: kColorTicketBorder,
+          ),
+          Expanded(
+            flex: 2,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Table(
+                    children: [
+                      TableRow(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Name',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 18.h),
+                              ),
+                              // SizedBox(height: 4.h),
+                              Text(
+                                attendee_name,
+                                style: TextStyle(
+                                  color: kColorTextDark,
+                                  fontSize: 17.h,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Last Check',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 17.h),
+                              ),
+                              // SizedBox(height: 4.h),
+                              Text(
+                                last_check_in,
+                                style: TextStyle(
+                                  color: colorForLastCheckIn,
+                                  fontSize: 17.h,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          SizedBox(
+                            height: 8.h,
+                            // width: 20.w,
+                          ),
+                          SizedBox(
+                            height: 8.h,
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Expire At',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 16.h),
+                              ),
+                              // SizedBox(height: 4.h),
+                              Text(
+                                expire_day,
+                                style: TextStyle(
+                                  color: colorForExpireDay,
+                                  fontSize: 17.h,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Join Times',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 16.h),
+                              ),
+                              // SizedBox(height: 4.h),
+                              Text(
+                                '$already_join_times/$max_join_times',
+                                style: TextStyle(
+                                  color: kColorTextDark,
+                                  fontSize: 18.h,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MembershipTicketList extends ConsumerStatefulWidget {
+  late Map<dynamic, dynamic> membershipList;
+
+  MembershipTicketList({
+    Key? key,
+    required this.membershipList,
+  });
+  @override
+  MembershipTicketListState createState() => MembershipTicketListState();
+}
+
+class MembershipTicketListState extends ConsumerState<MembershipTicketList> {
+  @override
+  Widget build(BuildContext context) {
+    bool isExpireDaySelected = ref.watch(isExpireDaySelectedProvider);
+    return _MembershipTicket(
+        colorForExpireDay: isExpireDaySelected ? kColorPrimary : Colors.black,
+        colorForLastCheckIn: isExpireDaySelected ? Colors.black : kColorPrimary,
+        course_name: widget.membershipList['course_name'],
+        attendee_name: widget.membershipList['attendee_name'],
+        duration: widget.membershipList['duration'],
+        last_check_in: widget.membershipList['last_check_in'],
+        expire_day: widget.membershipList['expire_day'],
+        times: widget.membershipList['times'],
+        max_join_times: widget.membershipList['max_join_times'],
+        already_join_times: widget.membershipList['already_join_times'],
+        image: widget.membershipList['course_name'] == 'Yoga' ||
+                widget.membershipList['course_name'] == 'Kids Yoga(A)' ||
+                widget.membershipList['course_name'] == 'Kids Yoga(B)' ||
+                widget.membershipList['course_name'] == 'Kids Yoga KG'
+            ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
+            : widget.membershipList['course_name'] == 'Dance' ||
+                    widget.membershipList['course_name'] == 'Kids Zumba' ||
+                    widget.membershipList['course_name'] == 'Zumba'
+                ? Image.asset('lib/assets/invi_course_pic/invi_dance.png')
+                : widget.membershipList['course_name'] == 'Karate' ||
+                        widget.membershipList['course_name'] == 'Kids Karate'
+                    ? Image.asset('lib/assets/invi_course_pic/invi_karate.png')
+                    : widget.membershipList['course_name'] == 'Music' ||
+                            widget.membershipList['course_name'] == 'Kids Music'
+                        ? Image.asset(
+                            'lib/assets/invi_course_pic/invi_music.png')
+                        : widget.membershipList['course_name'] ==
+                                    'Kids Gym(A)' ||
+                                widget.membershipList['course_name'] ==
+                                    'Kids Gym(B)'
+                            ? Image.asset(
+                                'lib/assets/invi_course_pic/male_fitness.png')
+                            : widget.membershipList['course_name'] == 'Pilates'
+                                ? Image.asset(
+                                    'lib/assets/invi_course_pic/invi_pilates.png')
+                                : widget.membershipList['course_name'] ==
+                                        'Family Pilates'
+                                    ? Image.asset(
+                                        'lib/assets/invi_course_pic/invi_family_pilates.png')
+                                    : widget.membershipList['course_name'] ==
+                                            'Family Yoga'
+                                        ? Image.asset(
+                                            'lib/assets/invi_course_pic/invi_family_yoga.png')
+                                        : widget.membershipList['course_name'] ==
+                                                    'Private Yoga@Studio' ||
+                                                widget.membershipList['course_name'] ==
+                                                    'Private Yoga@Home'
+                                            ? Image.asset(
+                                                'lib/assets/invi_course_pic/private_yoga.png')
+                                            : widget.membershipList['course_name'] ==
+                                                        'Private Pilates@Studio' ||
+                                                    widget.membershipList[
+                                                            'course_name'] ==
+                                                        'Private Pilates@Home'
+                                                ? Image.asset('lib/assets/invi_course_pic/private_pilates.png')
+                                                : Image.asset('lib/assets/invi_course_pic/female_fitness.png'));
+  }
+}
+  // late String attendee_name;
+  // late String course_name;
+  // late String expire_day;
+  // late int times_per_week;
+  // late int max_join_times;
+  // late int already_join_times;

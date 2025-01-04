@@ -12,12 +12,12 @@ import 'package:wellbee/screens/questionnaire/questinnaire_attendee.dart';
 import 'package:wellbee/screens/questionnaire/questionnaire_base.dart';
 import 'package:wellbee/screens/questionnaire/survey.dart';
 import 'package:wellbee/screens/setting/setting_page.dart';
+import 'package:wellbee/screens/user_calendar.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/color.dart';
 import 'package:wellbee/ui_parts/display.dart';
 import 'home.dart';
 import 'qr/qr_reservation.dart';
-import 'result.dart';
 import 'package:http/http.dart' as http;
 
 class TopPage extends StatefulWidget {
@@ -42,7 +42,7 @@ class _TopPageState extends State<TopPage> {
     _selectedIndex = widget.firstNum;
     _pages = [
       HomePage(),
-      // UserQrCodePage(),
+      UserCalendarPage(),
       SettingPage(),
     ];
     super.initState();
@@ -68,8 +68,8 @@ class _TopPageState extends State<TopPage> {
         onTap: _onItemTapped,
         items: const <Widget>[
           Icon(Icons.home, color: Color.fromARGB(255, 97, 198, 187), size: 30),
-          // Icon(Icons.qr_code_rounded,
-          //     color: Color.fromARGB(255, 97, 198, 187), size: 30),
+          Icon(Icons.calendar_month_outlined,
+              color: Color.fromARGB(255, 97, 198, 187), size: 30),
           Icon(Icons.settings_accessibility_outlined,
               color: Color.fromARGB(255, 97, 198, 187), size: 30),
         ],

@@ -187,8 +187,8 @@ class _MonthlySlotPageState extends State<MonthlySlotPage> {
         Future.delayed(const Duration(seconds: 15),
             () => throw TimeoutException("Request timeout"))
       ]);
-      if (response.statusCode == 204) {
-        showSnackBar(kColorPrimary, 'Slot has been deleted');
+      if (response.statusCode == 200) {
+        showSnackBar(kColorPrimary, 'Slot has been canceled');
         setState(() {
           _fetchAndBuildEvents();
         });

@@ -354,8 +354,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                                 style: TextStyle(fontSize: 20.h))));
                   } else {
                     final courseSlotList = snapshot.data!;
-                    return Container(
-                      height: 280.h,
+                    return Expanded(
                       child: ListView.builder(
                         itemCount: courseSlotList.length,
                         itemBuilder: (context, index) {

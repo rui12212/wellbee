@@ -104,10 +104,29 @@ class MembershipViewSet(viewsets.ModelViewSet):
         if self.action == 'fetch_membership_by_staff':
             memberships = Membership.objects.all()
             return memberships
+        if self.action == 'fetch_course_membership':
+            memberships = Membership.objects.all()
+            return memberships
         # if self.action == 'fetch_my_id':
         #     my_id = Membership.objects.all()
         else:
             return super().get_queryset()
+    
+    @action(detail=False, methods=['get'],permission_classes=[MembershipPermission],url_path='course_membership')
+    def fetch_course_membership(self,request):
+        now_utc = timezone.now()
+        local_timezone = pytz.timezone('Africa/Nairobi')
+        now_local = now_utc.astimezone(local_timezone)
+        today_date = now_local.date()
+
+        course_name = self.request.query_params.get('course_name')
+        memberships = Membership.objects.filter(
+            expire_day__gte = today_date,
+            course__course_name = course_name
+        ).order_by('expire_day')
+        serializer = self.get_serializer(memberships,many=True)
+        return Response(serializer.data)
+
         
     @action(detail=False, methods=['get'],permission_classes=[MembershipPermission],url_path='closest_membership')
     def fetch_closest_membership(self,request):
@@ -119,7 +138,8 @@ class MembershipViewSet(viewsets.ModelViewSet):
 
         memberships = Membership.objects.filter(
             user = user_id,
-            expire_day__gte = today_date
+            expire_day__gte = today_date,
+            already_join_times__lt = F('max_join_times')
         ).order_by('expire_day').first()
         serializer = self.get_serializer(memberships)
         return Response(serializer.data)
@@ -318,19 +338,19 @@ class CheckInViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CheckInSerializer
     permission_classes = [CheckInPermission]
 
-    def get_queryset(self):
-         if self.action == 'fetch_staff_checkin':
-            check_in = CheckIn.objects.all()
-            return check_in
+    # def get_queryset(self):
+    #      if self.action == 'fetch_staff_checkin':
+    #         check_in = CheckIn.objects.all()
+    #         return check_in
          
-    @action(detail=False,methods=['get'],url_path='staff_checkin')
-    def fetch_staff_checkin(self,request):
-        user_id = self.request.query_params.get('user_id')
-        last_checkin = CheckIn.objects.filter(
-            reservation__membership__user = user_id
-        ).reverse().first()
-        serializer = self.get_serializer(last_checkin)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+    # @action(detail=False,methods=['get'],url_path='staff_checkin')
+    # def fetch_staff_checkin(self,request):
+    #     user_id = self.request.query_params.get('user_id')
+    #     last_checkin = CheckIn.objects.filter(
+    #         reservation__membership__user = user_id
+    #     ).reverse().first()
+    #     serializer = self.get_serializer(last_checkin)
+    #     return Response(serializer.data,status=status.HTTP_200_OK)
     
 
     def perform_create(self, serializer):
