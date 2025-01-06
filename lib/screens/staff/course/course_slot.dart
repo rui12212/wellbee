@@ -142,14 +142,14 @@
 //         //   },
 //         // ), ((route) => false));
 //       }
-//       // else if (response.statusCode == 204) {
-//       //   showSnackBar(kColorPrimary, 'Slot has been deleted');
-//       //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-//       //     builder: (context) {
-//       //       return AllCoursePage();
-//       //     },
-//       //   ), ((route) => false));
-//       // }
+      // else if (response.statusCode == 204) {
+      //   showSnackBar(kColorPrimary, 'Slot has been deleted');
+      //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+      //     builder: (context) {
+      //       return AllCoursePage();
+      //     },
+      //   ), ((route) => false));
+      // }
 //       else if (response.statusCode >= 400) {
 //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
 //             content: Text('Internet Error. You may not have slots')));

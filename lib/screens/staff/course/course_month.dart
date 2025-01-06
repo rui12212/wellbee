@@ -174,7 +174,7 @@ class _MonthlySlotPageState extends State<MonthlySlotPage> {
     return kSlotEvents[day] ?? [];
   }
 
-  Future<List<dynamic>?> _deleteSlot(int slotId) async {
+  Future<List<dynamic>?> _cancelSlot(int slotId) async {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
       var url = Uri.parse(
@@ -189,15 +189,10 @@ class _MonthlySlotPageState extends State<MonthlySlotPage> {
       ]);
       if (response.statusCode == 200) {
         showSnackBar(kColorPrimary, 'Slot has been canceled');
-        setState(() {
-          _fetchAndBuildEvents();
-        });
-
-        // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-        //   builder: (context) {
-        //     // return AllCoursePage();
-        //   },
-        // ), ((route) => false));
+        setState(() {});
+      } else if (response.statusCode == 204) {
+        showSnackBar(kColorPrimary, 'Slot has been deleted');
+        setState(() {});
       } else if (response.statusCode >= 400) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('Internet Error. You may not have slots')));
@@ -218,7 +213,7 @@ class _MonthlySlotPageState extends State<MonthlySlotPage> {
       titleText: 'Cancel Reservation',
       desc: 'Are you sure to cancel?',
       callback: () async {
-        await _deleteSlot(id);
+        await _cancelSlot(id);
       },
     ).show(context);
   }
