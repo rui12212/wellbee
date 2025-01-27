@@ -1,4 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -164,7 +165,7 @@ class _RadarChartPageState extends State<RadarChartPage> {
                 Stack(
                   children: [
                     AspectRatio(
-                      aspectRatio: 1.1.w,
+                      aspectRatio: 1.1.h,
                       child: RadarChart(
                         RadarChartDataFixMinMax(
                           max: RadarEntry(value: 4.w),

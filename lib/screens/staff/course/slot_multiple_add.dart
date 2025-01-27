@@ -147,279 +147,283 @@ class _AddSlotPageState extends ConsumerState<AddSlotPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.all(15.w),
-          child: Column(
-            children: [
-              _Header(title: 'Add Slots'),
-              Container(
-                height: 270.h,
-                child: ListView.builder(
-                    itemCount: riverSlotList.length,
-                    itemBuilder: (context, index) {
-                      final DateTime dateTime = riverSlotList[index];
-                      final String stringDate =
-                          DateFormat('yyyy-MM-dd').format(dateTime).toString();
-                      String formattedDateOfWeek =
-                          DateFormat.EEEE('en').format(dateTime);
-                      return Slidable(
-                          closeOnScroll: true,
-                          endActionPane:
-                              ActionPane(motion: ScrollMotion(), children: [
-                            SlidableAction(
-                              flex: 1,
-                              onPressed: (context) async {
-                                ref
-                                    .read(slotListProvider.notifier)
-                                    .update((state) {
-                                  final newList = List<dynamic>.from(state);
-                                  newList.removeAt(index);
-                                  // print(newList);
-                                  return newList;
-                                });
-                              },
-                              backgroundColor: Colors.amber,
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete_forever_outlined,
-                              label: 'Delete',
-                            )
-                          ]),
-                          child: Container(
-                            height: 55.h,
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    bottom: BorderSide(
-                                        color: Colors.black, width: 0.2.h))),
-                            child: Row(
-                              // crossAxisAlignment: MAxisAlignment.center,
-                              children: [
-                                SizedBox(width: 20.w),
-                                Text(stringDate,
-                                    style: TextStyle(fontSize: 20.h)),
-                                Text(':  $formattedDateOfWeek',
-                                    style: TextStyle(fontSize: 18.h)),
-                              ],
-                            ),
-                          ));
-                    }),
-              ),
-              Container(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                    Column(
-                      children: [
-                        Align(
-                            alignment: Alignment.topLeft,
-                            child: Text('Start Time',
-                                style: TextStyle(
-                                    color: kColorTextDarkGrey,
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w500))),
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              border: Border.all(color: kColorTextDarkGrey)),
-                          child: DropdownButton(
-                            underline: SizedBox.shrink(),
-                            itemHeight: 45.h,
-                            isExpanded: true,
-                            style:
-                                TextStyle(fontSize: 22.sp, color: Colors.black),
-                            items: const [
-                              DropdownMenuItem(
-                                value: '11:00',
-                                child: Text('11:00'),
+        child: SingleChildScrollView(
+          child: Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(15.w),
+            child: Column(
+              children: [
+                _Header(title: 'Add Slots'),
+                Container(
+                  height: 270.h,
+                  child: ListView.builder(
+                      itemCount: riverSlotList.length,
+                      itemBuilder: (context, index) {
+                        final DateTime dateTime = riverSlotList[index];
+                        final String stringDate = DateFormat('yyyy-MM-dd')
+                            .format(dateTime)
+                            .toString();
+                        String formattedDateOfWeek =
+                            DateFormat.EEEE('en').format(dateTime);
+                        return Slidable(
+                            closeOnScroll: true,
+                            endActionPane:
+                                ActionPane(motion: ScrollMotion(), children: [
+                              SlidableAction(
+                                flex: 1,
+                                onPressed: (context) async {
+                                  ref
+                                      .read(slotListProvider.notifier)
+                                      .update((state) {
+                                    final newList = List<dynamic>.from(state);
+                                    newList.removeAt(index);
+                                    // print(newList);
+                                    return newList;
+                                  });
+                                },
+                                backgroundColor: Colors.amber,
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete_forever_outlined,
+                                label: 'Delete',
+                              )
+                            ]),
+                            child: Container(
+                              height: 55.h,
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      bottom: BorderSide(
+                                          color: Colors.black, width: 0.2.h))),
+                              child: Row(
+                                // crossAxisAlignment: MAxisAlignment.center,
+                                children: [
+                                  SizedBox(width: 20.w),
+                                  Text(stringDate,
+                                      style: TextStyle(fontSize: 20.h)),
+                                  Text(':  $formattedDateOfWeek',
+                                      style: TextStyle(fontSize: 18.h)),
+                                ],
                               ),
-                              DropdownMenuItem(
-                                value: '12:00',
-                                child: Text('12:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '13:00',
-                                child: Text('13:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '14:00',
-                                child: Text('14:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '15:00',
-                                child: Text('15:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '16:00',
-                                child: Text('16:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '17:00',
-                                child: Text('17:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '18:00',
-                                child: Text('18:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '19:00',
-                                child: Text('19:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '20:00',
-                                child: Text('20:00'),
-                              ),
-                            ],
-                            value: startTime,
-                            onChanged: (value) {
-                              if (value != null) {
-                                ref.read(startTimeProvider.notifier).state =
-                                    value;
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Align(
-                            alignment: Alignment.topLeft,
-                            child: Text('End Time',
-                                style: TextStyle(
-                                    color: kColorTextDarkGrey,
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w500))),
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              border: Border.all(color: kColorTextDarkGrey)),
-                          child: DropdownButton(
-                            underline: SizedBox.shrink(),
-                            itemHeight: 45.h,
-                            isExpanded: true,
-                            style:
-                                TextStyle(fontSize: 22.sp, color: Colors.black),
-                            items: const [
-                              DropdownMenuItem(
-                                value: '11:00',
-                                child: Text('11:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '12:00',
-                                child: Text('12:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '13:00',
-                                child: Text('13:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '14:00',
-                                child: Text('14:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '15:00',
-                                child: Text('15:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '16:00',
-                                child: Text('16:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '17:00',
-                                child: Text('17:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '18:00',
-                                child: Text('18:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '19:00',
-                                child: Text('19:00'),
-                              ),
-                              DropdownMenuItem(
-                                value: '20:00',
-                                child: Text('20:00'),
-                              ),
-                            ],
-                            value: endTime,
-                            onChanged: (value) {
-                              if (value != null) {
-                                ref.read(endTimeProvider.notifier).state =
-                                    value;
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Align(
-                            alignment: Alignment.topLeft,
-                            child: Text('Max Capacity',
-                                style: TextStyle(
-                                    color: kColorTextDarkGrey,
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w500))),
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              border: Border.all(color: kColorTextDarkGrey)),
-                          child: DropdownButton<int>(
-                            underline: SizedBox.shrink(),
-                            itemHeight: 45.h,
-                            isExpanded: true,
-                            style:
-                                TextStyle(fontSize: 22.sp, color: Colors.black),
-                            items: maxPeopleItems,
-                            value: maxPeople,
-                            onChanged: (value) {
-                              if (value != null) {
-                                ref.read(maxCapacityProvider.notifier).state =
-                                    value;
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                    FilledButton.icon(
-                      onPressed: () {
-                        if (riverSlotList.isNotEmpty) {
-                          CustomAwesomeDialogue(
-                            titleText: 'Confirm',
-                            desc: 'Push "OK" to add slots',
-                            callback: () {
-                              _createSlot();
-                            },
-                          ).show(context);
-                        } else {
-                          showSnackBar(Colors.red, 'No slot has been selected');
-                          return;
-                        }
-
-                        // Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.add),
-                      label:
-                          Text('Add Slot', style: TextStyle(fontSize: 20.sp)),
-                      style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all<Size>(
-                            Size(300, 60)), // ボタンの幅と高さを設定
-                      ),
-                    ),
-                  ],
+                            ));
+                      }),
                 ),
-              ),
-            ],
+                Container(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      Column(
+                        children: [
+                          Align(
+                              alignment: Alignment.topLeft,
+                              child: Text('Start Time',
+                                  style: TextStyle(
+                                      color: kColorTextDarkGrey,
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w500))),
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(color: kColorTextDarkGrey)),
+                            child: DropdownButton(
+                              underline: SizedBox.shrink(),
+                              itemHeight: 50.h,
+                              isExpanded: true,
+                              style: TextStyle(
+                                  fontSize: 22.sp, color: Colors.black),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: '11:00',
+                                  child: Text('11:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '12:00',
+                                  child: Text('12:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '13:00',
+                                  child: Text('13:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '14:00',
+                                  child: Text('14:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '15:00',
+                                  child: Text('15:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '16:00',
+                                  child: Text('16:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '17:00',
+                                  child: Text('17:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '18:00',
+                                  child: Text('18:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '19:00',
+                                  child: Text('19:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '20:00',
+                                  child: Text('20:00'),
+                                ),
+                              ],
+                              value: startTime,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  ref.read(startTimeProvider.notifier).state =
+                                      value;
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Align(
+                              alignment: Alignment.topLeft,
+                              child: Text('End Time',
+                                  style: TextStyle(
+                                      color: kColorTextDarkGrey,
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w500))),
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(color: kColorTextDarkGrey)),
+                            child: DropdownButton(
+                              underline: SizedBox.shrink(),
+                              itemHeight: 50.h,
+                              isExpanded: true,
+                              style: TextStyle(
+                                  fontSize: 22.sp, color: Colors.black),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: '11:00',
+                                  child: Text('11:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '12:00',
+                                  child: Text('12:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '13:00',
+                                  child: Text('13:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '14:00',
+                                  child: Text('14:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '15:00',
+                                  child: Text('15:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '16:00',
+                                  child: Text('16:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '17:00',
+                                  child: Text('17:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '18:00',
+                                  child: Text('18:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '19:00',
+                                  child: Text('19:00'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '20:00',
+                                  child: Text('20:00'),
+                                ),
+                              ],
+                              value: endTime,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  ref.read(endTimeProvider.notifier).state =
+                                      value;
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Align(
+                              alignment: Alignment.topLeft,
+                              child: Text('Max Capacity',
+                                  style: TextStyle(
+                                      color: kColorTextDarkGrey,
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w500))),
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(color: kColorTextDarkGrey)),
+                            child: DropdownButton<int>(
+                              underline: SizedBox.shrink(),
+                              itemHeight: 50.h,
+                              isExpanded: true,
+                              style: TextStyle(
+                                  fontSize: 22.sp, color: Colors.black),
+                              items: maxPeopleItems,
+                              value: maxPeople,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  ref.read(maxCapacityProvider.notifier).state =
+                                      value;
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      FilledButton.icon(
+                        onPressed: () {
+                          if (riverSlotList.isNotEmpty) {
+                            CustomAwesomeDialogue(
+                              titleText: 'Confirm',
+                              desc: 'Push "OK" to add slots',
+                              callback: () {
+                                _createSlot();
+                              },
+                            ).show(context);
+                          } else {
+                            showSnackBar(
+                                Colors.red, 'No slot has been selected');
+                            return;
+                          }
+
+                          // Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.add),
+                        label:
+                            Text('Add Slot', style: TextStyle(fontSize: 20.sp)),
+                        style: ButtonStyle(
+                          minimumSize: MaterialStateProperty.all<Size>(
+                              Size(300, 60)), // ボタンの幅と高さを設定
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +10,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:wellbee/assets/version_info.dart';
 import 'package:wellbee/main.dart';
 import 'package:wellbee/screens/attendee/attendee.dart';
 import 'package:wellbee/screens/graph/graph.dart';
@@ -99,6 +102,9 @@ List<Map<String, dynamic>> myReservations = [];
 String? token = '';
 
 class _HomePageState extends State<HomePage> {
+  bool isUpdateNeeded = false;
+  bool isIos = false;
+
   @override
   showSnackBar(color, text) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -109,7 +115,7 @@ class _HomePageState extends State<HomePage> {
   Future<Map<String, dynamic>?> _fetchReservation() async {
     try {
       token = await SharedPrefs.fetchAccessToken();
-      print(token);
+      // print(token);
       var url = Uri.parse(
           '${baseUri}reservations/reservation/my_reservations/?token=$token');
       var response = await Future.any([
@@ -177,6 +183,102 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void judgeOSType() {
+    if (Platform.isIOS) {
+      setState(
+        () {
+          isIos = true;
+        },
+      );
+    } else if (Platform.isAndroid) {
+      setState(
+        () {
+          isIos = false;
+        },
+      );
+    }
+  }
+
+  _fetchLatestVersion() async {
+    try {
+      // await DialogGenerator.showLoadingDialog(context: context);
+      token = await SharedPrefs.fetchAccessToken();
+      // print(token);
+      if (token == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Internet Error occurred.')));
+      } else {
+        var url =
+            Uri.parse('${baseUri}versions/version/latest_version?token=$token');
+        var response = await Future.any([
+          http.get(url, headers: {"Authorization": 'JWT $token'}),
+          Future.delayed(const Duration(seconds: 5),
+              () => throw TimeoutException("Request timeout"))
+        ]);
+        if (response.statusCode == 200) {
+          Map<String, dynamic> data = jsonDecode(response.body);
+          return data;
+        } else if (response.statusCode >= 400) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Internet Error occurred.')));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Something went wrong. Try again later')));
+        }
+      }
+    } catch (e) {
+      // Navigator.pop(context);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+  Future<bool?> checkVersionInformation() async {
+    final Map<String, dynamic> latestVersionMap = await _fetchLatestVersion();
+    final double latestVersion = latestVersionMap['version'];
+    List<String> parts = currentVersion.split('.');
+    final majorUpdate = parts[0];
+    final middleUpdate = parts[1];
+    final minorUpdate = parts[2];
+    final String combined = "${majorUpdate}.${middleUpdate}${minorUpdate}";
+    final double modifiedCurrentVersion = double.parse(combined);
+    if (latestVersion > modifiedCurrentVersion) {
+      isUpdateNeeded = true;
+      return isUpdateNeeded;
+    } else if (modifiedCurrentVersion >= latestVersion) {
+      isUpdateNeeded = false;
+      return isUpdateNeeded;
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error occur')));
+    }
+  }
+
+  Future<dynamic> onLaunchAndroidUrl() async {
+    final Uri url = Uri.parse(
+        'https://play.google.com/store/apps/details?id=com.wellbee.app&pcampaignid=web_share');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      // エラーハンドリング: URLを開けない場合の処理
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: Search the latest version on Google Play')));
+    }
+  }
+
+  Future<dynamic> onLaunchIOSUrl() async {
+    // print('haha');
+    final Uri url =
+        Uri.parse('https://apps.apple.com/app/wellbee-app/id6737229335');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      // エラーハンドリング: URLを開けない場合の処理
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: Search the latest version on Apple Store')));
+    }
+  }
+
   void showAwesomeDialog() {
     CustomAwesomeDialogueForCancelReservation(
       titleText: 'Sign Out',
@@ -194,7 +296,20 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    judgeOSType();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      bool? updateNeeded = await checkVersionInformation();
+      if (updateNeeded != null && updateNeeded == true) {
+        VersionUpCustomAwesomeDialogue(
+                titleText: 'New Version Released',
+                desc: 'Please update the app to the newest version',
+                callback: isIos == true ? onLaunchIOSUrl : onLaunchAndroidUrl)
+            .show(context);
+      } else if (updateNeeded != null && updateNeeded == false) {
+        return;
+      } else {
+        showSnackBar(Colors.red, 'version check error');
+      }
       _fetchAttendee();
     });
   }
@@ -210,7 +325,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Container(
                   width: 390.w,
-                  height: 200.h,
+                  // height: 200.h,
                   child: Material(
                     color: kColorPrimary,
                     // elevation: 68,

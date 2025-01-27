@@ -227,39 +227,39 @@ class _CheckInPageState extends State<CheckInPage> {
                             slot_end_time: formattedEndTime,
                             attendee_name: scannedReservation['attendee_name'],
                           ),
-                          SizedBox(height: 18.h),
-                          Column(
-                            children: [
-                              Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(
-                                      'Number of Attendee(For Family Course!)',
-                                      style: TextStyle(
-                                          color: Colors.redAccent,
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.w500))),
-                              Container(
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10)),
-                                    border:
-                                        Border.all(color: kColorTextDarkGrey)),
-                                child: DropdownButton(
-                                    isExpanded: true,
-                                    style: TextStyle(
-                                        fontSize: 22.sp, color: Colors.black),
-                                    itemHeight: 75.h,
-                                    value: selectedNumPerson,
-                                    hint: Text('Select number of people'),
-                                    items: numPersonItems,
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        selectedNumPerson = newValue;
-                                      });
-                                    }),
-                              ),
-                            ],
-                          ),
+                          // SizedBox(height: 18.h),
+                          // Column(
+                          //   children: [
+                          //     Align(
+                          //         alignment: Alignment.topLeft,
+                          //         child: Text(
+                          //             'Number of Attendee(For Family Course!)',
+                          //             style: TextStyle(
+                          //                 color: Colors.redAccent,
+                          //                 fontSize: 16.sp,
+                          //                 fontWeight: FontWeight.w500))),
+                          //     Container(
+                          //       decoration: BoxDecoration(
+                          //           borderRadius:
+                          //               BorderRadius.all(Radius.circular(10)),
+                          //           border:
+                          //               Border.all(color: kColorTextDarkGrey)),
+                          //       child: DropdownButton(
+                          //           isExpanded: true,
+                          //           style: TextStyle(
+                          //               fontSize: 22.sp, color: Colors.black),
+                          //           itemHeight: 75.h,
+                          //           value: selectedNumPerson,
+                          //           hint: Text('Select number of people'),
+                          //           items: numPersonItems,
+                          //           onChanged: (newValue) {
+                          //             setState(() {
+                          //               selectedNumPerson = newValue;
+                          //             });
+                          //           }),
+                          //     ),
+                          //   ],
+                          // ),
                           SizedBox(
                             height: 30.h,
                           ),

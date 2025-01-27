@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:wellbee/assets/version_info.dart';
 import 'package:wellbee/screens/first_attendee_add.dart';
 import 'package:wellbee/screens/staff/auth/staff_signin.dart';
 import 'package:wellbee/screens/staff/auth/staff_top_page.dart';
 import 'package:wellbee/ui_parts/color.dart';
+import 'package:wellbee/ui_parts/text_scale.dart';
 import 'package:wellbee/ui_parts/textstyle.dart';
 import 'assets/inet.dart';
 import 'screens/sign_up.dart';
@@ -37,14 +40,14 @@ class MyApp extends StatelessWidget {
         splitScreenMode: true,
         builder: (_, child) {
           return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'Flutter Demo',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              fontFamily: 'Playfair',
-            ),
-            home: const SignInPage(),
-          );
+              debugShowCheckedModeBanner: false,
+              title: 'Flutter Demo',
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+                fontFamily: 'Playfair',
+              ),
+              home: const SignInPage(),
+              builder: (context, child) => TextScaleFactor(child: child!));
         });
   }
 }
@@ -59,33 +62,6 @@ class _Footer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        //   const Text(
-        //       // \をいれることで、文字列として使いたい「'」と文字の中で使いたい「'」を分けられる
-        //       'Forgot password?',
-        //       style: TextStyle(
-        //         fontSize: 16,
-        //       )),
-        //   const SizedBox(
-        //     width: 4,
-        //   ),
-
-        //   // TextにもInkWellで機能を付与することが可能
-        //   InkWell(
-        //     onTap: () {
-        //       Navigator.of(context).push(MaterialPageRoute(
-        //         builder: (context) {
-        //           return const SignUpPage();
-        //         },
-        //       ));
-        //     },
-        //     child: const Text('Reset password',
-        //         style: TextStyle(
-        //           color: Colors.black38,
-        //           fontSize: 16,
-        //         )),
-        //   )
-        // ]),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Text(
               // \をいれることで、文字列として使いたい「'」と文字の中で使いたい「'」を分けられる
@@ -256,7 +232,7 @@ class _SignInPageState extends State<SignInPage> {
         }
       }
     } catch (e) {
-      Navigator.pop(context);
+      // Navigator.pop(context);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error: $e')));
     }
@@ -266,114 +242,14 @@ class _SignInPageState extends State<SignInPage> {
     // print('haha');
     final Uri url =
         Uri.parse('https://rui12212.github.io/wellbee/privacy-policy');
-    // if (await canLaunchUrl(url)) {
-    await launchUrl(url);
-    // } else {
-    //   // エラーハンドリング: URLを開けない場合の処理
-    //   ScaffoldMessenger.of(context)
-    //       .showSnackBar(SnackBar(content: Text('Try again later')));
-    // }
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      // エラーハンドリング: URLを開けない場合の処理
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Try again later')));
+    }
   }
-
-// ----------------right----------- down below is for 2nd ideas
-
-  // Future<void>? autoLoad() {
-  //   if (isToken == true && isAttendee == true) {
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(builder: (context) => const TopPage(0)),
-  //     );
-  //   }
-  //   if (isToken == true && isAttendee == false) {
-  //     // Navigator.pop(context);
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(builder: (context) => const FirstAttendeeAddPage()),
-  //     );
-  //   }
-  //   Navigator.pop(context);
-  //   // return;
-  // }
-
-  // Future<void> fetchTokenAndBool() async {
-  //   token = await SharedPrefs.fetchAccessToken();
-  //   if (token != null) {
-  //     int fetchedAttendeeInt = await _fetchAttendeeExist();
-  //     setState(() {
-  //       attendeeInt = fetchedAttendeeInt;
-  //     });
-
-  //     if (attendeeInt == 0) {
-  //       setState(() {
-  //         isToken = true;
-  //         isAttendee = true;
-  //       });
-  //       autoLoad();
-  //     } else if (attendeeInt == 1) {
-  //       setState(() {
-  //         isToken = true;
-  //         isAttendee = false;
-  //       });
-  //       autoLoad();
-  //     } else if (attendeeInt == 2) {
-  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //           content: Text(
-  //               'Error occurred. Try again later with internet connection')));
-  //       // print('attendeeInt:$attendeeInt');
-  //       // print('isToken:$isToken');
-  //       // print('isAttendee:$isAttendee');
-  //       return;
-  //     }
-  //   } else {
-  //     setState(() {
-  //       isToken = false;
-  //     });
-  //   }
-  // }
-
-  // _fetchAttendeeExist() async {
-  //   try {
-  //     await DialogGenerator.showLoadingDialog(context: context);
-  //     token = await SharedPrefs.fetchAccessToken();
-  //     // print(token);
-  //     if (token == null) {
-  //       return false;
-  //     } else {
-  //       var url =
-  //           Uri.parse('${baseUri}attendances/attendee/first_page_attendee/');
-  //       var response = await Future.any([
-  //         http.get(url, headers: {"Authorization": 'JWT $token'}),
-  //         Future.delayed(const Duration(seconds: 5),
-  //             () => throw TimeoutException("Request timeout"))
-  //       ]);
-  //       if (response.statusCode == 200) {
-  //         List<dynamic> data = jsonDecode(response.body);
-  //         // print(data);
-  //         if (data.isNotEmpty) {
-  //           // ネット正常＋attendeeがいる
-  //           return 0;
-  //         } else
-  //           // ネット正常＋attendeeがいない
-  //           return 1;
-  //       } else if (response.statusCode >= 400) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //             const SnackBar(content: Text('Internet Error occurred.')));
-  //         Navigator.pop(context);
-  //         return 2;
-  //       } else {
-  //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //             content: Text('Something went wrong. Try again later')));
-  //         Navigator.pop(context);
-  //         return 2;
-  //       }
-  //     }
-  //   } catch (e) {
-  //     Navigator.pop(context);
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text('Error: $e')));
-  //     return 2;
-  //   }
-  // }
 
   @override
   void initState() {
@@ -414,7 +290,6 @@ class _SignInPageState extends State<SignInPage> {
         final data = jsonDecode(response.body);
         final accessToken = data['access'];
         final refreshToken = data['refresh'];
-        // print(accessToken);
         await SharedPrefs.setAccessToken(accessToken);
         bool attendeeExists = await _fetchAttendeeExist();
         setState(() {
@@ -471,90 +346,6 @@ class _SignInPageState extends State<SignInPage> {
       return;
     }
   }
-
-  // Future<void> _login() async {
-  //   try {
-  //     if (_phoneController.text.isEmpty || _passwordController.text.isEmpty) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text('Please fill in all fields.')));
-  //       return;
-  //     }
-  //     // ダイアログを呼び出す
-  //     await DialogGenerator.showLoadingDialog(context: context);
-
-  //     var url = Uri.parse('${baseUri}authen/jwt/create/');
-  //     var response = await Future.any([
-  //       http.post(url, body: {
-  //         'phone_number': _phoneController.text,
-  //         'password': _passwordController.text,
-  //       }),
-  //       Future.delayed(const Duration(seconds: 15),
-  //           () => throw TimeoutException("Request timeout"))
-  //     ]);
-
-  //     if (response.statusCode == 200) {
-  //       // 作成成功したら、Token作成
-  //       // 作成したTokenを取得し、SharedPrefsに保存
-  //       final data = jsonDecode(response.body);
-  //       final accessToken = data['access'];
-  //       final refreshToken = data['refresh'];
-  //       // print(accessToken);
-  //       await SharedPrefs.setAccessToken(accessToken);
-  //       int attendeeInt = await _fetchAttendeeExist();
-  //       if (attendeeInt == 0) {
-  //         setState(() {
-  //           isAttendee = true;
-  //         });
-  //       } else if (attendeeInt == 1) {
-  //         setState(() {
-  //           isAttendee = false;
-  //         });
-  //       }
-  //       Navigator.pop(context);
-  //       await Future.delayed(Duration(milliseconds: 250));
-
-  //       ScaffoldMessenger.of(context)
-  //           .showSnackBar(const SnackBar(content: Text('Login success!')));
-
-  //       if (isAttendee == true) {
-  //         Navigator.push(
-  //           context,
-  //           MaterialPageRoute(builder: (context) => const TopPage(0)),
-  //         );
-  //       }
-  //       if (isAttendee == false) {
-  //         Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //               builder: (context) => const FirstAttendeeAddPage()),
-  //         );
-  //       }
-  //     } else if (response.statusCode > 350) {
-  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //           content: Text(
-  //               'Error occurred. Mobile number or password maybe wrong.')));
-  //       Navigator.pop(context);
-  //       // Navigator.pop(context);
-  //     } else {
-  //       // ロードの終了
-  //       Navigator.pop(context);
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text('Failed to create user. Try again later.')));
-  //     }
-  //     // エラー処理
-  //   } catch (e) {
-  //     // ロードの終了
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text('Error: $e')));
-  //     // Navigator.pop(context);
-  //     Navigator.pop(context);
-  //     // ここは最後に必ず実行される
-  //   } finally {
-  //     // ロードの終了
-  //     // Navigator.pop(context);
-  //     return;
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {

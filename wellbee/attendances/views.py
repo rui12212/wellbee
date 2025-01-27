@@ -17,7 +17,7 @@ import pytz
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404, render
-
+from django.db.models import Prefetch
 # admin用。削除はできないようにしたい。is_activeをFalseにする仕様にする
 class MembershipViewSet(viewsets.ModelViewSet):
     queryset = Membership.objects.all()
@@ -107,6 +107,9 @@ class MembershipViewSet(viewsets.ModelViewSet):
         if self.action == 'fetch_course_membership':
             memberships = Membership.objects.all()
             return memberships
+        if self.action == 'fetch_health_survey':
+            health_surveys = Membership.objects.all()
+            return health_surveys
         # if self.action == 'fetch_my_id':
         #     my_id = Membership.objects.all()
         else:
@@ -197,6 +200,8 @@ class MembershipViewSet(viewsets.ModelViewSet):
             )
         serializer = self.get_serializer(memberships, many=True)
         return Response(serializer.data)
+    
+
 
 
 class AttendeeViewSet(viewsets.ModelViewSet):
@@ -217,6 +222,8 @@ class AttendeeViewSet(viewsets.ModelViewSet):
         elif self.action == 'fetch_first_attendee':
             attendee = Attendee.objects.all()
             return attendee
+        elif self.action == 'fetch_attendee_health_survey':
+            attendee= Attendee.objects.all()
         else:
             return Attendee.objects.all()
         
@@ -260,18 +267,6 @@ class AttendeeViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(attendees, many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
-    
-    # def create(self, request, *args, **kwargs):
-    #     data = request.data.copy()
-    #     data['user'] = request.user.id
-    #     serializer = self.get_serializer(data=data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-    # def perform_create(self, serializer):
-    #     serializer.save(user=self.request.user)
 
     def perform_create(self,serializer):
         my_attendee_count = Attendee.objects.filter(user=self.request.user).count()
@@ -288,6 +283,22 @@ class AttendeeViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['get'], url_path='attendee_health_survey', permission_classes=[AttendeePermission])
+    def fetch_attendee_health_survey(self,request):
+        today = timezone.now().date()
+        active_memberships = Membership.objects.filter(
+            expire_day__gte = today
+        ).order_by('expire_day')
+
+        attendees =  Attendee.objects.filter(
+            membership__expire_day__gte = today
+        ).prefetch_related(
+            Prefetch('membership_set', queryset=active_memberships)
+        ).distinct()
+        serializer = serializers.AttendeeSerializer(attendees, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
     
 class InterviewViewSet(viewsets.ModelViewSet):
     queryset=Interview.objects.all()

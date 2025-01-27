@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'questionnaires.apps.QuestionnairesConfig',
     'reservations.apps.ReservationsConfig',
+    'versions.apps.VersionsConfig',
 ]
 
 MIDDLEWARE = [

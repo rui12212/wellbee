@@ -9,6 +9,7 @@ class MembershipSerializer(serializers.ModelSerializer):
     attendee_gender = serializers.CharField(source='attendee.gender', read_only=True)
     attendee_birthday = serializers.DateField(source='attendee.date_of_birth', read_only=True)
     course_name = serializers.CharField(source='course.course_name', read_only=True)
+    last_survey_date = serializers.DateTimeField(source='attendee.last_survey_date',read_only=True)
     # user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     # attendee = serializers.PrimaryKeyRelatedField(queryset=Attendee.objects.all())
@@ -18,7 +19,7 @@ class MembershipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Membership
         # fields = '__all__'
-        fields=('id','user_id','course','expire_day','start_day','minus','times','max_join_times','already_join_times','last_check_in','requested_join_times','duration','request_time', 'is_approved', 'total_price','attendee_name','attendee_gender','attendee_birthday','course_name','num_person','discounted_total_price','attendee')
+        fields=('id','user_id','course','expire_day','start_day','minus','times','max_join_times','already_join_times','last_check_in','requested_join_times','duration','request_time', 'is_approved', 'total_price','attendee_name','attendee_gender','attendee_birthday','course_name','num_person','discounted_total_price','attendee','last_survey_date')
         extra_kwargs = {
             'user_id': {'read_only': True},
             'id': {'read_only': True},
@@ -54,10 +55,11 @@ class AttendeeSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(source = 'user.id', read_only=True)
     user_phone = serializers.CharField(source='user.phone_number', read_only=True)
     points = serializers.IntegerField(source='user.points', read_only=True)
+    membership = MembershipSerializer(source='membership_set', read_only=True, many=True)
 
     class Meta:
         model = Attendee
-        fields = ('id','user', 'name', 'gender', 'date_of_birth', 'any_comment', 'created_date', 'reason', 'goal','last_survey_date','user_id','user_phone','points')
+        fields = ('id','user', 'name', 'gender', 'date_of_birth', 'any_comment', 'created_date', 'reason', 'goal','last_survey_date','user_id','user_phone','points','membership')
         extra_kwargs = {
             'user': {'read_only': True},
             'created_date': {'read_only': True},

@@ -56,7 +56,7 @@ class _Question extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(question,
                   style:
-                      TextStyle(fontSize: 26.h, fontWeight: FontWeight.w300)),
+                      TextStyle(fontSize: 24.h, fontWeight: FontWeight.w300)),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -173,7 +173,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                             coloredText: 'Height & Weight',
                             krSub: 'دەستپێکێ درێژی و کێشا خو دانە'),
                         SizedBox(
-                          height: 30.h,
+                          height: 20.h,
                         ),
                         CircleAvatar(
                             radius: 110,
@@ -282,6 +282,9 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                                   fontSize: 16.sp,
                                   color: kColorPrimary,
                                   fontWeight: FontWeight.w700)),
+                        ),
+                        SizedBox(
+                          height: 30.h,
                         ),
                       ],
                     ),

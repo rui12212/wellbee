@@ -379,7 +379,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                                               child: Text(
                                                   '$formattedStartTime - $formattedEndTime',
                                                   style: TextStyle(
-                                                      fontSize: 20.sp)),
+                                                      fontSize: 20.w)),
                                             ),
                                             subtitle: Row(
                                               children: [
@@ -392,7 +392,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                                                     is_max == true
                                                 ? Text('Cancelled',
                                                     style: TextStyle(
-                                                        fontSize: 18,
+                                                        fontSize: 18.w,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         color: kColorPrimary))
@@ -400,7 +400,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                                                         is_max == true
                                                     ? Text('Reservation Full',
                                                         style: TextStyle(
-                                                            fontSize: 18.sp,
+                                                            fontSize: 18.w,
                                                             fontWeight:
                                                                 FontWeight.w400,
                                                             color:
@@ -417,8 +417,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                                         title: Container(
                                           child: Text(
                                               '$formattedStartTime - $formattedEndTime',
-                                              style:
-                                                  TextStyle(fontSize: 20.sp)),
+                                              style: TextStyle(fontSize: 20.w)),
                                         ),
                                         subtitle: Row(
                                           children: [

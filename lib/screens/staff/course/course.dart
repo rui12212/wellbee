@@ -297,7 +297,7 @@ class _AllCoursePageState extends State<AllCoursePage> {
           Text(
             title,
             style: TextStyle(
-              fontSize: 18.0.h,
+              fontSize: title.length >= 13 ? 13.w : 18.w,
               color: Colors.white,
               shadows: [
                 Shadow(

@@ -29,7 +29,7 @@ class _Header extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 28.w, fontWeight: FontWeight.bold),
           ),
           TextButton(
             style: TextButton.styleFrom(
@@ -151,8 +151,7 @@ class _MembershipAllCoursePageState extends State<MembershipAllCoursePage> {
                                             builder: (context) =>
                                                 CheckMembershipPage(
                                                     courseName:
-                                                        fetchedCourseList[
-                                                            index]
+                                                        fetchedCourseList[index]
                                                             ['course_name'])));
                                   },
                                   child: _buildGridItem(
@@ -296,7 +295,7 @@ class _MembershipAllCoursePageState extends State<MembershipAllCoursePage> {
           Text(
             title,
             style: TextStyle(
-              fontSize: 18.0.h,
+              fontSize: title.length >= 13 ? 13.w : 18.w,
               color: Colors.white,
               shadows: [
                 Shadow(

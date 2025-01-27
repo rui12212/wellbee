@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wellbee/ui_function/provider.dart';
 import 'package:wellbee/ui_parts/color.dart';
+// import 'package:intl/intl.dart';qq
 
 class _TicketShapeBorder extends ShapeBorder {
   final double? width;
@@ -165,7 +166,7 @@ class _Ticket extends StatelessWidget {
                         children: [
                           Text(
                             'Course',
-                            style: TextStyle(color: kColorText, fontSize: 18.h),
+                            style: TextStyle(color: kColorText, fontSize: 18.w),
                           ),
                           // SizedBox(height: 4.h),
                           Text(
@@ -180,14 +181,14 @@ class _Ticket extends StatelessWidget {
                                       course_name == 'Kids Yoga(B)' ||
                                       course_name == 'Kids Yoga KG' ||
                                       course_name == 'Kids Zumba'
-                                  ? 14.h
+                                  ? 14.w
                                   : course_name == 'Private Yoga@Studio' ||
                                           course_name == 'Private Yoga@Home' ||
                                           course_name ==
                                               'Private Pilates@Studio' ||
                                           course_name == 'Private Pilates@Home'
-                                      ? 12.h
-                                      : 17.h,
+                                      ? 12.w
+                                      : 17.w,
                               color: kColorPrimary,
                               fontWeight: FontWeight.bold,
                             ),
@@ -199,14 +200,14 @@ class _Ticket extends StatelessWidget {
                         children: [
                           Text(
                             'Name',
-                            style: TextStyle(color: kColorText, fontSize: 18.h),
+                            style: TextStyle(color: kColorText, fontSize: 18.w),
                           ),
                           // SizedBox(height: 4.h),
                           Text(
                             attendee_name,
                             style: TextStyle(
                               color: kColorTextDark,
-                              fontSize: 17.h,
+                              fontSize: 17.w,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -232,14 +233,14 @@ class _Ticket extends StatelessWidget {
                         children: [
                           Text(
                             'Expire At',
-                            style: TextStyle(color: kColorText, fontSize: 16.h),
+                            style: TextStyle(color: kColorText, fontSize: 16.w),
                           ),
                           // SizedBox(height: 4.h),
                           Text(
                             expire_day,
                             style: TextStyle(
                               color: kColorTextDark,
-                              fontSize: 16.h,
+                              fontSize: 17.w,
                             ),
                           ),
                         ],
@@ -256,7 +257,7 @@ class _Ticket extends StatelessWidget {
                             '$already_join_times/$max_join_times',
                             style: TextStyle(
                               color: kColorTextDark,
-                              fontSize: 18.h,
+                              fontSize: 18.w,
                             ),
                           ),
                         ],
@@ -426,7 +427,7 @@ class _MembershipTicket extends StatelessWidget {
                               Text(
                                 'Name',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 18.h),
+                                    color: kColorText, fontSize: 16.w),
                               ),
                               // SizedBox(height: 4.h),
                               Text(
@@ -445,14 +446,14 @@ class _MembershipTicket extends StatelessWidget {
                               Text(
                                 'Last Check',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 17.h),
+                                    color: kColorText, fontSize: 16.w),
                               ),
                               // SizedBox(height: 4.h),
                               Text(
                                 last_check_in,
                                 style: TextStyle(
                                   color: colorForLastCheckIn,
-                                  fontSize: 17.h,
+                                  fontSize: 18.w,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -479,14 +480,14 @@ class _MembershipTicket extends StatelessWidget {
                               Text(
                                 'Expire At',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 16.h),
+                                    color: kColorText, fontSize: 16.w),
                               ),
                               // SizedBox(height: 4.h),
                               Text(
                                 expire_day,
                                 style: TextStyle(
                                   color: colorForExpireDay,
-                                  fontSize: 17.h,
+                                  fontSize: 18.w,
                                 ),
                               ),
                             ],
@@ -497,14 +498,14 @@ class _MembershipTicket extends StatelessWidget {
                               Text(
                                 'Join Times',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 16.h),
+                                    color: kColorText, fontSize: 16.w),
                               ),
                               // SizedBox(height: 4.h),
                               Text(
                                 '$already_join_times/$max_join_times',
                                 style: TextStyle(
                                   color: kColorTextDark,
-                                  fontSize: 18.h,
+                                  fontSize: 18.w,
                                 ),
                               ),
                             ],
@@ -597,9 +598,256 @@ class MembershipTicketListState extends ConsumerState<MembershipTicketList> {
                                                 : Image.asset('lib/assets/invi_course_pic/female_fitness.png'));
   }
 }
-  // late String attendee_name;
-  // late String course_name;
-  // late String expire_day;
-  // late int times_per_week;
-  // late int max_join_times;
-  // late int already_join_times;
+
+class _HealthSurveyTicket extends StatelessWidget {
+  final Widget image;
+  late String attendee_name;
+  late String course_name;
+  late String expire_date;
+  late String availability;
+  late String last_survey_date;
+  late int duration;
+  late Color colorForAvailability;
+  late Color colorForLastCheckIn;
+
+  _HealthSurveyTicket({
+    Key? key,
+    required this.image,
+    required this.attendee_name,
+    required this.course_name,
+    required this.expire_date,
+    required this.availability,
+    required this.last_survey_date,
+    required this.duration,
+    required this.colorForAvailability,
+    required this.colorForLastCheckIn,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 128.h,
+      decoration: ShapeDecoration(
+        color: Colors.white,
+        shape: _TicketShapeBorder(width: 1, radius: 16.0),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Container(
+                  height: 80.h,
+                  // padding: EdgeInsets.all(24),
+                  child: image,
+                ),
+                Container(
+                    child: Column(
+                  children: [
+                    Text('$duration month', style: TextStyle(fontSize: 16.h)),
+                  ],
+                )),
+              ],
+            ),
+          ),
+          Container(
+            width: 1,
+            height: double.infinity,
+            margin: EdgeInsets.symmetric(vertical: 8.0.h),
+            color: kColorTicketBorder,
+          ),
+          Expanded(
+            flex: 2,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Table(
+                    children: [
+                      TableRow(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Name',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 16.w),
+                              ),
+                              // SizedBox(height: 4.h),
+                              Text(
+                                attendee_name,
+                                style: TextStyle(
+                                  color: kColorTextDark,
+                                  fontSize: 17.h,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Expire At',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 16.w),
+                              ),
+                              // SizedBox(height: 4.h),
+                              Text(
+                                expire_date,
+                                style: TextStyle(
+                                  color: kColorTextDark,
+                                  fontSize: 18.w,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          SizedBox(
+                            height: 8.h,
+                            // width: 20.w,
+                          ),
+                          SizedBox(
+                            height: 8.h,
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Availability',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 16.w),
+                              ),
+                              // SizedBox(height: 4.h),
+                              Text(
+                                availability,
+                                style: TextStyle(
+                                  color: colorForAvailability,
+                                  fontSize: 17.w,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Last Survey',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 16.w),
+                              ),
+                              // SizedBox(height: 4.h),
+                              Text(
+                                last_survey_date,
+                                style: TextStyle(
+                                  color: colorForLastCheckIn,
+                                  fontSize: 17.w,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class HealthSurveyTicketList extends ConsumerStatefulWidget {
+  late Map<String, dynamic> membershipList;
+  late String last_survey_date;
+  late bool isCanTakeSurvey;
+
+  HealthSurveyTicketList({
+    Key? key,
+    required this.membershipList,
+    required this.last_survey_date,
+    required this.isCanTakeSurvey,
+  });
+  @override
+  HealthSurveyTicketListState createState() => HealthSurveyTicketListState();
+}
+
+class HealthSurveyTicketListState
+    extends ConsumerState<HealthSurveyTicketList> {
+  @override
+  Widget build(BuildContext context) {
+    // bool isCanTakeSurvey = ref.watch(isCanTakeSurveyProvider);
+
+    return _HealthSurveyTicket(
+        colorForLastCheckIn:
+            widget.isCanTakeSurvey ? kColorPrimary : Colors.red.shade700,
+        colorForAvailability:
+            widget.isCanTakeSurvey ? kColorPrimary : Colors.red.shade700,
+        availability: widget.isCanTakeSurvey ? 'OK' : 'Not Yet',
+        course_name: widget.membershipList['course_name'],
+        attendee_name: widget.membershipList['attendee_name'],
+        duration: widget.membershipList['duration'],
+        last_survey_date: widget.last_survey_date,
+        expire_date: widget.membershipList['expire_day'],
+        image: widget.membershipList['course_name'] == 'Yoga' ||
+                widget.membershipList['course_name'] == 'Kids Yoga(A)' ||
+                widget.membershipList['course_name'] == 'Kids Yoga(B)' ||
+                widget.membershipList['course_name'] == 'Kids Yoga KG'
+            ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
+            : widget.membershipList['course_name'] == 'Dance' ||
+                    widget.membershipList['course_name'] == 'Kids Zumba' ||
+                    widget.membershipList['course_name'] == 'Zumba'
+                ? Image.asset('lib/assets/invi_course_pic/invi_dance.png')
+                : widget.membershipList['course_name'] == 'Karate' ||
+                        widget.membershipList['course_name'] == 'Kids Karate'
+                    ? Image.asset('lib/assets/invi_course_pic/invi_karate.png')
+                    : widget.membershipList['course_name'] == 'Music' ||
+                            widget.membershipList['course_name'] == 'Kids Music'
+                        ? Image.asset(
+                            'lib/assets/invi_course_pic/invi_music.png')
+                        : widget.membershipList['course_name'] == 'Kids Gym(A)' ||
+                                widget.membershipList['course_name'] ==
+                                    'Kids Gym(B)'
+                            ? Image.asset(
+                                'lib/assets/invi_course_pic/male_fitness.png')
+                            : widget.membershipList['course_name'] == 'Pilates'
+                                ? Image.asset(
+                                    'lib/assets/invi_course_pic/invi_pilates.png')
+                                : widget.membershipList['course_name'] ==
+                                        'Family Pilates'
+                                    ? Image.asset(
+                                        'lib/assets/invi_course_pic/invi_family_pilates.png')
+                                    : widget.membershipList['course_name'] ==
+                                            'Family Yoga'
+                                        ? Image.asset(
+                                            'lib/assets/invi_course_pic/invi_family_yoga.png')
+                                        : widget.membershipList['course_name'] ==
+                                                    'Private Yoga@Studio' ||
+                                                widget.membershipList['course_name'] ==
+                                                    'Private Yoga@Home'
+                                            ? Image.asset(
+                                                'lib/assets/invi_course_pic/private_yoga.png')
+                                            : widget.membershipList['course_name'] ==
+                                                        'Private Pilates@Studio' ||
+                                                    widget.membershipList[
+                                                            'course_name'] ==
+                                                        'Private Pilates@Home'
+                                                ? Image.asset('lib/assets/invi_course_pic/private_pilates.png')
+                                                : Image.asset('lib/assets/invi_course_pic/female_fitness.png'));
+  }
+}

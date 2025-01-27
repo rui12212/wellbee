@@ -138,229 +138,238 @@ class _CheckMembershipPageState extends ConsumerState<CheckMembershipPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 20.w,
-          ),
-          child: Column(
-            children: [
-              _Header(
-                isLongName: widget.courseName.length > 12 ? true : false,
-                title: '${widget.courseName}',
-              ),
-              Container(
-                  height: 45.h,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      children: [
-                        FilledButton(
-                          onPressed: isExpireDaySelected
-                              ? () {}
-                              : () {
-                                  ref
-                                      .read(
-                                          isExpireDaySelectedProvider.notifier)
-                                      .state = true;
-                                },
-                          style: ButtonStyle(
-                              backgroundColor: isExpireDaySelected
-                                  ? MaterialStateProperty.all(kColorPrimary)
-                                  : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 218, 240, 230))),
-                          child: Text('Expire Day',
-                              style: TextStyle(
-                                color: isExpireDaySelected
-                                    ? Colors.white
-                                    : kColorPrimary,
-                                fontSize: 15.h,
-                                fontWeight: isExpireDaySelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                              )),
-                        ),
-                        Text('/',
-                            style: TextStyle(
-                                fontSize: 20.h, fontWeight: FontWeight.bold)),
-                        FilledButton(
-                          onPressed: isExpireDaySelected
-                              ? () {
-                                  ref
-                                      .read(
-                                          isExpireDaySelectedProvider.notifier)
-                                      .state = false;
-                                  // Navigator.of(context).push(
-                                  //     MaterialPageRoute(builder: (context) {
-                                  //   return CheckLastCheckInPage(
-                                  //       courseName: widget.courseName);
-                                  // }));
-                                }
-                              : () {},
-                          style: ButtonStyle(
-                              backgroundColor: isExpireDaySelected
-                                  ? MaterialStateProperty.all(
-                                      Color.fromARGB(255, 218, 240, 230))
-                                  : MaterialStateProperty.all(kColorPrimary)),
-                          child: Text('Last Check',
-                              style: TextStyle(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 20.w,
+            ),
+            child: Column(
+              children: [
+                _Header(
+                  isLongName: widget.courseName.length > 12 ? true : false,
+                  title: '${widget.courseName}',
+                ),
+                Container(
+                    height: 45.h,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          FilledButton(
+                            onPressed: isExpireDaySelected
+                                ? () {}
+                                : () {
+                                    ref
+                                        .read(isExpireDaySelectedProvider
+                                            .notifier)
+                                        .state = true;
+                                  },
+                            style: ButtonStyle(
+                                backgroundColor: isExpireDaySelected
+                                    ? MaterialStateProperty.all(kColorPrimary)
+                                    : MaterialStateProperty.all(
+                                        Color.fromARGB(255, 218, 240, 230))),
+                            child: Text('Expire Day',
+                                style: TextStyle(
+                                  color: isExpireDaySelected
+                                      ? Colors.white
+                                      : kColorPrimary,
                                   fontSize: 15.h,
                                   fontWeight: isExpireDaySelected
-                                      ? FontWeight.normal
-                                      : FontWeight.bold,
-                                  color: isExpireDaySelected
-                                      ? kColorPrimary
-                                      : Colors.white)),
-                        ),
-                      ],
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                )),
+                          ),
+                          Text('/',
+                              style: TextStyle(
+                                  fontSize: 20.h, fontWeight: FontWeight.bold)),
+                          FilledButton(
+                            onPressed: isExpireDaySelected
+                                ? () {
+                                    ref
+                                        .read(isExpireDaySelectedProvider
+                                            .notifier)
+                                        .state = false;
+                                    // Navigator.of(context).push(
+                                    //     MaterialPageRoute(builder: (context) {
+                                    //   return CheckLastCheckInPage(
+                                    //       courseName: widget.courseName);
+                                    // }));
+                                  }
+                                : () {},
+                            style: ButtonStyle(
+                                backgroundColor: isExpireDaySelected
+                                    ? MaterialStateProperty.all(
+                                        Color.fromARGB(255, 218, 240, 230))
+                                    : MaterialStateProperty.all(kColorPrimary)),
+                            child: Text('Last Check',
+                                style: TextStyle(
+                                    fontSize: 15.h,
+                                    fontWeight: isExpireDaySelected
+                                        ? FontWeight.normal
+                                        : FontWeight.bold,
+                                    color: isExpireDaySelected
+                                        ? kColorPrimary
+                                        : Colors.white)),
+                          ),
+                        ],
+                      ),
+                    )),
+                SingleChildScrollView(
+                  child: Container(
+                    height: 555.h,
+                    child: FutureBuilder(
+                      future: _fetchAllMembership(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                  child: Text('No Membership',
+                                      style: TextStyle(
+                                        fontSize: 20.sp,
+                                      ))),
+                            ],
+                          );
+                        } else {
+                          final membershipList = snapshot.data!;
+                          List withInOneWeek = [];
+                          List withInTwoWeeks = [];
+                          List withInFourWeeks = [];
+                          List withInMoreThanOneMonth = [];
+                          DateTime today = DateTime.now();
+                          membershipList.forEach((e) {
+                            DateTime expireDay =
+                                DateTime.parse(e['expire_day']);
+                            final differenceByToday =
+                                expireDay.difference(today);
+                            if (differenceByToday.inDays <= 7) {
+                              withInOneWeek.add(e);
+                            } else if (differenceByToday.inDays <= 14) {
+                              withInTwoWeeks.add(e);
+                            } else if (differenceByToday.inDays <= 28) {
+                              withInFourWeeks.add(e);
+                            } else if (differenceByToday.inDays >= 29) {
+                              withInMoreThanOneMonth.add(e);
+                            }
+                          });
+
+                          List lastCheckWithInOneWeek = [];
+                          List lastCheckWithInTwoWeeks = [];
+                          List lastCheckWithInFourWeeks = [];
+                          List lastCheckWithInMoreThanOneMonth = [];
+                          membershipList.forEach((e) {
+                            DateTime lastCheckIn =
+                                DateTime.parse(e['last_check_in']);
+                            final differenceByToday =
+                                today.difference(lastCheckIn);
+                            if (differenceByToday.inDays <= 7) {
+                              lastCheckWithInOneWeek.add(e);
+                            } else if (differenceByToday.inDays <= 14) {
+                              lastCheckWithInTwoWeeks.add(e);
+                            } else if (differenceByToday.inDays <= 28) {
+                              lastCheckWithInFourWeeks.add(e);
+                            } else if (differenceByToday.inDays >= 29) {
+                              lastCheckWithInMoreThanOneMonth.add(e);
+                            }
+                          });
+                          // print(membershipList);
+                          return SingleChildScrollView(
+                              child: isExpireDaySelected
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                          buildExpireCategorySection(
+                                              'In 1 Week',
+                                              withInOneWeek,
+                                              scrollControllerOne),
+                                          buildExpireCategorySection(
+                                              'In 2 weeks',
+                                              withInTwoWeeks,
+                                              scrollControllerTwo),
+                                          buildExpireCategorySection(
+                                              'In 4 weeks',
+                                              withInFourWeeks,
+                                              scrollControllerThree),
+                                          buildExpireCategorySection(
+                                              'In more than 1 month',
+                                              withInMoreThanOneMonth,
+                                              scrollControllerFour)
+                                        ])
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                          buildLastCheckInCategorySection(
+                                              'In more than 1 month',
+                                              lastCheckWithInMoreThanOneMonth,
+                                              scrollControllerOne),
+                                          buildLastCheckInCategorySection(
+                                              'In 4 weeks',
+                                              lastCheckWithInFourWeeks,
+                                              scrollControllerTwo),
+                                          buildLastCheckInCategorySection(
+                                              'In 2 weeks',
+                                              lastCheckWithInTwoWeeks,
+                                              scrollControllerThree),
+                                          buildLastCheckInCategorySection(
+                                              'In 1 Week',
+                                              lastCheckWithInOneWeek,
+                                              scrollControllerFour)
+                                        ]));
+                          // ListView.builder(
+                          //     itemCount: membershipList.length,
+                          //     itemBuilder: (context, index) {
+                          //       // request_join_timesとmax_join_timesの比較
+                          //       final requested_join_times =
+                          //           membershipList[index]
+                          //               ['requested_join_times'];
+                          //       final max_join_times =
+                          //           membershipList[index]['max_join_times'];
+                          //       final isAlreadyMaxRequest =
+                          //           requested_join_times == max_join_times;
+
+                          //       // already_join_timesとmax_join_timesの比較
+                          //       final already_join_times =
+                          //           membershipList[index]['already_join_times'];
+                          //       final isAlreadyMaxJoin =
+                          //           already_join_times == max_join_times;
+
+                          //       bool is_expired = false;
+                          //       DateTime formattedDate = DateTime.parse(
+                          //           membershipList[index]['expire_day']);
+
+                          //       DateTime today = DateTime.now();
+
+                          //       if (formattedDate.isBefore(today)) {
+                          //         is_expired = true;
+                          //       }
+                          //       return Column(
+                          //         children: [
+                          //           // TicketList(
+                          //           //     membershipList: membershipList[index]),
+                          //           SizedBox(height: 10.h),
+                          //         ],
+                          //       );
+                          //     }),
+                        }
+                      },
                     ),
-                  )),
-              SingleChildScrollView(
-                child: Container(
-                  height: 555.h,
-                  child: FutureBuilder(
-                    future: _fetchAllMembership(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Center(
-                                child: Text('No Membership',
-                                    style: TextStyle(
-                                      fontSize: 20.sp,
-                                    ))),
-                          ],
-                        );
-                      } else {
-                        final membershipList = snapshot.data!;
-                        List withInOneWeek = [];
-                        List withInTwoWeeks = [];
-                        List withInFourWeeks = [];
-                        List withInMoreThanOneMonth = [];
-                        DateTime today = DateTime.now();
-                        membershipList.forEach((e) {
-                          DateTime expireDay = DateTime.parse(e['expire_day']);
-                          final differenceByToday = expireDay.difference(today);
-                          if (differenceByToday.inDays <= 7) {
-                            withInOneWeek.add(e);
-                          } else if (differenceByToday.inDays <= 14) {
-                            withInTwoWeeks.add(e);
-                          } else if (differenceByToday.inDays <= 28) {
-                            withInFourWeeks.add(e);
-                          } else if (differenceByToday.inDays >= 29) {
-                            withInMoreThanOneMonth.add(e);
-                          }
-                        });
-
-                        List lastCheckWithInOneWeek = [];
-                        List lastCheckWithInTwoWeeks = [];
-                        List lastCheckWithInFourWeeks = [];
-                        List lastCheckWithInMoreThanOneMonth = [];
-                        membershipList.forEach((e) {
-                          DateTime lastCheckIn =
-                              DateTime.parse(e['last_check_in']);
-                          final differenceByToday =
-                              today.difference(lastCheckIn);
-                          if (differenceByToday.inDays <= 7) {
-                            lastCheckWithInOneWeek.add(e);
-                          } else if (differenceByToday.inDays <= 14) {
-                            lastCheckWithInTwoWeeks.add(e);
-                          } else if (differenceByToday.inDays <= 28) {
-                            lastCheckWithInFourWeeks.add(e);
-                          } else if (differenceByToday.inDays >= 29) {
-                            lastCheckWithInMoreThanOneMonth.add(e);
-                          }
-                        });
-                        // print(membershipList);
-                        return SingleChildScrollView(
-                            child: isExpireDaySelected
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                        buildExpireCategorySection('In 1 Week',
-                                            withInOneWeek, scrollControllerOne),
-                                        buildExpireCategorySection(
-                                            'In 2 weeks',
-                                            withInTwoWeeks,
-                                            scrollControllerTwo),
-                                        buildExpireCategorySection(
-                                            'In 4 weeks',
-                                            withInFourWeeks,
-                                            scrollControllerThree),
-                                        buildExpireCategorySection(
-                                            'In more than 1 month',
-                                            withInMoreThanOneMonth,
-                                            scrollControllerFour)
-                                      ])
-                                : Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                        buildLastCheckInCategorySection(
-                                            'In more than 1 month',
-                                            lastCheckWithInMoreThanOneMonth,
-                                            scrollControllerOne),
-                                        buildLastCheckInCategorySection(
-                                            'In 4 weeks',
-                                            lastCheckWithInFourWeeks,
-                                            scrollControllerTwo),
-                                        buildLastCheckInCategorySection(
-                                            'In 2 weeks',
-                                            lastCheckWithInTwoWeeks,
-                                            scrollControllerThree),
-                                        buildLastCheckInCategorySection(
-                                            'In 1 Week',
-                                            lastCheckWithInOneWeek,
-                                            scrollControllerFour)
-                                      ]));
-                        // ListView.builder(
-                        //     itemCount: membershipList.length,
-                        //     itemBuilder: (context, index) {
-                        //       // request_join_timesとmax_join_timesの比較
-                        //       final requested_join_times =
-                        //           membershipList[index]
-                        //               ['requested_join_times'];
-                        //       final max_join_times =
-                        //           membershipList[index]['max_join_times'];
-                        //       final isAlreadyMaxRequest =
-                        //           requested_join_times == max_join_times;
-
-                        //       // already_join_timesとmax_join_timesの比較
-                        //       final already_join_times =
-                        //           membershipList[index]['already_join_times'];
-                        //       final isAlreadyMaxJoin =
-                        //           already_join_times == max_join_times;
-
-                        //       bool is_expired = false;
-                        //       DateTime formattedDate = DateTime.parse(
-                        //           membershipList[index]['expire_day']);
-
-                        //       DateTime today = DateTime.now();
-
-                        //       if (formattedDate.isBefore(today)) {
-                        //         is_expired = true;
-                        //       }
-                        //       return Column(
-                        //         children: [
-                        //           // TicketList(
-                        //           //     membershipList: membershipList[index]),
-                        //           SizedBox(height: 10.h),
-                        //         ],
-                        //       );
-                        //     }),
-                      }
-                    },
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),

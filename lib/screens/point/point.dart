@@ -163,25 +163,29 @@ class _PointPageState extends State<PointPage> {
                                     ),
 
                                     // alignment: Alignment.bottomCenter,
-                                    Center(
-                                        child: Container(
-                                      width: 220.w,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('1 Point/time',
-                                              style: TextStyle(
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold)),
-                                          Text(
-                                              'Reserve & attend the course\nحجزکرن و ئامادەبوون د کورسی دا',
-                                              style: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.w300)),
-                                        ],
-                                      ),
-                                    )),
+                                    Expanded(
+                                      child: Center(
+                                          child: Container(
+                                        width: 220.w,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text('1 Point/time',
+                                                style: TextStyle(
+                                                    fontSize: 16.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            Text(
+                                                'Reserve & attend the course\nحجزکرن و ئامادەبوون د کورسی دا',
+                                                style: TextStyle(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.w300)),
+                                          ],
+                                        ),
+                                      )),
+                                    ),
                                   ],
                                 ),
                                 SizedBox(height: 20.h),
@@ -201,25 +205,29 @@ class _PointPageState extends State<PointPage> {
                                                 'lib/assets/home_pic/point_survey.png')),
                                       ),
                                     ),
-                                    Center(
-                                        child: Container(
-                                      width: 220.w,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('1 Point/time',
-                                              style: TextStyle(
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold)),
-                                          Text(
-                                              'Answer the Health Survey\nبەرسڤدانا راپرسیا ساخلەمیێ',
-                                              style: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.w300)),
-                                        ],
-                                      ),
-                                    )),
+                                    Expanded(
+                                      child: Center(
+                                          child: Container(
+                                        width: 220.w,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text('1 Point/time',
+                                                style: TextStyle(
+                                                    fontSize: 16.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            Text(
+                                                'Answer the Health Survey\nبەرسڤدانا راپرسیا ساخلەمیێ',
+                                                style: TextStyle(
+                                                    fontSize: 15.w,
+                                                    fontWeight:
+                                                        FontWeight.w300)),
+                                          ],
+                                        ),
+                                      )),
+                                    ),
                                   ],
                                 ),
                                 SizedBox(height: 20.h),
@@ -239,22 +247,26 @@ class _PointPageState extends State<PointPage> {
                                                 'lib/assets/home_pic/point_item.png')),
                                       ),
                                     ),
-                                    Container(
-                                      width: 220.w,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('1 Point/5,000IQD',
-                                              style: TextStyle(
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold)),
-                                          Text(
-                                              'Purchase Wellbee items\nکرینا کەل و پەلێن وێلبی',
-                                              style: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.w300)),
-                                        ],
+                                    Expanded(
+                                      child: Container(
+                                        width: 220.w,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text('1 Point/5,000IQD',
+                                                style: TextStyle(
+                                                    fontSize: 16.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            Text(
+                                                'Purchase Wellbee items\nکرینا کەل و پەلێن وێلبی',
+                                                style: TextStyle(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.w300)),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -276,22 +288,26 @@ class _PointPageState extends State<PointPage> {
                                                 'lib/assets/home_pic/point_invite.png')),
                                       ),
                                     ),
-                                    Container(
-                                      width: 220.w,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('1 Point/person',
-                                              style: TextStyle(
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold)),
-                                          Text(
-                                              'Invite friends to Wellbee\nداخاز کرنا هەڤالان بو وێلبی',
-                                              style: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.w300)),
-                                        ],
+                                    Expanded(
+                                      child: Container(
+                                        width: 220.w,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text('1 Point/person',
+                                                style: TextStyle(
+                                                    fontSize: 16.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            Text(
+                                                'Invite friends to Wellbee\nداخاز کرنا هەڤالان بو وێلبی',
+                                                style: TextStyle(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.w300)),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],

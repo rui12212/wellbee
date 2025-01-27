@@ -170,13 +170,14 @@ class _AccountPageState extends State<AccountPage> {
         body: SafeArea(
           child: Container(
             padding: EdgeInsets.all(12.h),
-            child: Column(
-              // crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _Header(
-                  title: 'Account',
-                ),
-                Padding(
+            child: SingleChildScrollView(
+              child: Column(
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Header(
+                    title: 'Account',
+                  ),
+                  Container(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -192,7 +193,7 @@ class _AccountPageState extends State<AccountPage> {
                             style: TextStyle(fontSize: 16),
                           ),
                           SizedBox(
-                            height: 15.h,
+                            height: 5.h,
                           ),
                           Center(
                             child: Container(
@@ -209,7 +210,7 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                           ),
                           SizedBox(
-                            height: 15.h,
+                            height: 5.h,
                           ),
                           Row(
                             children: [
@@ -232,7 +233,7 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                           Center(
                             child: Column(children: [
-                              TextButton(
+                              OutlinedButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                   // Navigator.of(context)
@@ -247,29 +248,27 @@ class _AccountPageState extends State<AccountPage> {
                                   style: TextStyle(
                                       fontSize: 18, color: kColorPrimary),
                                 ),
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: kColorPrimary),
+                                ),
                               ),
-                              Container(
-                                width: 250.w,
-                                height: 50.h,
-                                child: OutlinedButton(
-                                    onPressed: isChecked
-                                        ? () {
-                                            showAwesomeDialog();
-                                          }
-                                        : null,
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: kColorPrimary),
-                                    ),
-                                    child: Text(
-                                      'Delete account',
-                                      style: TextStyle(
-                                          fontSize: 18.h, color: kColorPrimary),
-                                    )),
-                              )
+                              TextButton(
+                                  onPressed: isChecked
+                                      ? () {
+                                          showAwesomeDialog();
+                                        }
+                                      : null,
+                                  child: Text(
+                                    'Delete account',
+                                    style: TextStyle(
+                                        fontSize: 18.h, color: kColorPrimary),
+                                  ))
                             ]),
                           )
-                        ])),
-              ],
+                        ]),
+                  ),
+                ],
+              ),
             ),
           ),
         ));

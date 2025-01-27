@@ -35,3 +35,11 @@ final isExpireWithin2WeekProvider = StateProvider<bool>((ref) {
 final isLastCheckInOver2WeekProvider = StateProvider<bool>((ref) {
   return false;
 });
+
+final isUpdateNeededProvider = StateProvider<bool>((ref) {
+  return false;
+});
+
+final isCanTakeSurveyProvider = StateProvider<bool>((ref) {
+  return false;
+});

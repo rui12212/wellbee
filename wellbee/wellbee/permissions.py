@@ -24,7 +24,7 @@ class MembershipPermission(BasePermission):
         if view.action in ['list', 'retrieve']:
             return (request.user and request.user.is_authenticated) or request.user.is_staff==1
         # アクションがmy_reservationだった場合
-        if view.action  == 'fetch_available_membership' or view.action == 'fetch_my_all_membership' or view.action == 'fetch_membership_by_staff' or view.action == 'fetch_closest_membership' or view.action == 'fetch_course_membership':
+        if view.action  == 'fetch_available_membership' or view.action == 'fetch_my_all_membership' or view.action == 'fetch_membership_by_staff' or view.action == 'fetch_closest_membership' or view.action == 'fetch_course_membership' or view.action == 'fetch_health_survey':
             return (request.user and request.user.is_authenticated) or request.user.is_staff==1
         if view.action in ['create','partial_update','update', 'destroy',]:
             return (request.user and request.user.is_authenticated) or request.user.is_staff==1
@@ -39,7 +39,7 @@ class AttendeePermission(BasePermission):
         if view.action == 'fetch_first_page_attendee':
             return True
         # 自分で作ったアクションを実行する許可を下記
-        if view.action  == 'fetch_attendee_by_staff' or view.action == 'fetch_my_attendee' or view.action == 'fetch_first_attendee':
+        if view.action  == 'fetch_attendee_by_staff' or view.action == 'fetch_my_attendee' or view.action == 'fetch_first_attendee' or view.action=='fetch_attendee_health_survey':
             return (request.user and request.user.is_authenticated) or request.user.is_staff==1
          # 更新と削除はスタッフのみ
         # if view.action == 'destroy':
@@ -158,6 +158,23 @@ class CheckInPermission(BasePermission):
             return request.user.is_staff
         # 自分で作ったアクションを実行する許可を下記
         if view.action  == 'fetch_staff_checkin':
+            return (request.user and request.user.is_authenticated) or request.user.is_staff
+         # 更新と削除はスタッフのみ
+        if view.action == 'destroy':
+            return request.user.is_staff
+        if view.action in ['create','partial_update','update']:
+            return (request.user and request.user.is_authenticated) or request.user.is_staff
+
+        # デフォルトではアクセスを拒否
+        return False
+
+class VersionPermission(BasePermission):
+    def has_permission(self, request, view):
+        # リスト表示はスタッフのみ
+        if view.action in ['list', 'retrieve']:
+            return request.user.is_staff
+        # 自分で作ったアクションを実行する許可を下記
+        if view.action  == 'fetch_latest_version':
             return (request.user and request.user.is_authenticated) or request.user.is_staff
          # 更新と削除はスタッフのみ
         if view.action == 'destroy':

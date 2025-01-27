@@ -1,23 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wellbee/assets/inet.dart';
-import 'package:wellbee/screens/attendee/attendee.dart';
-import 'package:wellbee/screens/qr/qr_user.dart';
-import 'package:wellbee/screens/reservation/membership.dart';
-import 'package:wellbee/screens/questionnaire/ex_survey.dart';
-import 'package:wellbee/screens/questionnaire/questinnaire_attendee.dart';
-import 'package:wellbee/screens/questionnaire/questionnaire_base.dart';
-import 'package:wellbee/screens/questionnaire/survey.dart';
+import 'package:wellbee/assets/version_info.dart';
 import 'package:wellbee/screens/setting/setting_page.dart';
 import 'package:wellbee/screens/user_calendar.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/color.dart';
-import 'package:wellbee/ui_parts/display.dart';
+import 'package:wellbee/ui_parts/dialogue_awesome.dart';
 import 'home.dart';
-import 'qr/qr_reservation.dart';
 import 'package:http/http.dart' as http;
 
 class TopPage extends StatefulWidget {

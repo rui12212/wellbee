@@ -39,9 +39,11 @@ class _Header extends StatelessWidget {
 
 class _Question extends StatelessWidget {
   String question;
+  String translation;
 
   _Question({
     required this.question,
+    required this.translation,
   });
 
   @override
@@ -52,6 +54,8 @@ class _Question extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(question,
+                style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w300)),
+            Text(translation,
                 style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w300))
           ],
         ));
@@ -131,7 +135,9 @@ class _QrCodePageState extends State<QrCodePage> {
             children: [
               _Header(),
               _Question(
-                  question: 'Scan me for checking in!\nسکان بکە بو چوونا ژوو'),
+                question: 'Scan me for checking in!',
+                translation: 'سکان بکە بو چوونا ژوو',
+              ),
               Container(
                 height: 400.h,
                 // width: 400.h,

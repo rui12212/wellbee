@@ -369,7 +369,7 @@ class AttendeeDisplay extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 120.w,
+            width: 110.w,
             decoration: BoxDecoration(
                 image: DecorationImage(
                   image: gender == 'male'
@@ -408,20 +408,20 @@ class AttendeeDisplay extends StatelessWidget {
                         children: [
                           Text('Birthday: ',
                               style:
-                                  TextStyle(fontSize: 16.h, color: kColorText)),
+                                  TextStyle(fontSize: 16.w, color: kColorText)),
                           Text(dateOfBirth,
                               style:
-                                  TextStyle(fontSize: 16.h, color: kColorText))
+                                  TextStyle(fontSize: 16.w, color: kColorText))
                         ],
                       ),
                       Row(
                         children: [
                           Text('Gender: ',
                               style:
-                                  TextStyle(fontSize: 16.h, color: kColorText)),
+                                  TextStyle(fontSize: 17.w, color: kColorText)),
                           Text(gender,
                               style:
-                                  TextStyle(fontSize: 16.h, color: kColorText))
+                                  TextStyle(fontSize: 17.w, color: kColorText))
                         ],
                       ),
                       // SizedBox(height: 10.h),
@@ -431,11 +431,11 @@ class AttendeeDisplay extends StatelessWidget {
                               ? Text('No goal is set',
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      fontSize: 16.h,
+                                      fontSize: 17.w,
                                       color: kColorTextDarkGrey))
                               : DefaultTextStyle(
                                   style: TextStyle(
-                                      fontSize: 16.h,
+                                      fontSize: 17.w,
                                       color: kColorTextDarkGrey),
                                   child: Text(
                                     goal,
@@ -627,7 +627,7 @@ class _ReservationTicket extends StatelessWidget {
                                           course_name == 'Kids Yoga(B)' ||
                                           course_name == 'Kids Yoga KG' ||
                                           course_name == 'Kids Zumba'
-                                      ? 14.h
+                                      ? 14.w
                                       : course_name == 'Private Yoga@Studio' ||
                                               course_name ==
                                                   'Private Yoga@Home' ||
@@ -635,8 +635,8 @@ class _ReservationTicket extends StatelessWidget {
                                                   'Private Pilates@Studio' ||
                                               course_name ==
                                                   'Private Pilates@Home'
-                                          ? 12.h
-                                          : 17.h,
+                                          ? 12.w
+                                          : 17.w,
                                   color: kColorTextDark,
                                   // fontWeight: FontWeight.bold,
                                 ),
@@ -655,7 +655,7 @@ class _ReservationTicket extends StatelessWidget {
                                 attendee_name,
                                 style: TextStyle(
                                   color: kColorTextDark,
-                                  fontSize: 18.sp,
+                                  fontSize: 18.w,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -690,7 +690,7 @@ class _ReservationTicket extends StatelessWidget {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: kColorPrimary,
-                                fontSize: 19.sp,
+                                fontSize: 18.w,
                               ),
                             ),
                             SizedBox(
@@ -699,7 +699,7 @@ class _ReservationTicket extends StatelessWidget {
                             Text(
                               '$date',
                               style: TextStyle(
-                                fontSize: 19.sp,
+                                fontSize: 18.w,
                                 fontWeight: FontWeight.bold,
                                 color: kColorPrimary,
                               ),
@@ -932,7 +932,7 @@ class _PastReservationTicket extends StatelessWidget {
                                           course_name == 'Kids Yoga(B)' ||
                                           course_name == 'Kids Yoga KG' ||
                                           course_name == 'Kids Zumba'
-                                      ? 14.h
+                                      ? 14.w
                                       : course_name == 'Private Yoga@Studio' ||
                                               course_name ==
                                                   'Private Yoga@Home' ||
@@ -940,8 +940,8 @@ class _PastReservationTicket extends StatelessWidget {
                                                   'Private Pilates@Studio' ||
                                               course_name ==
                                                   'Private Pilates@Home'
-                                          ? 12.h
-                                          : 17.h,
+                                          ? 12.w
+                                          : 17.w,
                                   color: kColorTextDark,
                                   // fontWeight: FontWeight.bold,
                                 ),
@@ -960,7 +960,7 @@ class _PastReservationTicket extends StatelessWidget {
                                 attendee_name,
                                 style: TextStyle(
                                   color: kColorTextDark,
-                                  fontSize: 16.sp,
+                                  fontSize: 16.w,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -989,13 +989,13 @@ class _PastReservationTicket extends StatelessWidget {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: kColorPrimary,
-                                fontSize: 15.sp,
+                                fontSize: 16.w,
                               ),
                             ),
                             Text(
                               '$date',
                               style: TextStyle(
-                                fontSize: 15.sp,
+                                fontSize: 16.w,
                                 fontWeight: FontWeight.bold,
                                 color: kColorPrimary,
                               ),
@@ -1016,7 +1016,7 @@ class _PastReservationTicket extends StatelessWidget {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: kColorPrimary,
-                                fontSize: 20.sp,
+                                fontSize: 20.w,
                               ),
                             ),
                           ],
@@ -1063,8 +1063,16 @@ class ReservationCheckList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(tytle,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300)),
-            Text(text, style: TextStyle(fontSize: 20)),
+                style: TextStyle(
+                  fontSize: 16.h,
+                  fontWeight: FontWeight.w300,
+                )),
+            Text(text,
+                style: TextStyle(
+                  color: kColorTextDarkGrey,
+                  fontSize: 20.h,
+                  fontWeight: FontWeight.w700,
+                )),
           ],
         ),
       ],
@@ -1074,15 +1082,15 @@ class ReservationCheckList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      SizedBox(height: 30),
+      SizedBox(height: 30.h),
       baseContainer('Course Name', slot_course_name),
-      SizedBox(height: 18),
+      SizedBox(height: 18.h),
       baseContainer('Lesson Date', slot_date),
-      SizedBox(height: 18),
+      SizedBox(height: 18.h),
       baseContainer('Lesson Start Time', slot_start_time),
-      SizedBox(height: 18),
+      SizedBox(height: 18.h),
       baseContainer('Lesson End Time', slot_end_time),
-      SizedBox(height: 18),
+      SizedBox(height: 18.h),
       baseContainer(
         'Wellbee Member Name',
         attendee_name,

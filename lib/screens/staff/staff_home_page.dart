@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wellbee/screens/staff/calendar/calendar.dart';
 import 'package:wellbee/screens/staff/course/course.dart';
+import 'package:wellbee/screens/staff/health_survey/health_survey_expirely.dart';
 import 'package:wellbee/screens/staff/membership/all_course.dart';
 import 'package:wellbee/ui_parts/color.dart';
 
@@ -119,6 +120,30 @@ class _StaffHomePageState extends State<StaffHomePage> {
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => MembershipAllCoursePage()));
+                    }),
+                Divider(),
+                InkWell(
+                    child: Container(
+                        height: 100.h,
+                        width: 390.w,
+                        // decoration: BoxDecoration(
+                        //     border: Border.symmetric(
+                        //         horizontal: BorderSide(width: 0.2))),
+                        child: Row(
+                          children: [
+                            Icon(Icons.graphic_eq_outlined,
+                                color: Color.fromARGB(255, 97, 198, 187),
+                                size: 30),
+                            SizedBox(
+                              width: 10.w,
+                            ),
+                            Text('Check Health Survey',
+                                style: TextStyle(fontSize: 26.sp))
+                          ],
+                        )),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => CheckHealthSurveyPage()));
                     }),
               ],
             ),

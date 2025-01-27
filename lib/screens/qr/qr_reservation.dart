@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/home.dart';
 import 'package:wellbee/screens/qr/qr_code.dart';
@@ -28,7 +29,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80.h,
+      // height: 80.h,
       child: Column(
         children: [
           Align(
@@ -151,10 +152,41 @@ class _QrReservationPageState extends State<QrReservationPage> {
     }
   }
 
+  Future<List<dynamic>?> _deletePastReservation(int reservationId) async {
+    try {
+      token = await SharedPrefs.fetchAccessToken();
+      var url = Uri.parse(
+          '${baseUri}reservations/reservation/$reservationId/?token=$token');
+      var response = await Future.any([
+        http.delete(url, headers: {
+          "Authorization": 'JWT $token',
+          "Content-Type": "application/json"
+        }),
+        Future.delayed(const Duration(seconds: 15),
+            () => throw TimeoutException("Request timeout"))
+      ]);
+      if (response.statusCode == 204) {
+        // List<dynamic> data = jsonDecode(response.body);
+        showSnackBar(kColorPrimary, 'Past reservation automatically deleted');
+        setState(() {});
+        // Navigator.of(context)
+        //     .push(MaterialPageRoute(builder: (context) => TopPage(0)));
+      } else if (response.statusCode >= 400) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Internet Error occurred')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Something went wrong. Try again later')));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    // _fetchReservation();
   }
 
   @override
@@ -233,7 +265,25 @@ class _QrReservationPageState extends State<QrReservationPage> {
                     );
                   } else {
                     final fetchedReservationList = snapshot.data!;
-                    // print(fetchedReservationList);
+                    final today = DateTime.now();
+                    final String formattedDate =
+                        DateFormat('yyyy-MM-dd').format(today);
+                    final dateOfToday = DateTime.parse(formattedDate);
+                    // final deleteList = [];
+                    fetchedReservationList.forEach(
+                      (e) async {
+                        final DateTime reservationDate =
+                            DateTime.parse(e['date']);
+                        // print(dateOfToday);
+                        // print(e['date']);
+                        if (reservationDate.isBefore(dateOfToday)) {
+                          // deleteList.add(e['id']);
+                          await _deletePastReservation(e['id']);
+                        } else {
+                          return;
+                        }
+                      },
+                    );
                     return Expanded(
                       child: ListView.builder(
                           itemCount: fetchedReservationList.length,
@@ -252,6 +302,7 @@ class _QrReservationPageState extends State<QrReservationPage> {
                             final bool is_cancelled =
                                 fetchedReservationList[index]
                                     ['slot_is_cancelled'];
+                            // setState(() {});
                             return Column(
                               children: [
                                 isAttended == true && is_before ||

@@ -397,7 +397,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
             membership = reservation.membership
 
             if membership.requested_join_times >0:
-                membership.requested_join_times -=1
+                membership.requested_join_times = F('requested_join_times') - 1
                 membership.save()
             if  membership.requested_join_times==0:
                 membership.requested_join_times=0
@@ -435,6 +435,20 @@ class ReservationViewSet(viewsets.ModelViewSet):
         reservations = self.get_queryset()
         serializer = self.get_serializer(reservations, many=True)
         return Response(serializer.data)
+    
+    # @action(detail=True, methods=['patch'],url_path='delete_slot', permission_classes=[ReservationPermission])
+    # def delete_slot(self,request,pk=None):
+
+    #     # SlotインスタンスをURLパラメーターから取得
+    #     reservationId = self.get_object()
+    #     reservation = Reservation.objects.filter(id=reservationId)
+
+    #     if reservation.exists():
+    #         reservation.delete()
+    #         return Response({'detail': 'Slot has been deleted'}, status=status.HTTP_204_NO_CONTENT)
+    #     else:
+    #         raise ValidationError('Reservation does not exist')
+           
 
     
     # @action(detail=False, methods=['post'], url_path='create_reservation')
