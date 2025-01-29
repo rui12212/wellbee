@@ -11,7 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:wellbee/assets/version_info.dart';
+import 'package:wellbee/version/version_info.dart';
 import 'package:wellbee/main.dart';
 import 'package:wellbee/screens/attendee/attendee.dart';
 import 'package:wellbee/screens/graph/graph.dart';

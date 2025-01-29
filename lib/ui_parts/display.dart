@@ -984,14 +984,14 @@ class _PastReservationTicket extends StatelessWidget {
                                 color: kColorText,
                               ),
                             ),
-                            Text(
-                              '$formattedStartTime-$formattedEndTime,',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: kColorPrimary,
-                                fontSize: 16.w,
-                              ),
-                            ),
+                            // Text(
+                            //   '$formattedStartTime-$formattedEndTime,',
+                            //   style: TextStyle(
+                            //     fontWeight: FontWeight.bold,
+                            //     color: kColorPrimary,
+                            //     fontSize: 16.w,
+                            //   ),
+                            // ),
                             Text(
                               '$date',
                               style: TextStyle(
@@ -1016,7 +1016,7 @@ class _PastReservationTicket extends StatelessWidget {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: kColorPrimary,
-                                fontSize: 20.w,
+                                fontSize: 20.r,
                               ),
                             ),
                           ],

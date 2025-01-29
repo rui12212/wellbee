@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wellbee/assets/inet.dart';
-import 'package:wellbee/assets/version_info.dart';
+import 'package:wellbee/version/version_info.dart';
 import 'package:wellbee/screens/setting/setting_page.dart';
 import 'package:wellbee/screens/user_calendar.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';

@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:wellbee/assets/version_info.dart';
+import 'package:wellbee/version/version_info.dart';
 import 'package:wellbee/screens/first_attendee_add.dart';
 import 'package:wellbee/screens/staff/auth/staff_signin.dart';
 import 'package:wellbee/screens/staff/auth/staff_top_page.dart';

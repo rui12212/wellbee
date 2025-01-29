@@ -458,7 +458,7 @@ class _StaffMembershipAddPageState extends State<StaffMembershipAddPage> {
                   name: widget.attendeeList['name'],
                 ),
                 Container(
-                  height: 580.h,
+                  height: 580.r,
                   child: SingleChildScrollView(
                     child: Column(
                       children: [

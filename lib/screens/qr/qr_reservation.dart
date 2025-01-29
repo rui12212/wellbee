@@ -105,8 +105,8 @@ class _QrReservationPageState extends State<QrReservationPage> {
         if (data.isNotEmpty && data != null) {
           return data;
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Error.You may not have reservation')));
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('You may not have reservation')));
         }
       } else if (response.statusCode >= 400) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -274,9 +274,17 @@ class _QrReservationPageState extends State<QrReservationPage> {
                       (e) async {
                         final DateTime reservationDate =
                             DateTime.parse(e['date']);
+                        final bool isAttended = e['attended'];
+                        final bool is_cancelled = e['slot_is_cancelled'];
                         // print(dateOfToday);
                         // print(e['date']);
-                        if (reservationDate.isBefore(dateOfToday)) {
+                        // 過去の予約で、参加していないものは消す
+                        if ((reservationDate.isBefore(dateOfToday) &&
+                                isAttended == false) ||
+                            // 過去の予約で、Slotがキャンセルされたものを削除する
+                            (reservationDate.isBefore(dateOfToday) &&
+                                is_cancelled == true &&
+                                isAttended == false)) {
                           // deleteList.add(e['id']);
                           await _deletePastReservation(e['id']);
                         } else {
@@ -305,16 +313,18 @@ class _QrReservationPageState extends State<QrReservationPage> {
                             // setState(() {});
                             return Column(
                               children: [
-                                isAttended == true && is_before ||
-                                        isAttended == true
+                                isAttended == true && is_before
+                                    // is_cancelled == false
                                     ? Opacity(
                                         opacity: 0.4,
                                         child: PastReservationTicketList(
                                             reservationList:
                                                 fetchedReservationList[index]),
                                       )
-                                    : isAttended == false && is_before
-                                        ? Stack(
+                                    : is_cancelled == true && is_before == false
+                                        ?
+                                        // Slotがキャンセルの場合は、Opacity
+                                        Stack(
                                             children: [
                                               Container(
                                                 height: 120.h,
@@ -324,14 +334,10 @@ class _QrReservationPageState extends State<QrReservationPage> {
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     Text(
-                                                        'Delete Past Reservation\nژێبرنا حجزکرنا بەری نوکە',
+                                                        'Reservation Cancelled',
                                                         style: TextStyle(
                                                             color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    255,
-                                                                    0,
-                                                                    0),
+                                                                kColorTextDark,
                                                             fontSize: 22.sp,
                                                             fontWeight:
                                                                 FontWeight
@@ -371,117 +377,38 @@ class _QrReservationPageState extends State<QrReservationPage> {
                                               ),
                                             ],
                                           )
-                                        : is_cancelled == true
-                                            ?
-                                            // Slotがキャンセルの場合は、Opacity
-                                            Stack(
-                                                children: [
-                                                  Container(
-                                                    height: 120.h,
-                                                    alignment: Alignment.center,
-                                                    child: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                            'Reservation Cancelled',
-                                                            style: TextStyle(
-                                                                color: Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        255,
-                                                                        0,
-                                                                        0),
-                                                                fontSize: 22.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700)),
-                                                        Text(
-                                                            'Delete the Reservation',
-                                                            style: TextStyle(
-                                                                color: Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        255,
-                                                                        0,
-                                                                        0),
-                                                                fontSize: 22.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700)),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  Opacity(
-                                                    opacity: 0.2,
-                                                    child: Slidable(
-                                                        endActionPane:
-                                                            ActionPane(
-                                                          motion:
-                                                              ScrollMotion(),
-                                                          children: [
-                                                            SlidableAction(
-                                                              flex: 1,
-                                                              onPressed:
-                                                                  (context) async {
-                                                                showAwesomeDialog(
-                                                                    fetchedReservationList[
-                                                                            index]
-                                                                        ['id']);
-                                                              },
-                                                              backgroundColor:
-                                                                  Colors.amber,
-                                                              foregroundColor:
-                                                                  Colors.white,
-                                                              icon: Icons
-                                                                  .delete_forever_outlined,
-                                                              label: 'Delete',
-                                                            )
-                                                          ],
-                                                        ),
-                                                        child: ReservationTicketList(
-                                                            reservationList:
-                                                                fetchedReservationList[
-                                                                    index])),
-                                                  ),
-                                                ],
-                                              )
-                                            : Slidable(
-                                                endActionPane: ActionPane(
-                                                  motion: ScrollMotion(),
-                                                  children: [
-                                                    SlidableAction(
-                                                      flex: 1,
-                                                      onPressed:
-                                                          (context) async {
-                                                        showAwesomeDialog(
-                                                            fetchedReservationList[
-                                                                index]['id']);
-                                                      },
-                                                      backgroundColor:
-                                                          Colors.amber,
-                                                      foregroundColor:
-                                                          Colors.white,
-                                                      icon: Icons
-                                                          .delete_forever_outlined,
-                                                      label: 'Delete',
-                                                    )
-                                                  ],
-                                                ),
-                                                child: InkWell(
-                                                    child: ReservationTicketList(
-                                                        reservationList:
-                                                            fetchedReservationList[
-                                                                index]),
-                                                    onTap: () {
-                                                      Navigator.of(context).push(
-                                                          MaterialPageRoute(
-                                                              builder: (context) => QrCodePage(
-                                                                  selectedReservation:
-                                                                      fetchedReservationList[
-                                                                          index])));
-                                                    })),
+                                        : Slidable(
+                                            endActionPane: ActionPane(
+                                              motion: ScrollMotion(),
+                                              children: [
+                                                SlidableAction(
+                                                  flex: 1,
+                                                  onPressed: (context) async {
+                                                    showAwesomeDialog(
+                                                        fetchedReservationList[
+                                                            index]['id']);
+                                                  },
+                                                  backgroundColor: Colors.amber,
+                                                  foregroundColor: Colors.white,
+                                                  icon: Icons
+                                                      .delete_forever_outlined,
+                                                  label: 'Delete',
+                                                )
+                                              ],
+                                            ),
+                                            child: InkWell(
+                                                child: ReservationTicketList(
+                                                    reservationList:
+                                                        fetchedReservationList[
+                                                            index]),
+                                                onTap: () {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) => QrCodePage(
+                                                              selectedReservation:
+                                                                  fetchedReservationList[
+                                                                      index])));
+                                                })),
                                 SizedBox(height: 10.h),
                               ],
                             );

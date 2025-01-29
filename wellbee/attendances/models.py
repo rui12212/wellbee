@@ -220,6 +220,11 @@ def set_expire_day(sender, instance, **kwargs):
     else:
         instance.expire_day = (timezone.localdate() + relativedelta(months=instance.duration))
 
+@receiver(post_save, sender=Membership)
+def plus_point(sender, instance, created, **kwargs):
+    if created:
+        instance.user.points += 1
+        instance.user.save()
 
 
 # @receiver(pre_save, sender=Payment)
@@ -263,7 +268,7 @@ def validate_staff(sender, instance, **kwargs):
 @receiver(post_save, sender=CheckIn)
 def set_points_for_checkin(sender, created, instance, **kwargs):
     if created:
-        instance.reservation.membership.user.points = instance.reservation.membership.user.points + instance.num_person
+        instance.reservation.membership.user.points += 1
         instance.reservation.membership.user.save()
         
 @receiver(post_save, sender=CheckIn)
