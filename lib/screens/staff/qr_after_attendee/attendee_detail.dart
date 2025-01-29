@@ -39,7 +39,7 @@ class _Header extends StatelessWidget {
                 Text(
                   title,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 30.h, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 30.w, fontWeight: FontWeight.bold),
                 ),
                 TextButton(
                   style: TextButton.styleFrom(

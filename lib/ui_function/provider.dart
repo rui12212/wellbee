@@ -40,6 +40,6 @@ final isUpdateNeededProvider = StateProvider<bool>((ref) {
   return false;
 });
 
-final isCanTakeSurveyProvider = StateProvider<bool>((ref) {
+final isAllCourseSelectedProvider = StateProvider<bool>((ref) {
   return false;
 });

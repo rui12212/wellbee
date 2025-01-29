@@ -28,16 +28,19 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // height: 50.h,
+      height: 70.h,
       child: Column(
         children: [
           Align(
             alignment: Alignment.topLeft,
             child: Row(
               children: [
-                Text(title,
-                    style:
-                        TextStyle(fontSize: 24.w, fontWeight: FontWeight.bold)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Text(title,
+                      style: TextStyle(
+                          fontSize: 24.w, fontWeight: FontWeight.bold)),
+                ),
                 TextButton(
                   style: TextButton.styleFrom(
                       backgroundColor: Colors.transparent,
@@ -73,8 +76,7 @@ class _CheckHealthSurveyPageState extends ConsumerState<CheckHealthSurveyPage> {
   String? token = '';
   final ScrollController scrollControllerOne = ScrollController();
   final ScrollController scrollControllerTwo = ScrollController();
-  final ScrollController scrollControllerThree = ScrollController();
-  final ScrollController scrollControllerFour = ScrollController();
+  final ScrollController outerScrollController = ScrollController();
 
   @override
   showSnackBar(color, text) {
@@ -87,6 +89,14 @@ class _CheckHealthSurveyPageState extends ConsumerState<CheckHealthSurveyPage> {
   void initState() {
     super.initState();
     // _fetchMyAllMembership();
+  }
+
+  @override
+  void dispose() {
+    scrollControllerOne.dispose();
+    scrollControllerTwo.dispose();
+    outerScrollController.dispose();
+    super.dispose();
   }
 
   Future<List<dynamic>?> _fetchAttendeeWithHealthSurvey() async {
@@ -173,6 +183,7 @@ class _CheckHealthSurveyPageState extends ConsumerState<CheckHealthSurveyPage> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
+          controller: outerScrollController,
           child: Container(
             padding: EdgeInsets.symmetric(
               horizontal: 20.w,
@@ -182,58 +193,55 @@ class _CheckHealthSurveyPageState extends ConsumerState<CheckHealthSurveyPage> {
                 _Header(
                   title: 'Check Health Survey',
                 ),
-                SingleChildScrollView(
-                  child: Container(
-                    height: 555.h,
-                    child: FutureBuilder<dynamic>(
-                      future: createSurveyAvailabilityList(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Center(
-                              child: Text('Error: ${snapshot.error}'));
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                  child: Text('No Attendee Shown',
-                                      style: TextStyle(
-                                        fontSize: 20.sp,
-                                      ))),
-                            ],
-                          );
-                        } else {
-                          final canTakeSurveyList =
-                              snapshot.data!['canTakeSurveyList'];
-                          final cannotTakeSurveyList =
-                              snapshot.data!['cannotTakeSurveyList'];
+                Container(
+                  height: 555.h,
+                  child: FutureBuilder<dynamic>(
+                    future: createSurveyAvailabilityList(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                                child: Text('No Attendee Shown',
+                                    style: TextStyle(
+                                      fontSize: 20.sp,
+                                    ))),
+                          ],
+                        );
+                      } else {
+                        final canTakeSurveyList =
+                            snapshot.data!['canTakeSurveyList'];
+                        final cannotTakeSurveyList =
+                            snapshot.data!['cannotTakeSurveyList'];
 
-                          return SingleChildScrollView(
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                buildSurveyCategorySection(
-                                  'Available',
-                                  canTakeSurveyList!,
-                                  scrollControllerOne,
-                                  // membershipList['is_available'],
-                                ),
-                                buildSurveyCategorySection(
-                                  'Not Available',
-                                  cannotTakeSurveyList!,
-                                  scrollControllerTwo,
-                                  // membershipList['is_available'],
-                                ),
-                              ]));
-                        }
-                      },
-                    ),
+                        return SingleChildScrollView(
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                              buildSurveyCategorySection(
+                                'Available',
+                                canTakeSurveyList!,
+                                scrollControllerOne,
+                                outerScrollController,
+                                // membershipList['is_available'],
+                              ),
+                              buildSurveyCategorySection(
+                                'Not Available',
+                                cannotTakeSurveyList!,
+                                scrollControllerTwo,
+                                outerScrollController,
+                                // membershipList['is_available'],
+                              ),
+                            ]));
+                      }
+                    },
                   ),
                 )
               ],
@@ -248,6 +256,7 @@ class _CheckHealthSurveyPageState extends ConsumerState<CheckHealthSurveyPage> {
     String title,
     List attendeeList,
     ScrollController scrollController,
+    ScrollController outerScrollController,
   ) {
     if (attendeeList.isEmpty) {
       return Row(
@@ -269,9 +278,9 @@ class _CheckHealthSurveyPageState extends ConsumerState<CheckHealthSurveyPage> {
       );
     }
     // itemの一つの高さ。ここはこれから作∏るItemの大きさによる
-    double itemHeight = 150.h;
+    double itemHeight = 120.h;
     double listHeight = attendeeList.length * itemHeight;
-    double maxListHeight = 450.h;
+    double maxListHeight = 360.h;
     listHeight = listHeight > maxListHeight ? maxListHeight : listHeight;
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -361,61 +370,3 @@ class _CheckHealthSurveyPageState extends ConsumerState<CheckHealthSurveyPage> {
     ]);
   }
 }
-
-// Widget buildSurveyNotAvailableCategorySection(
-//   String title,
-//   List attendeeList,
-//   ScrollController scrollController,
-// ) {
-//   if (attendeeList.isEmpty) {
-//     return Row(
-//       children: [
-//         Text(
-//           title,
-//           style: TextStyle(
-//             fontSize: 20.sp,
-//             fontWeight: FontWeight.bold,
-//           ),
-//         ),
-//         Expanded(
-//           child: Divider(
-//             thickness: 0.5,
-//             color: Color.fromARGB(255, 80, 79, 79),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-//   // itemの一つの高さ。ここはこれから作るItemの大きさによる
-//   double itemHeight = 150.h;
-//   double listHeight = attendeeList.length * itemHeight;
-//   double maxListHeight = 450.h;
-//   listHeight = listHeight > maxListHeight ? maxListHeight : listHeight;
-
-//   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-//     Container(
-//       height: 40.h,
-//       child: Row(
-//         children: [
-//           Text(
-//             title,
-//             style: TextStyle(
-//               color: title == 'Available' ? kColorPrimary : Colors.red.shade700,
-//               fontSize: 20.sp,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//           Expanded(
-//             child: Divider(
-//               thickness: 1,
-//               color: Color.fromARGB(255, 138, 130, 130),
-//             ),
-//           ),
-//         ],
-//       ),
-//     ),
-//     SizedBox(height: 8.h),
-//     // メンバーシップリスト
-   
-//   ]);
-// }

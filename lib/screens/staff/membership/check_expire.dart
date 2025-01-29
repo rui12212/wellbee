@@ -328,41 +328,6 @@ class _CheckMembershipPageState extends ConsumerState<CheckMembershipPage> {
                                               lastCheckWithInOneWeek,
                                               scrollControllerFour)
                                         ]));
-                          // ListView.builder(
-                          //     itemCount: membershipList.length,
-                          //     itemBuilder: (context, index) {
-                          //       // request_join_timesとmax_join_timesの比較
-                          //       final requested_join_times =
-                          //           membershipList[index]
-                          //               ['requested_join_times'];
-                          //       final max_join_times =
-                          //           membershipList[index]['max_join_times'];
-                          //       final isAlreadyMaxRequest =
-                          //           requested_join_times == max_join_times;
-
-                          //       // already_join_timesとmax_join_timesの比較
-                          //       final already_join_times =
-                          //           membershipList[index]['already_join_times'];
-                          //       final isAlreadyMaxJoin =
-                          //           already_join_times == max_join_times;
-
-                          //       bool is_expired = false;
-                          //       DateTime formattedDate = DateTime.parse(
-                          //           membershipList[index]['expire_day']);
-
-                          //       DateTime today = DateTime.now();
-
-                          //       if (formattedDate.isBefore(today)) {
-                          //         is_expired = true;
-                          //       }
-                          //       return Column(
-                          //         children: [
-                          //           // TicketList(
-                          //           //     membershipList: membershipList[index]),
-                          //           SizedBox(height: 10.h),
-                          //         ],
-                          //       );
-                          //     }),
                         }
                       },
                     ),

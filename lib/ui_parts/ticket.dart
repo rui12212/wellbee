@@ -133,7 +133,7 @@ class _Ticket extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 128.h,
+      height: 128.r,
       decoration: ShapeDecoration(
         color: Colors.white,
         shape: _TicketShapeBorder(width: 1, radius: 16.0),
@@ -150,7 +150,7 @@ class _Ticket extends StatelessWidget {
           Container(
             width: 1,
             height: double.infinity,
-            margin: EdgeInsets.symmetric(vertical: 8.0.h),
+            margin: EdgeInsets.symmetric(vertical: 8.0.r),
             color: kColorTicketBorder,
           ),
           Expanded(
@@ -168,7 +168,7 @@ class _Ticket extends StatelessWidget {
                             'Course',
                             style: TextStyle(color: kColorText, fontSize: 18.w),
                           ),
-                          // SizedBox(height: 4.h),
+                          // SizedBox(height: 4.r),
                           Text(
                             course_name,
                             style: TextStyle(
@@ -202,7 +202,7 @@ class _Ticket extends StatelessWidget {
                             'Name',
                             style: TextStyle(color: kColorText, fontSize: 18.w),
                           ),
-                          // SizedBox(height: 4.h),
+                          // SizedBox(height: 4.r),
                           Text(
                             attendee_name,
                             style: TextStyle(
@@ -218,11 +218,11 @@ class _Ticket extends StatelessWidget {
                   TableRow(
                     children: [
                       SizedBox(
-                        height: 8.h,
+                        height: 8.r,
                         // width: 20.w,
                       ),
                       SizedBox(
-                        height: 8.h,
+                        height: 8.r,
                       ),
                     ],
                   ),
@@ -235,7 +235,7 @@ class _Ticket extends StatelessWidget {
                             'Expire At',
                             style: TextStyle(color: kColorText, fontSize: 16.w),
                           ),
-                          // SizedBox(height: 4.h),
+                          // SizedBox(height: 4.r),
                           Text(
                             expire_day,
                             style: TextStyle(
@@ -250,9 +250,9 @@ class _Ticket extends StatelessWidget {
                         children: [
                           Text(
                             'Join Times',
-                            style: TextStyle(color: kColorText, fontSize: 16.h),
+                            style: TextStyle(color: kColorText, fontSize: 16.r),
                           ),
-                          // SizedBox(height: 4.h),
+                          // SizedBox(height: 4.r),
                           Text(
                             '$already_join_times/$max_join_times',
                             style: TextStyle(
@@ -379,7 +379,7 @@ class _MembershipTicket extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 128.h,
+      height: 120.r,
       decoration: ShapeDecoration(
         color: Colors.white,
         shape: _TicketShapeBorder(width: 1, radius: 16.0),
@@ -391,14 +391,14 @@ class _MembershipTicket extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  height: 80.h,
+                  height: 80.r,
                   // padding: EdgeInsets.all(24),
                   child: image,
                 ),
                 Container(
                     child: Column(
                   children: [
-                    Text('$duration month', style: TextStyle(fontSize: 16.h)),
+                    Text('$duration month', style: TextStyle(fontSize: 16.r)),
                   ],
                 )),
               ],
@@ -407,13 +407,13 @@ class _MembershipTicket extends StatelessWidget {
           Container(
             width: 1,
             height: double.infinity,
-            margin: EdgeInsets.symmetric(vertical: 8.0.h),
+            margin: EdgeInsets.symmetric(vertical: 8.0.r),
             color: kColorTicketBorder,
           ),
           Expanded(
             flex: 2,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              padding: EdgeInsets.symmetric(horizontal: 12.r, vertical: 6.r),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -427,14 +427,14 @@ class _MembershipTicket extends StatelessWidget {
                               Text(
                                 'Name',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 16.w),
+                                    color: kColorText, fontSize: 16.r),
                               ),
-                              // SizedBox(height: 4.h),
+                              // SizedBox(height: 4.r),
                               Text(
                                 attendee_name,
                                 style: TextStyle(
                                   color: kColorTextDark,
-                                  fontSize: 17.h,
+                                  fontSize: 17.r,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -446,14 +446,14 @@ class _MembershipTicket extends StatelessWidget {
                               Text(
                                 'Last Check',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 16.w),
+                                    color: kColorText, fontSize: 16.r),
                               ),
-                              // SizedBox(height: 4.h),
+                              // SizedBox(height: 4.r),
                               Text(
                                 last_check_in,
                                 style: TextStyle(
                                   color: colorForLastCheckIn,
-                                  fontSize: 18.w,
+                                  fontSize: 18.r,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -464,11 +464,11 @@ class _MembershipTicket extends StatelessWidget {
                       TableRow(
                         children: [
                           SizedBox(
-                            height: 8.h,
+                            height: 8.r,
                             // width: 20.w,
                           ),
                           SizedBox(
-                            height: 8.h,
+                            height: 8.r,
                           ),
                         ],
                       ),
@@ -480,14 +480,14 @@ class _MembershipTicket extends StatelessWidget {
                               Text(
                                 'Expire At',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 16.w),
+                                    color: kColorText, fontSize: 16.r),
                               ),
-                              // SizedBox(height: 4.h),
+                              // SizedBox(height: 4.r),
                               Text(
                                 expire_day,
                                 style: TextStyle(
                                   color: colorForExpireDay,
-                                  fontSize: 18.w,
+                                  fontSize: 18.r,
                                 ),
                               ),
                             ],
@@ -498,14 +498,14 @@ class _MembershipTicket extends StatelessWidget {
                               Text(
                                 'Join Times',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 16.w),
+                                    color: kColorText, fontSize: 16.r),
                               ),
-                              // SizedBox(height: 4.h),
+                              // SizedBox(height: 4.r),
                               Text(
                                 '$already_join_times/$max_join_times',
                                 style: TextStyle(
                                   color: kColorTextDark,
-                                  fontSize: 18.w,
+                                  fontSize: 18.r,
                                 ),
                               ),
                             ],
@@ -627,7 +627,7 @@ class _HealthSurveyTicket extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 128.h,
+      height: 120.r,
       decoration: ShapeDecoration(
         color: Colors.white,
         shape: _TicketShapeBorder(width: 1, radius: 16.0),
@@ -639,14 +639,14 @@ class _HealthSurveyTicket extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  height: 80.h,
+                  height: 80.r,
                   // padding: EdgeInsets.all(24),
                   child: image,
                 ),
                 Container(
                     child: Column(
                   children: [
-                    Text('$duration month', style: TextStyle(fontSize: 16.h)),
+                    Text('$duration month', style: TextStyle(fontSize: 16.r)),
                   ],
                 )),
               ],
@@ -655,13 +655,13 @@ class _HealthSurveyTicket extends StatelessWidget {
           Container(
             width: 1,
             height: double.infinity,
-            margin: EdgeInsets.symmetric(vertical: 8.0.h),
+            margin: EdgeInsets.symmetric(vertical: 8.0.r),
             color: kColorTicketBorder,
           ),
           Expanded(
             flex: 2,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.r),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -675,14 +675,14 @@ class _HealthSurveyTicket extends StatelessWidget {
                               Text(
                                 'Name',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 16.w),
+                                    color: kColorText, fontSize: 16.r),
                               ),
-                              // SizedBox(height: 4.h),
+                              // SizedBox(height: 4.r),
                               Text(
                                 attendee_name,
                                 style: TextStyle(
                                   color: kColorTextDark,
-                                  fontSize: 17.h,
+                                  fontSize: 17.r,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -694,14 +694,14 @@ class _HealthSurveyTicket extends StatelessWidget {
                               Text(
                                 'Expire At',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 16.w),
+                                    color: kColorText, fontSize: 16.r),
                               ),
-                              // SizedBox(height: 4.h),
+                              // SizedBox(height: 4.r),
                               Text(
                                 expire_date,
                                 style: TextStyle(
                                   color: kColorTextDark,
-                                  fontSize: 18.w,
+                                  fontSize: 18.r,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -712,11 +712,11 @@ class _HealthSurveyTicket extends StatelessWidget {
                       TableRow(
                         children: [
                           SizedBox(
-                            height: 8.h,
+                            height: 8.r,
                             // width: 20.w,
                           ),
                           SizedBox(
-                            height: 8.h,
+                            height: 8.r,
                           ),
                         ],
                       ),
@@ -728,14 +728,14 @@ class _HealthSurveyTicket extends StatelessWidget {
                               Text(
                                 'Availability',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 16.w),
+                                    color: kColorText, fontSize: 16.r),
                               ),
-                              // SizedBox(height: 4.h),
+                              // SizedBox(height: 4.r),
                               Text(
                                 availability,
                                 style: TextStyle(
                                   color: colorForAvailability,
-                                  fontSize: 17.w,
+                                  fontSize: 17.r,
                                 ),
                               ),
                             ],
@@ -746,14 +746,14 @@ class _HealthSurveyTicket extends StatelessWidget {
                               Text(
                                 'Last Survey',
                                 style: TextStyle(
-                                    color: kColorText, fontSize: 16.w),
+                                    color: kColorText, fontSize: 16.r),
                               ),
-                              // SizedBox(height: 4.h),
+                              // SizedBox(height: 4.r),
                               Text(
                                 last_survey_date,
                                 style: TextStyle(
                                   color: colorForLastCheckIn,
-                                  fontSize: 17.w,
+                                  fontSize: 17.r,
                                 ),
                               ),
                             ],

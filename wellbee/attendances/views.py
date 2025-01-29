@@ -107,9 +107,9 @@ class MembershipViewSet(viewsets.ModelViewSet):
         if self.action == 'fetch_course_membership':
             memberships = Membership.objects.all()
             return memberships
-        if self.action == 'fetch_health_survey':
-            health_surveys = Membership.objects.all()
-            return health_surveys
+        if self.action == 'fetch_all_available_membership':
+            memberships = Membership.objects.all()
+            return memberships
         # if self.action == 'fetch_my_id':
         #     my_id = Membership.objects.all()
         else:
@@ -198,6 +198,21 @@ class MembershipViewSet(viewsets.ModelViewSet):
                 attendee_birthday = F('attendee__date_of_birth'),
                 course_name = F('course__course_name')
             )
+        serializer = self.get_serializer(memberships, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], permission_classes=[MembershipPermission], url_path='all_available_membership')
+    def fetch_all_available_membership(self, request):
+        now_utc = timezone.now()
+        local_timezone = pytz.timezone('Africa/Nairobi')
+        now_local = now_utc.astimezone(local_timezone)
+        today_date = now_local.date()
+        memberships = Membership.objects.filter(
+            expire_day__gte = today_date
+        ).order_by('expire_day').annotate(
+             attendee_name = F('attendee__name'),
+                course_name = F('course__course_name')
+        )
         serializer = self.get_serializer(memberships, many=True)
         return Response(serializer.data)
     

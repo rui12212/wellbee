@@ -315,7 +315,7 @@ class HomeCard extends StatelessWidget {
                   padding: const EdgeInsets.all(15.0),
                   child: Text(
                     text,
-                    style: TextStyle(color: Colors.white, fontSize: 18.h),
+                    style: TextStyle(color: Colors.white, fontSize: 18.r),
                   ),
                 ),
               ),
@@ -364,7 +364,7 @@ class AttendeeDisplay extends StatelessWidget {
 
     // }
     return Container(
-      height: 150.h,
+      height: 150.r,
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
@@ -382,12 +382,12 @@ class AttendeeDisplay extends StatelessWidget {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20.r),
                     bottomLeft: Radius.circular(20.r))),
-            height: 150.h,
+            height: 150.r,
           ),
           Expanded(
               child: Container(
-                  height: 150.h,
-                  padding: EdgeInsets.all(16).h,
+                  height: 150.r,
+                  padding: EdgeInsets.all(16).r,
                   decoration: BoxDecoration(
                       color: Colors.white,
                       // boxShadow: shadowList,
@@ -418,24 +418,24 @@ class AttendeeDisplay extends StatelessWidget {
                         children: [
                           Text('Gender: ',
                               style:
-                                  TextStyle(fontSize: 17.w, color: kColorText)),
+                                  TextStyle(fontSize: 17.r, color: kColorText)),
                           Text(gender,
                               style:
-                                  TextStyle(fontSize: 17.w, color: kColorText))
+                                  TextStyle(fontSize: 17.r, color: kColorText))
                         ],
                       ),
-                      // SizedBox(height: 10.h),
+                      // SizedBox(height: 10.r),
                       Align(
                           alignment: Alignment.topLeft,
                           child: goal == ''
                               ? Text('No goal is set',
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      fontSize: 17.w,
+                                      fontSize: 17.r,
                                       color: kColorTextDarkGrey))
                               : DefaultTextStyle(
                                   style: TextStyle(
-                                      fontSize: 17.w,
+                                      fontSize: 17.r,
                                       color: kColorTextDarkGrey),
                                   child: Text(
                                     goal,
@@ -575,7 +575,7 @@ class _ReservationTicket extends StatelessWidget {
     String formattedEndTime = IntConverter.formatTime(end_time);
     return Container(
       width: 390.w,
-      height: 128.h,
+      height: 128.r,
       decoration: ShapeDecoration(
         color: Colors.white,
         shape: _ReservationTicketShapeBorder(width: 1, radius: 16.0),
@@ -592,7 +592,7 @@ class _ReservationTicket extends StatelessWidget {
           Container(
             width: 1.w,
             // height: double.infinity,
-            margin: EdgeInsets.symmetric(vertical: 8.0.h),
+            margin: EdgeInsets.symmetric(vertical: 8.0.r),
             color: kColorTicketBorder,
           ),
           Expanded(
@@ -665,8 +665,8 @@ class _ReservationTicket extends StatelessWidget {
                       ),
                       TableRow(
                         children: [
-                          SizedBox(height: 5.h),
-                          SizedBox(height: 5.h),
+                          SizedBox(height: 5.r),
+                          SizedBox(height: 5.r),
                         ],
                       ),
                     ],
@@ -880,7 +880,7 @@ class _PastReservationTicket extends StatelessWidget {
     String formattedEndTime = IntConverter.formatTime(end_time);
     return Container(
       width: 390.w,
-      height: 128.h,
+      height: 128.r,
       decoration: ShapeDecoration(
         color: Colors.white,
         shape: _ReservationTicketShapeBorder(width: 1, radius: 16.0),
@@ -897,7 +897,7 @@ class _PastReservationTicket extends StatelessWidget {
           Container(
             width: 1,
             // height: double.infinity,
-            margin: EdgeInsets.symmetric(vertical: 8.0.h),
+            margin: EdgeInsets.symmetric(vertical: 8.0.r),
             color: kColorTicketBorder,
           ),
           Expanded(
@@ -970,8 +970,8 @@ class _PastReservationTicket extends StatelessWidget {
                       ),
                       TableRow(
                         children: [
-                          SizedBox(height: 2.h),
-                          SizedBox(height: 2.h),
+                          SizedBox(height: 2.r),
+                          SizedBox(height: 2.r),
                         ],
                       ),
                       TableRow(children: [
@@ -1064,13 +1064,13 @@ class ReservationCheckList extends StatelessWidget {
           children: [
             Text(tytle,
                 style: TextStyle(
-                  fontSize: 16.h,
+                  fontSize: 16.r,
                   fontWeight: FontWeight.w300,
                 )),
             Text(text,
                 style: TextStyle(
                   color: kColorTextDarkGrey,
-                  fontSize: 20.h,
+                  fontSize: 20.r,
                   fontWeight: FontWeight.w700,
                 )),
           ],
@@ -1082,15 +1082,15 @@ class ReservationCheckList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      SizedBox(height: 30.h),
+      SizedBox(height: 30.r),
       baseContainer('Course Name', slot_course_name),
-      SizedBox(height: 18.h),
+      SizedBox(height: 18.r),
       baseContainer('Lesson Date', slot_date),
-      SizedBox(height: 18.h),
+      SizedBox(height: 18.r),
       baseContainer('Lesson Start Time', slot_start_time),
-      SizedBox(height: 18.h),
+      SizedBox(height: 18.r),
       baseContainer('Lesson End Time', slot_end_time),
-      SizedBox(height: 18.h),
+      SizedBox(height: 18.r),
       baseContainer(
         'Wellbee Member Name',
         attendee_name,

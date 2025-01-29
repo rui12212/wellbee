@@ -378,7 +378,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                         Column(
                           children: [
                             Container(
-                              height: 200.h,
+                              height: 220.h,
                               width: 400.w,
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -527,7 +527,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                                 child: _buildGridItem(
                                   icon: Icons.airplane_ticket_outlined,
                                   title: "Membership",
-                                  fontSize: 14.h,
+                                  fontSize: 13.w,
                                   colorStart:
                                       Color.fromARGB(255, 238, 233, 173),
                                   colorEnd: Color.fromARGB(255, 205, 196, 32),
