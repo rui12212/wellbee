@@ -40,8 +40,8 @@ class _StaffTopPageState extends State<StaffTopPage> {
     _pages = [
       StaffHomePage(),
       // UserHomePage(pk: '5de65b35f8b24ee7a03b595fde324322'),
-      // ScannerWidget(),
-      CheckInPage(id: '64'),
+      ScannerWidget(),
+      // CheckInPage(id: '64'),
       showLogOutDialogue(),
     ];
     super.initState();
