@@ -88,40 +88,40 @@ WSGI_APPLICATION = 'wellbee.wsgi.application'
 
 # -----------Dev------------
 # dev
-DEBUG = True
-ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wellbee',
-        'USER': 'root',
-        'PASSWORD': 'Kruike221',
-        'HOST': 'localhost',
-        'PORT': '3306'
-    }
-}
-CORS_ALLOW_ALL_ORIGINS = True
+# DEBUG = True
+# ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'wellbee',
+#         'USER': 'root',
+#         'PASSWORD': 'Kruike221',
+#         'HOST': 'localhost',
+#         'PORT': '3306'
+#     }
+# }
+# CORS_ALLOW_ALL_ORIGINS = True
 
 
 # -----------PRODUCTION----------
 # SECURITY WARNING: don't run with debug turned on in production!
 # pro
-# DEBUG = env('DEBUG')
-# ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+DEBUG = env('DEBUG')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.mysql'),
-#         'NAME': env('DATABASE_NAME'),
-#         'USER': env('DATABASE_USER'),
-#         'PASSWORD': env('DATABASE_PASSWORD'),
-#         'HOST': env('DATABASE_HOST'),
-#         'PORT': env('DATABASE_PORT', default='3306'),
-#     }
-# }
-# CORS_ALLOWED_ORIGINS = [
-#     env("CORS_ALLOWED_HOSTS"),
-# ]
+DATABASES = {
+    'default': {
+        'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.mysql'),
+        'NAME': env('DATABASE_NAME'),
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASSWORD'),
+        'HOST': env('DATABASE_HOST'),
+        'PORT': env('DATABASE_PORT', default='3306'),
+    }
+}
+CORS_ALLOWED_ORIGINS = [
+    env("CORS_ALLOWED_HOSTS"),
+]
 
 
 
