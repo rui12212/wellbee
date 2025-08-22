@@ -216,6 +216,21 @@ class MembershipViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(memberships, many=True)
         return Response(serializer.data)
     
+    @action(detail=False, methods=['get'], permission_classes=[MembershipPermission], url_path='all_dm_attendee')
+    def fetch_all_dm_attendee(self, request):
+        now_utc = timezone.now()
+        local_timezone = pytz.timezone('Africa/Nairobi')
+        now_local = now_utc.astimezone(local_timezone)
+        today_date = now_local.date()
+        memberships = Membership.objects.filter(
+            expire_day__gte = today_date
+        ).order_by('attendee__name').annotate(
+             attendee_name = F('attendee__name'),
+                course_name = F('course__course_name')
+        )
+        serializer = self.get_serializer(memberships, many=True)
+        return Response(serializer.data)
+    
 
 
 

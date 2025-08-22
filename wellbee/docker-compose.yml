@@ -1,0 +1,52 @@
+version: '3'
+services:
+ app:
+   container_name: "wellbee-docker"
+   build:
+     context: .
+     dockerfile: Dockerfile
+   working_dir: /wellbee
+   ports:
+      - "8000:8000"
+   volumes:
+     - .:/wellbee
+   command: sh -c "chmod +x /wellbee/entrypoint.sh && /wellbee/entrypoint.sh"
+   env_file:
+      - .env
+      # - .env.prod
+ web:
+   container_name: web
+   build: 
+     context: .
+     dockerfile: nginx/Dockerfile
+   volumes:
+      - ./static:/static
+   # ローカルの80番ボートをコンテナの80番ポートとつなぐ
+   ports:
+      - "80:80"
+   # 先にappを起動してからwebを起動する
+   depends_on:
+      - app
+   
+  #  depends_on:
+  #    - db
+ db:
+   container_name: mysql
+   image: mysql:8.0
+   restart: always
+   environment:
+     MYSQL_ROOT_PASSWORD: Kruike221
+     SECRET_KEY: django
+    #  ALLOWED_HOSTS: localhost
+     DEBUG: True
+     MYSQL_ROOT_HOST: '%'
+
+     MYSQL_DATABASE: "wellbee"
+     MYSQL_USER: root
+     MYSQL_PASSWORD: Kruike221
+     MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
+   volumes:
+     - db_data:/var/lib/mysql
+volumes:
+  db_data:
+  static:
