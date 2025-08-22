@@ -184,23 +184,6 @@ class _SignInPageState extends State<SignInPage> {
     return;
   }
 
-  Future<void> fetchTokenAndBool() async {
-    token = await SharedPrefs.fetchAccessToken();
-    // print(token);
-    if (token != null) {
-      bool attendeeExists = await _fetchAttendeeExist();
-      setState(() {
-        isToken = true;
-        isAttendee = attendeeExists;
-      });
-      autoLoad();
-    } else {
-      setState(() {
-        isToken = false;
-      });
-    }
-  }
-
   _fetchAttendeeExist() async {
     try {
       await DialogGenerator.showLoadingDialog(context: context);
@@ -215,8 +198,9 @@ class _SignInPageState extends State<SignInPage> {
           Future.delayed(const Duration(seconds: 5),
               () => throw TimeoutException("Request timeout"))
         ]);
+        List<dynamic> data = jsonDecode(response.body);
+
         if (response.statusCode == 200) {
-          List<dynamic> data = jsonDecode(response.body);
           if (data.isNotEmpty) {
             return true;
           } else
@@ -229,17 +213,39 @@ class _SignInPageState extends State<SignInPage> {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text('Something went wrong. Try again later')));
+          return false;
         }
       }
     } catch (e) {
-      // Navigator.pop(context);
+      Navigator.pop(context);
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
+          .showSnackBar(SnackBar(content: Text('Exceptional error')));
+      return null;
+    }
+  }
+
+  Future<void> fetchTokenAndCheckAttendeeExist() async {
+    token = await SharedPrefs.fetchAccessToken();
+    if (token != null) {
+      bool? attendeeExists = await _fetchAttendeeExist();
+      if (attendeeExists != null) {
+        setState(() {
+          isToken = true;
+          isAttendee = attendeeExists;
+        });
+        autoLoad();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Something went wrong. Try again later')));
+      }
+    } else {
+      setState(() {
+        isToken = false;
+      });
     }
   }
 
   Future<void> onLaunchUrl() async {
-    // print('haha');
     final Uri url =
         Uri.parse('https://rui12212.github.io/wellbee/privacy-policy');
     if (await canLaunchUrl(url)) {
@@ -254,7 +260,7 @@ class _SignInPageState extends State<SignInPage> {
   @override
   void initState() {
     super.initState();
-    fetchTokenAndBool();
+    fetchTokenAndCheckAttendeeExist();
   }
 
   @override
@@ -295,7 +301,6 @@ class _SignInPageState extends State<SignInPage> {
         setState(() {
           isAttendee = attendeeExists;
         });
-        // print(accessToken);
         Navigator.pop(context);
         await Future.delayed(Duration(milliseconds: 250));
 
@@ -386,7 +391,6 @@ class _SignInPageState extends State<SignInPage> {
                     // function: (value) {
                     //   _passwordController = value;
                     //   // パスワード入力時の処理
-                    //   // print('Password: $value');
                     // },
                   ),
                 ),

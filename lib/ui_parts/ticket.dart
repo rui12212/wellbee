@@ -851,3 +851,242 @@ class HealthSurveyTicketListState
                                                 : Image.asset('lib/assets/invi_course_pic/female_fitness.png'));
   }
 }
+
+class _DMTicket extends StatelessWidget {
+  final Widget image;
+  final String attendee_name;
+  final String course_name;
+  final int duration;
+  final String last_check_in;
+  final String expire_day;
+  final int times;
+  final int max_join_times;
+  final int already_join_times;
+
+  _DMTicket({
+    Key? key,
+    required this.image,
+    required this.attendee_name,
+    required this.course_name,
+    required this.duration,
+    required this.already_join_times,
+    required this.max_join_times,
+    required this.last_check_in,
+    required this.expire_day,
+    required this.times,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 120.r,
+      decoration: ShapeDecoration(
+        color: Colors.white,
+        shape: _TicketShapeBorder(width: 1, radius: 16.0),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Container(
+                  height: 80.r,
+                  // padding: EdgeInsets.all(24),
+                  child: image,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 1,
+            height: double.infinity,
+            margin: EdgeInsets.symmetric(vertical: 8.0.r),
+            color: kColorTicketBorder,
+          ),
+          Expanded(
+            flex: 2,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.r, vertical: 6.r),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Table(
+                    children: [
+                      TableRow(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Name',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 16.r),
+                              ),
+                              // SizedBox(height: 4.r),
+                              Text(
+                                attendee_name,
+                                style: TextStyle(
+                                    color: kColorTextDark,
+                                    fontSize: 20.r,
+                                    fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Last Check',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 14.r),
+                              ),
+                              // SizedBox(height: 4.r),
+                              Text(
+                                last_check_in,
+                                style: TextStyle(
+                                  color: kColorTextDark,
+                                  fontSize: 14.r,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          SizedBox(
+                            height: 8.r,
+                            // width: 20.w,
+                          ),
+                          SizedBox(
+                            height: 8.r,
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Expire At',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 14.r),
+                              ),
+                              // SizedBox(height: 4.r),
+                              Text(
+                                expire_day,
+                                style: TextStyle(
+                                  color: kColorTextDark,
+                                  fontSize: 14.r,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Join Times',
+                                style: TextStyle(
+                                    color: kColorText, fontSize: 14.r),
+                              ),
+                              // SizedBox(height: 4.r),
+                              Text(
+                                '$already_join_times/$max_join_times',
+                                style: TextStyle(
+                                  color: kColorTextDark,
+                                  fontSize: 14.r,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DMTicketList extends ConsumerStatefulWidget {
+  final Map<dynamic, dynamic> membershipList;
+
+  DMTicketList({
+    Key? key,
+    required this.membershipList,
+  });
+  @override
+  MembershipTicketListState createState() => MembershipTicketListState();
+}
+
+class DMTicketListState extends ConsumerState<MembershipTicketList> {
+  @override
+  Widget build(BuildContext context) {
+    return _DMTicket(
+        course_name: widget.membershipList['course_name'],
+        attendee_name: widget.membershipList['attendee_name'],
+        duration: widget.membershipList['duration'],
+        last_check_in: widget.membershipList['last_check_in'],
+        expire_day: widget.membershipList['expire_day'],
+        times: widget.membershipList['times'],
+        max_join_times: widget.membershipList['max_join_times'],
+        already_join_times: widget.membershipList['already_join_times'],
+        image: widget.membershipList['course_name'] == 'Yoga' ||
+                widget.membershipList['course_name'] == 'Kids Yoga(A)' ||
+                widget.membershipList['course_name'] == 'Kids Yoga(B)' ||
+                widget.membershipList['course_name'] == 'Kids Yoga KG'
+            ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
+            : widget.membershipList['course_name'] == 'Dance' ||
+                    widget.membershipList['course_name'] == 'Kids Zumba' ||
+                    widget.membershipList['course_name'] == 'Zumba'
+                ? Image.asset('lib/assets/invi_course_pic/invi_dance.png')
+                : widget.membershipList['course_name'] == 'Karate' ||
+                        widget.membershipList['course_name'] == 'Kids Karate'
+                    ? Image.asset('lib/assets/invi_course_pic/invi_karate.png')
+                    : widget.membershipList['course_name'] == 'Music' ||
+                            widget.membershipList['course_name'] == 'Kids Music'
+                        ? Image.asset(
+                            'lib/assets/invi_course_pic/invi_music.png')
+                        : widget.membershipList['course_name'] ==
+                                    'Kids Gym(A)' ||
+                                widget.membershipList['course_name'] ==
+                                    'Kids Gym(B)'
+                            ? Image.asset(
+                                'lib/assets/invi_course_pic/male_fitness.png')
+                            : widget.membershipList['course_name'] == 'Pilates'
+                                ? Image.asset(
+                                    'lib/assets/invi_course_pic/invi_pilates.png')
+                                : widget.membershipList['course_name'] ==
+                                        'Family Pilates'
+                                    ? Image.asset(
+                                        'lib/assets/invi_course_pic/invi_family_pilates.png')
+                                    : widget.membershipList['course_name'] ==
+                                            'Family Yoga'
+                                        ? Image.asset(
+                                            'lib/assets/invi_course_pic/invi_family_yoga.png')
+                                        : widget.membershipList['course_name'] ==
+                                                    'Private Yoga@Studio' ||
+                                                widget.membershipList['course_name'] ==
+                                                    'Private Yoga@Home'
+                                            ? Image.asset(
+                                                'lib/assets/invi_course_pic/private_yoga.png')
+                                            : widget.membershipList['course_name'] ==
+                                                        'Private Pilates@Studio' ||
+                                                    widget.membershipList[
+                                                            'course_name'] ==
+                                                        'Private Pilates@Home'
+                                                ? Image.asset('lib/assets/invi_course_pic/private_pilates.png')
+                                                : Image.asset('lib/assets/invi_course_pic/female_fitness.png'));
+  }
+}
