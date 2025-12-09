@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wellbee/screens/staff/calendar/calendar.dart';
 import 'package:wellbee/screens/staff/course/course.dart';
+import 'package:wellbee/screens/staff/course_add/all_courses.dart';
 import 'package:wellbee/screens/staff/dm/attendee_select.dart';
 import 'package:wellbee/screens/staff/health_survey/health_survey_expirely.dart';
 import 'package:wellbee/screens/staff/membership/all_course.dart';
@@ -74,6 +75,30 @@ class _StaffHomePageState extends State<StaffHomePage> {
                             builder: (context) => CalendarPage()));
                       }),
                   Divider(),
+                  InkWell(
+                      child: Container(
+                          height: 100.h,
+                          width: 390.w,
+                          // decoration: BoxDecoration(
+                          //     border: Border.symmetric(
+                          //         horizontal: BorderSide(width: 0.2))),
+                          child: Row(
+                            children: [
+                              Icon(Icons.calendar_month_outlined,
+                                  color: Color.fromARGB(255, 97, 198, 187),
+                                  size: 30),
+                              SizedBox(
+                                width: 10.w,
+                              ),
+                              Text('Course Add',
+                                  style: TextStyle(fontSize: 26.sp))
+                            ],
+                          )),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => CoursesPage()));
+                      }),
+                  Divider(),
                   // SizedBox(
                   //   height: 5.h,
                   // ),
@@ -92,7 +117,7 @@ class _StaffHomePageState extends State<StaffHomePage> {
                               SizedBox(
                                 width: 10.w,
                               ),
-                              Text('Add Slots',
+                              Text('Slot Add',
                                   style: TextStyle(fontSize: 26.sp))
                             ],
                           )),
@@ -164,7 +189,8 @@ class _StaffHomePageState extends State<StaffHomePage> {
                               SizedBox(
                                 width: 10.w,
                               ),
-                              Text('DM', style: TextStyle(fontSize: 26.sp))
+                              Text('Auto Message',
+                                  style: TextStyle(fontSize: 26.sp))
                             ],
                           )),
                       onTap: () {

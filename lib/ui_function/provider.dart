@@ -43,3 +43,15 @@ final isUpdateNeededProvider = StateProvider<bool>((ref) {
 final isAllCourseSelectedProvider = StateProvider<bool>((ref) {
   return false;
 });
+
+final isPrivateSelectedProvider = StateProvider<bool>(
+  (ref) {
+    return true;
+  },
+);
+
+final isOpenSelectedProvider = StateProvider<bool>(
+  (ref) {
+    return true;
+  },
+);

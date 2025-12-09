@@ -46,7 +46,7 @@ class MembershipSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model= Course
-        fields=('id', 'course_name','is_private')
+        fields=('id', 'course_name','is_private','is_open')
         extra_kwargs = {
             'id': {'read_only': True},
             }

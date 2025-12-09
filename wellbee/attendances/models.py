@@ -12,29 +12,9 @@ from accounts.models import User
 
 
 class Course(models.Model):
-    COURSE_NAME=(
-        # ('Trial Yoga', 'Trial Yoga'),
-        ('Yoga','Yoga'),
-        ('Zumba','Zumba'),
-        ('Pilates','Pilates'),
-        ('Kids Yoga(A)','Kids Yoga(A)'),
-        ('Kids Yoga(B)','Kids Yoga(B)'),
-        ('Kids Yoga KG', 'Kids Yoga KG'),
-        # DBで変更
-        ('Kids Zumba', 'Kids Zumba'),
-        ('Kids Karate','Kids Karate'),
-        # DBで変更
-        ('Kids Gym(A)','Kids Gym(A)'),
-        ('Kids Gym(B)','Kids Gym(B)'),
-        
-        ('Private Yoga@Studio', 'Private Yoga@Studio'),
-        ('Private Yoga@Home', 'Private Yoga@Home'),
-        ('Private Pilates@Studio', 'Private Pilates@Studio'),
-        ('Private Pilates@Home', 'Private Pilates@Home'),
-    )
-    course_name=models.CharField(verbose_name="course_name", choices=COURSE_NAME,max_length=25, default='Yoga',blank=False, null=False)
+    course_name=models.CharField(verbose_name="course_name",max_length=25, default='Yoga',blank=False, null=False)
     is_private=models.BooleanField(verbose_name='is_private', default=False, null=False, blank=False)
-    
+    is_open=models.BooleanField(verbose_name='is_open',default=True, null=False, blank=False)
 
     def __str__(self):
         return self.course_name

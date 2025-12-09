@@ -49,7 +49,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
                 {'error': f'start_day\'s type is not valid:{e}'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
+        
         try:
             # add
             total_price = int(fetched_total_price)
@@ -402,11 +402,7 @@ class CheckInViewSet(viewsets.ModelViewSet):
 
        reservation_id = get_object_or_404(Reservation,id=fetch_reservation)
 
-    #    my_overlap_checkin = CheckIn.objects.filter(
-    #        reservation = fetch_reservation
-    #    )
-    #    if my_overlap_checkin.exists():
-    #     raise ValidationError('Same reservation already exists')
+
 
        check_in = CheckIn.objects.create(
            reservation = reservation_id,
@@ -421,38 +417,41 @@ class CheckInViewSet(viewsets.ModelViewSet):
         response={'messages': 'Deleting is not allowed!'}
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
-
-# class MyCheckInViewSet(viewsets.ModelViewSet):
-#     queryset = CheckIn.objects.all()
-#     serializer_class = serializers.CheckInSerializer
-
-#     @action(detail=True)
-#     def perform_create(self, serializer):
-#         serializer.save(user_id=self.request.user.id)
-
-#     @action(detail=True)
-#     def get_queryset(self):
-#         # このuserProfileの中には自分のid情報が入っているから、ここに合うもののみ持ってこれる＋情報の変更ができる
-#         return self.queryset.filter(user_id=self.request.user.id)
-    
-#     def destroy(self, request, *args,**kwargs):
-#         response={'messages': 'Deleting is not allowed!'}
-#         return Response(response, status=status.HTTP_400_BAD_REQUEST)
-    
-#     def update(self, request, *args,**kwargs):
-#         response={'messages': 'Updating this data is not allowed!'}
-#         return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = serializers.CourseSerializer
     # permission_classes=[IsStaffUser]
 
+    @action(detail=False, methods=['get'], permission_classes=[IsStaffUser],url_path='all_course')
+    def fetch_all_course(self,request):
+        courses = Course.objects.filter(
+            is_open = True
+        )
+        serializer = self.get_serializer(courses,many=True)
+        return Response(serializer.data)
+
+
     def get_queryset(self):
-        return self.queryset.order_by('course_name')
+        if self.action == 'fetch_all_course':
+            courses = Membership.objects.all()
+            return courses
+        return super().get_queryset()
+    
+    
     
     def perform_create(self, serializer):
+        data = self.request.data
         serializer.save(self)
+        created_course_name = data.get('course_name')
+        created_is_private = data.get('is_private')
+
+        course = Course.objects.create(
+            course_name = created_course_name,
+            is_private = created_is_private
+        )
+        serializer = self.get_serializer(course)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 
     
