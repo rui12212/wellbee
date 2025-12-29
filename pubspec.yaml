@@ -89,11 +89,6 @@ flutter:
      - lib/assets/attendee_pic/attendee.png
      - lib/assets/home_pic/graph.png
      - lib/assets/home_pic/membership.png
-     - lib/assets/course_pic/karate.png
-     - lib/assets/course_pic/dance.png
-     - lib/assets/course_pic/yoga.png
-     - lib/assets/course_pic/music.png
-     - lib/assets/course_pic/taiso.png
      - lib/assets/attendee_pic/female_fitness.png
      - lib/assets/attendee_pic/male_fitness.png
      - lib/assets/home_pic/survey.png
@@ -118,6 +113,10 @@ flutter:
      - lib/assets/invi_course_pic/invi_family_yoga.png
      - lib/assets/invi_course_pic/private_pilates.png
      - lib/assets/invi_course_pic/private_yoga.png
+     - lib/assets/invi_course_pic/invi_gold.png
+     - lib/assets/invi_course_pic/invi_flamenco.png
+     - lib/assets/invi_course_pic/invi_toning.png
+     - lib/assets/invi_course_pic/invi_zumba.png
   fonts:
     - family: Playfair
       fonts:

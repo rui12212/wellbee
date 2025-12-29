@@ -36,7 +36,7 @@ class _Header extends StatelessWidget {
 }
 
 class _Question extends StatelessWidget {
-  String question;
+  final String question;
 
   _Question({
     required this.question,
@@ -44,14 +44,20 @@ class _Question extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: 40.h,
-        child: Column(
-          children: [
-            Text(question,
-                style: TextStyle(fontSize: 28.h, fontWeight: FontWeight.w300))
-          ],
-        ));
+    return Padding(
+      padding: EdgeInsets.only(top: 12.h, bottom: 10.h),
+      child: Row(
+        children: [
+          Text(
+            question,
+            style: TextStyle(
+                fontSize: 30.sp,
+                fontWeight: FontWeight.w600,
+                color: kColorPrimary),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -99,7 +105,6 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
         ? attendee['reason']
         : _reasonController.text;
     try {
-      // final date_of_birth = formatDate(dateOfBirth);
       final String formattedDate = DateFormat('yyyy-MM-dd').format(dateOfBirth);
       token = await SharedPrefs.fetchAccessToken();
       var url = Uri.parse(
@@ -140,8 +145,6 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
   @override
   void initState() {
     super.initState();
-    // 一番最初にwidget.attendeeにアクセスできないから、initStateでアクセス
-    // 最後に表示する時（DatePickerのText）はDateTime型なので、ここでparse変換
     newDate = DateTime.parse(widget.attendeeList['date_of_birth']);
     _nameController =
         TextEditingController(text: widget.attendeeList['name'] ?? '');
@@ -164,242 +167,285 @@ class _AttendeeUpdatePageState extends State<AttendeeUpdatePage> {
     );
   }
 
-  // DateTimeを文字列に変換。_selectedDateで選択したばかりの時はDateTime型。それをTextにいれるため
   String formatDate(DateTime date) {
     return '${date.year}/${date.month}/${date.day}';
   }
 
+  Widget _buildModernTextField({
+    required String label,
+    required String hintText,
+    required TextEditingController controller,
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 7.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+                color: kColorTextDarkGrey,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 5.h),
+          TextFormField(
+            controller: controller,
+            maxLines: maxLines,
+            style: TextStyle(fontSize: 20.sp),
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: TextStyle(color: Colors.grey[400]),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 15.h, horizontal: 15.w),
+              filled: true,
+              fillColor: Colors.grey[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: kColorTextDarkGrey, width: 1),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: kColorPrimary, width: 2),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernDropdown({
+    required String label,
+    required String value,
+    required void Function(String?) onChanged,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 7.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+                color: kColorTextDarkGrey,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 5.h),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              color: Colors.grey[100],
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 15.w),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: value,
+                isExpanded: true,
+                icon: Icon(Icons.keyboard_arrow_down_rounded,
+                    color: Colors.grey[600], size: 30.sp),
+                style: TextStyle(fontSize: 20.sp, color: Colors.black),
+                borderRadius: BorderRadius.circular(14),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'male',
+                    child: Text('Male'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'female',
+                    child: Text('Female'),
+                  ),
+                ],
+                onChanged: onChanged,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernDatePicker({
+    required String label,
+    required DateTime date,
+    required Function(DateTime) onDateChanged,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 7.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+                color: kColorTextDarkGrey,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 5.h),
+          InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () async {
+              final DateTime? _selectedDate = await showDatePicker(
+                context: context,
+                initialDate: date,
+                firstDate: DateTime(1940),
+                lastDate: DateTime.now(),
+                builder: (context, child) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: ColorScheme.light(
+                        primary: kColorPrimary, // header bg color
+                        onPrimary: Colors.white, // header text color
+                        onSurface: kColorTextDarkGrey, // body text color
+                      ),
+                      textButtonTheme: TextButtonThemeData(
+                        style: TextButton.styleFrom(
+                          foregroundColor: kColorPrimary, // button text color
+                        ),
+                      ),
+                    ),
+                    child: child!,
+                  );
+                },
+              );
+              if (_selectedDate != null) {
+                setState(() {
+                  onDateChanged(_selectedDate);
+                });
+              }
+            },
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 17.h, horizontal: 15.w),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.grey[300]!, width: 1),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.cake_outlined, size: 24.sp, color: kColorPrimary),
+                  SizedBox(width: 10.w),
+                  Text(
+                    formatDate(date),
+                    style: TextStyle(
+                        fontSize: 20.sp,
+                        color: kColorTextDarkGrey,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // isSelectedValue = widget.attendeeList['gender'];
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              children: [
+      backgroundColor: Color(0xFFF8FAFB),
+      body: SafeArea(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: [
+                _Question(question: 'Update Info'),
                 _Header(),
-                _Question(question: 'Update Member Info'),
-                Expanded(
-                  child: SingleChildScrollView(
+              ]),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 15.h, bottom: 20.h),
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 36.h,
+                        _buildModernTextField(
+                          label: 'Name/ناڤ',
+                          hintText: widget.attendeeList['name'] ?? '',
+                          controller: _nameController,
                         ),
-                        Container(
-                            child: Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Name/ناڤ',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            CustomTextBox(
-                              label: '',
-                              hintText: widget.attendeeList['name'],
-                              controller: _nameController,
-                            ).textFieldDecoration()
-                          ],
-                        )),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Gender/رەگەز',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  border:
-                                      Border.all(color: kColorTextDarkGrey)),
-                              child: DropdownButton(
-                                underline: SizedBox.shrink(),
-                                itemHeight: 75.h,
-                                isExpanded: true,
-                                style: TextStyle(
-                                    fontSize: 22.sp, color: Colors.black),
-                                items: [
-                                  DropdownMenuItem(
-                                    value: 'male',
-                                    child: Text('Male'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'female',
-                                    child: Text('Female'),
-                                  ),
-                                ],
-                                value: isSelectedValue,
-                                onChanged: (String? value) {
-                                  setState(() {
-                                    isSelectedValue = value!;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Birthday/ژدایک بوون',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            Container(
-                              width: 390.w,
-                              height: 65.h,
-                              child: TextButton(
-                                style: ButtonStyle(
-                                  minimumSize: MaterialStateProperty.all<Size>(
-                                      Size(150, 50)), // ボタンのサイズを設定
-                                  side: MaterialStateProperty.all<BorderSide>(
-                                    BorderSide(
-                                        color: kColorTextDarkGrey,
-                                        width: 1), // 枠線の色と幅を設定
-                                  ),
-                                  shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          10), // 枠線の角を丸くする
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  final DateTime? _selectedDate =
-                                      await showDatePicker(
-                                    context: context,
-                                    initialDate: newDate,
-                                    firstDate: DateTime(1940),
-                                    lastDate: DateTime.now(),
-                                  );
-                                  if (_selectedDate != null) {
-                                    setState(
-                                      () {
-                                        // 値が変化したら＝onPressedされたらnewDateを新しい日付に更新。
-                                        newDate = _selectedDate;
-                                      },
-                                    );
-                                    // ここまではnewDateをDateTimeとして扱う
-                                  }
-                                },
-                                child: Text(
-                                  // 最後にStringに。
-                                  formatDate(newDate),
-                                  style: TextStyle(
-                                      fontSize: 22.sp,
-                                      color:
-                                          Color.fromARGB(255, 161, 154, 154)),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Container(
-                            child: Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Purpose/مەبەست',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            LongCustomTextBox(
-                              label: '',
-                              hintText:
-                                  'Why will you join Wellbee?\nبوچی دێ بەشداربوونێ دگەل وێلبی کەی؟',
-                              controller: _reasonController,
-                            ).textFieldDecoration()
-                          ],
-                        )),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Container(
-                            child: Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Goals/ئارمانج',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            LongCustomTextBox(
-                              label: '',
-                              hintText:
-                                  'How you want to be?\nتە دڤێت یا چاوا بی؟',
-                              controller: _goalController,
-                            ).textFieldDecoration()
-                          ],
-                        )),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Container(
-                            child: Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Comments/کومێنت',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            LongCustomTextBox(
-                              label: '',
-                              hintText:
-                                  'Anything that staffs should know?\nهەر تشتەکێ کو کارمەند پێدڤیە بزانن؟',
-                              controller: _commentController,
-                            ).textFieldDecoration()
-                          ],
-                        )),
-                        SizedBox(
-                          height: 52.h,
-                        ),
-                        FilledButton.icon(
-                          onPressed: () {
-                            _updateAttendee();
-                            // print();
+                        _buildModernDropdown(
+                          label: 'Gender/رەگەز',
+                          value: isSelectedValue,
+                          onChanged: (String? value) {
+                            setState(() {
+                              isSelectedValue = value!;
+                            });
                           },
-                          icon: const Icon(Icons.person),
-                          label: Text('Update/نویکرن',
-                              style: TextStyle(fontSize: 20.sp)),
-                          style: ButtonStyle(
-                            minimumSize: MaterialStateProperty.all<Size>(
-                                Size(300, 80)), // ボタンの幅と高さを設定
-                          ),
                         ),
+                        _buildModernDatePicker(
+                          label: 'Birthday/ژدایک بوون',
+                          date: newDate,
+                          onDateChanged: (DateTime d) {
+                            newDate = d;
+                          },
+                        ),
+                        _buildModernTextField(
+                          label: 'Purpose/مەبەست',
+                          hintText:
+                              'Why will you join Wellbee?\nبوچی دێ بەشداربوونێ دگەل وێلبی کەی؟',
+                          controller: _reasonController,
+                          maxLines: 3,
+                        ),
+                        _buildModernTextField(
+                          label: 'Goals/ئارمانج',
+                          hintText: 'How you want to be?\nتە دڤێت یا چاوا بی؟',
+                          controller: _goalController,
+                          maxLines: 3,
+                        ),
+                        _buildModernTextField(
+                          label: 'Comments/کومێنت',
+                          hintText:
+                              'Anything that staffs should know?\nهەر تشتەکێ کو کارمەند پێدڤیە بزانن؟',
+                          controller: _commentController,
+                          maxLines: 3,
+                        ),
+                        SizedBox(height: 40.h),
                         SizedBox(
-                          height: 52.h,
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.person,
+                                color: Colors.white, size: 26.sp),
+                            label: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10.h),
+                              child: Text(
+                                'Update/نویکرن',
+                                style: TextStyle(
+                                    fontSize: 22.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: kColorPrimary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              minimumSize: Size(double.infinity, 60.h),
+                              elevation: 2,
+                            ),
+                            onPressed: _updateAttendee,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
