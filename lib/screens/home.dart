@@ -338,7 +338,7 @@ class _HomePageState extends State<HomePage> {
                       padding: EdgeInsets.only(
                         left: 24.w,
                         right: 24.w,
-                        top: 8.h,
+                        top: 16.h,
                         bottom: 18.h,
                       ),
                       child: Column(
@@ -379,35 +379,80 @@ class _HomePageState extends State<HomePage> {
                                   snapshot.data == null) {
                                 return Container(
                                   width: 390.w,
-                                  // height: 300.h,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        height: 15.h,
+                                  child: Card(
+                                    color: Colors.white.withOpacity(0.12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.r),
+                                    ),
+                                    elevation: 0,
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 24.w,
+                                        vertical: 24.h,
                                       ),
-                                      Text('No Reservation',
-                                          style: TextStyle(
-                                              fontSize: 28.h,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white)),
-                                      Text('1.Add Member from "Member" Page',
-                                          style: TextStyle(
-                                              fontSize: 16.h,
-                                              fontWeight: FontWeight.w400,
-                                              color: Colors.white)),
-                                      Text('2.Visit Wellbee and buy Membership',
-                                          style: TextStyle(
-                                              fontSize: 16.h,
-                                              fontWeight: FontWeight.w400,
-                                              color: Colors.white)),
-                                      Text('3.Make a Reservation',
-                                          style: TextStyle(
-                                              fontSize: 16.h,
-                                              fontWeight: FontWeight.w400,
-                                              color: Colors.white))
-                                    ],
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Center(
+                                            child: Icon(
+                                              Icons.calendar_today_outlined,
+                                              color: Colors.white70,
+                                              size: 48.sp,
+                                            ),
+                                          ),
+                                          SizedBox(height: 16.h),
+                                          Center(
+                                            child: Text(
+                                              'No Reservation',
+                                              style: TextStyle(
+                                                fontSize: 20.sp,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 18.h),
+                                          Center(
+                                            child: SizedBox(
+                                              width: double.infinity,
+                                              child: ElevatedButton.icon(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.white,
+                                                  elevation: 0,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16.r),
+                                                  ),
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 14.h),
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          MembershipPage(),
+                                                    ),
+                                                  );
+                                                },
+                                                icon: Icon(
+                                                    Icons.add_circle_outline,
+                                                    color: kColorPrimary),
+                                                label: Text(
+                                                  'Reserve Class',
+                                                  style: TextStyle(
+                                                    color: kColorPrimary,
+                                                    fontSize: 18.sp,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 );
                               } else {
@@ -439,64 +484,25 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                     Container(
-                                        width: 130.w,
-                                        height: 110.h,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: reservation['slot_course_name'] ==
-                                                          'Yoga' ||
-                                                      reservation['slot_course_name'] ==
-                                                          'Kids Yoga(A)' ||
-                                                      reservation['slot_course_name'] ==
-                                                          'Kids Yoga(B)' ||
-                                                      reservation['slot_course_name'] ==
-                                                          'Kids Yoga KG'
-                                                  ? AssetImage(
-                                                      'lib/assets/invi_course_pic/invi_yoga.png')
-                                                  : reservation[
-                                                                  'slot_course_name'] ==
-                                                              'Dance' ||
-                                                          reservation['slot_course_name'] ==
-                                                              'Kids ' ||
-                                                          reservation['slot_course_name'] ==
-                                                              'Zumba'
-                                                      ? AssetImage(
-                                                          'lib/assets/invi_course_pic/invi_dance.png')
-                                                      : reservation['slot_course_name'] ==
-                                                                  'Karate' ||
-                                                              reservation['slot_course_name'] ==
-                                                                  'Kids Karate'
-                                                          ? AssetImage(
-                                                              'lib/assets/invi_course_pic/invi_karate.png')
-                                                          : reservation['slot_course_name'] ==
-                                                                      'Music' ||
-                                                                  reservation[
-                                                                          'slot_course_name'] ==
-                                                                      'Kids Music'
-                                                              ? AssetImage(
-                                                                  'lib/assets/invi_course_pic/invi_music.png')
-                                                              : reservation['slot_course_name'] ==
-                                                                          'Kids Gym(A)' ||
-                                                                      reservation['slot_course_name'] ==
-                                                                          'Kids Gym(B)'
-                                                                  ? AssetImage(
-                                                                      'lib/assets/invi_course_pic/male_fitness.png')
-                                                                  : reservation['slot_course_name'] ==
-                                                                          'Pilates'
-                                                                      ? AssetImage(
-                                                                          'lib/assets/invi_course_pic/invi_pilates.png')
-                                                                      : reservation['slot_course_name'] ==
-                                                                              'Family Pilates'
-                                                                          ? AssetImage('lib/assets/invi_course_pic/invi_family_pilates.png')
-                                                                          : reservation['slot_course_name'] == 'Family Yoga'
-                                                                              ? AssetImage('lib/assets/invi_course_pic/invi_family_yoga.png')
-                                                                              : reservation['slot_course_name'] == 'Private Yoga@Studio' || reservation['slot_course_name'] == 'Private Yoga@Home'
-                                                                                  ? AssetImage('lib/assets/invi_course_pic/private_yoga.png')
-                                                                                  : reservation['slot_course_name'] == 'Private Pilates@Studio' || reservation['slot_course_name'] == 'Private Pilates@Home'
-                                                                                      ? AssetImage('lib/assets/invi_course_pic/private_pilates.png')
-                                                                                      : AssetImage('lib/assets/invi_course_pic/female_fitness.png')),
-                                        ))
+                                      width: 130.w,
+                                      height: 110.h,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: reservation[
+                                                          'slot_course_asset_image_path'] !=
+                                                      null &&
+                                                  reservation[
+                                                          'slot_course_asset_image_path']
+                                                      .toString()
+                                                      .isNotEmpty
+                                              ? AssetImage(reservation[
+                                                  'slot_course_asset_image_path'])
+                                              : AssetImage(
+                                                  'lib/assets/invi_course_pic/female_fitness.png'),
+                                        ),
+                                      ),
+                                    )
                                   ],
                                 );
                               }

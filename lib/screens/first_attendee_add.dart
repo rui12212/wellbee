@@ -1,53 +1,59 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:survey_kit/survey_kit.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/top_page.dart';
 import 'package:wellbee/ui_parts/color.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:http/http.dart' as http;
 import 'package:wellbee/ui_parts/dialogue_awesome.dart';
-import 'package:wellbee/ui_parts/textstyle.dart';
 
 class _Header extends StatelessWidget {
-  String title;
-  String subtitle;
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: TextButton(
+        style: TextButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shape: const CircleBorder(
+                side: BorderSide(
+                    color: Color.fromARGB(255, 216, 214, 214), width: 5))),
+        child: const Icon(Icons.chevron_left,
+            color: Color.fromARGB(255, 155, 152, 152)),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+}
 
-  _Header({required this.title, required this.subtitle});
+class _Question extends StatelessWidget {
+  final String question;
+
+  _Question({
+    required this.question,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 80.h,
-      child: Column(
+    return Padding(
+      padding: EdgeInsets.only(top: 12.h, bottom: 10.h),
+      child: Row(
         children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Row(
-              children: [
-                Text(
-                  title,
-                  style:
-                      TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
+          Text(
+            question,
+            style: TextStyle(
+                fontSize: 30.sp,
+                fontWeight: FontWeight.w600,
+                color: kColorPrimary),
           ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              subtitle,
-              style: TextStyle(
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.w300,
-                  color: kColorTextDarkGrey),
-            ),
-          )
         ],
       ),
     );
@@ -129,238 +135,293 @@ class _FirstAttendeeAddPageState extends State<FirstAttendeeAddPage> {
     super.initState();
   }
 
-  @override
   showSnackBar(color, text) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(backgroundColor: color, content: Text(text)),
     );
   }
 
+  String formatDate(DateTime date) {
+    return '${date.year}/${date.month}/${date.day}';
+  }
+
+  Widget _buildModernTextField({
+    required String label,
+    required String hintText,
+    required TextEditingController controller,
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 7.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+                color: kColorTextDarkGrey,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 5.h),
+          TextFormField(
+            controller: controller,
+            maxLines: maxLines,
+            style: TextStyle(fontSize: 20.sp),
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: TextStyle(color: Colors.grey[400]),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 15.h, horizontal: 15.w),
+              filled: true,
+              fillColor: Colors.grey[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: kColorTextDarkGrey, width: 1),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: kColorPrimary, width: 2),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernDropdown({
+    required String label,
+    required String value,
+    required void Function(String?) onChanged,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 7.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+                color: kColorTextDarkGrey,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 5.h),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              color: Colors.grey[100],
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 15.w),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: value,
+                isExpanded: true,
+                icon: Icon(Icons.keyboard_arrow_down_rounded,
+                    color: Colors.grey[600], size: 30.sp),
+                style: TextStyle(fontSize: 20.sp, color: Colors.black),
+                borderRadius: BorderRadius.circular(14),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'male',
+                    child: Text('Male'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'female',
+                    child: Text('Female'),
+                  ),
+                ],
+                onChanged: onChanged,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernDatePicker({
+    required String label,
+    required DateTime date,
+    required Function(DateTime) onDateChanged,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 7.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+                color: kColorTextDarkGrey,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 5.h),
+          InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () async {
+              final DateTime? _selectedDate = await showDatePicker(
+                context: context,
+                initialDate: date == DateTime.now() ? DateTime(2000) : date,
+                firstDate: DateTime(1940),
+                lastDate: DateTime.now(),
+                builder: (context, child) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: ColorScheme.light(
+                        primary: kColorPrimary, // header bg color
+                        onPrimary: Colors.white, // header text color
+                        onSurface: kColorTextDarkGrey, // body text color
+                      ),
+                      textButtonTheme: TextButtonThemeData(
+                        style: TextButton.styleFrom(
+                          foregroundColor: kColorPrimary, // button text color
+                        ),
+                      ),
+                    ),
+                    child: child!,
+                  );
+                },
+              );
+              if (_selectedDate != null) {
+                setState(() {
+                  onDateChanged(_selectedDate);
+                });
+              }
+            },
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 17.h, horizontal: 15.w),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.grey[300]!, width: 1),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.cake_outlined, size: 24.sp, color: kColorPrimary),
+                  SizedBox(width: 10.w),
+                  Text(
+                    date == DateTime.now()
+                        ? 'Choose Your Birthday'
+                        : formatDate(date),
+                    style: TextStyle(
+                        fontSize: 20.sp,
+                        color: date == DateTime.now()
+                            ? Color.fromARGB(255, 161, 154, 154)
+                            : kColorTextDarkGrey,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              children: [
-                _Header(
-                    title: 'Put Your Information',
-                    subtitle: 'Start being Wellbee from here!'),
-                Expanded(
-                  child: SingleChildScrollView(
+      backgroundColor: Color(0xFFF8FAFB),
+      body: SafeArea(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: [
+                _Question(question: 'Set member info'),
+                _Header(),
+              ]),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 15.h, bottom: 20.h),
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 36.h,
+                        _buildModernTextField(
+                          label: 'Name',
+                          hintText: '',
+                          controller: _nameController,
                         ),
-                        Container(
-                            child: Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Name',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            CustomTextBox(
-                              label: '',
-                              hintText: '',
-                              controller: _nameController,
-                            ).textFieldDecoration()
-                          ],
-                        )),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Gender',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  border:
-                                      Border.all(color: kColorTextDarkGrey)),
-                              child: DropdownButton(
-                                itemHeight: 75.h,
-                                isExpanded: true,
-                                style: TextStyle(
-                                    fontSize: 22.sp, color: Colors.black),
-                                items: [
-                                  DropdownMenuItem(
-                                    value: 'male',
-                                    child: Text('Male'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'female',
-                                    child: Text('Female'),
-                                  ),
-                                ],
-                                value: isSelectedValue,
-                                onChanged: (String? value) {
-                                  setState(() {
-                                    isSelectedValue = value!;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Birthday',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            Container(
-                              width: 390.w,
-                              height: 65.h,
-                              child: TextButton(
-                                style: ButtonStyle(
-                                  minimumSize: MaterialStateProperty.all<Size>(
-                                      Size(150, 50)), // ボタンのサイズを設定
-                                  side: MaterialStateProperty.all<BorderSide>(
-                                    BorderSide(
-                                        color: kColorTextDarkGrey,
-                                        width: 1), // 枠線の色と幅を設定
-                                  ),
-                                  shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          10), // 枠線の角を丸くする
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  final DateTime? _selectedDate =
-                                      await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime(2000),
-                                    firstDate: DateTime(1940),
-                                    lastDate: DateTime.now(),
-                                  );
-                                  if (_selectedDate != null) {
-                                    setState(
-                                      () {
-                                        newDate = _selectedDate;
-                                      },
-                                    );
-                                  }
-                                },
-                                child: Text(
-                                  newDate == DateTime.now()
-                                      ? 'Choose Your Birthday'
-                                      : '${newDate.year}/${newDate.month}/${newDate.day}',
-                                  style: TextStyle(
-                                      fontSize: 22.sp,
-                                      color:
-                                          Color.fromARGB(255, 161, 154, 154)),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Container(
-                            child: Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Difficulties',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            LongCustomTextBox(
-                              label: '',
-                              hintText: 'Why will you join Wellbee?',
-                              controller: _reasonController,
-                            ).textFieldDecoration()
-                          ],
-                        )),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Container(
-                            child: Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Goals',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            LongCustomTextBox(
-                              label: '',
-                              hintText: 'How you want to be?',
-                              controller: _goalController,
-                            ).textFieldDecoration()
-                          ],
-                        )),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Container(
-                            child: Column(
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('Comments',
-                                    style: TextStyle(
-                                        color: kColorTextDarkGrey,
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w500))),
-                            LongCustomTextBox(
-                              label: '',
-                              hintText: 'Anything that staffs should know??',
-                              controller: _commentController,
-                            ).textFieldDecoration()
-                          ],
-                        )),
-                        SizedBox(
-                          height: 52.h,
-                        ),
-                        FilledButton.icon(
-                          onPressed: () {
-                            _createAttendee();
+                        _buildModernDropdown(
+                          label: 'Gender',
+                          value: isSelectedValue,
+                          onChanged: (String? value) {
+                            setState(() {
+                              isSelectedValue = value!;
+                            });
                           },
-                          icon: const Icon(Icons.person),
-                          label: Text('Add Member',
-                              style: TextStyle(fontSize: 20.sp)),
-                          style: ButtonStyle(
-                            minimumSize: MaterialStateProperty.all<Size>(
-                                Size(300, 80)), // ボタンの幅と高さを設定
-                          ),
                         ),
+                        _buildModernDatePicker(
+                          label: 'Birthday',
+                          date: newDate,
+                          onDateChanged: (DateTime d) {
+                            newDate = d;
+                          },
+                        ),
+                        _buildModernTextField(
+                          label: 'Difficulties',
+                          hintText: 'Why will you join Wellbee?',
+                          controller: _reasonController,
+                          maxLines: 3,
+                        ),
+                        _buildModernTextField(
+                          label: 'Goals',
+                          hintText: 'How you want to be?',
+                          controller: _goalController,
+                          maxLines: 3,
+                        ),
+                        _buildModernTextField(
+                          label: 'Comments',
+                          hintText: 'Anything that staffs should know?',
+                          controller: _commentController,
+                          maxLines: 3,
+                        ),
+                        SizedBox(height: 40.h),
                         SizedBox(
-                          height: 52.h,
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.person,
+                                color: Colors.white, size: 26.sp),
+                            label: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10.h),
+                              child: Text(
+                                'Add Member',
+                                style: TextStyle(
+                                    fontSize: 22.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: kColorPrimary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              minimumSize: Size(double.infinity, 60.h),
+                              elevation: 2,
+                            ),
+                            onPressed: _createAttendee,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

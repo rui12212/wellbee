@@ -44,9 +44,14 @@ class MembershipSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    asset_image_path = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        allow_null=True
+    )
     class Meta:
         model= Course
-        fields=('id', 'course_name','is_private')
+        fields=('id', 'course_name','is_private','is_open','asset_image_path')
         extra_kwargs = {
             'id': {'read_only': True},
             }

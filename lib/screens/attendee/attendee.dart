@@ -7,7 +7,6 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/attendee/attendee_add.dart';
 import 'package:wellbee/screens/top_page.dart';
@@ -19,56 +18,67 @@ import 'package:wellbee/screens/attendee/attendee_update.dart';
 import '../../ui_parts/color.dart';
 
 class _Header extends StatelessWidget {
-  String title;
-  String subtitle;
+  final String title;
+  final String subtitle;
 
-  _Header({required this.title, required this.subtitle});
+  const _Header({required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120.h,
+      padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Row(
-              children: [
-                Text(
+          Row(
+            children: [
+              Expanded(
+                child: Text(
                   title,
-                  style:
-                      TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 30.sp,
+                      fontWeight: FontWeight.w600,
+                      color: kColorPrimary),
                 ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shape: const CircleBorder(
-                          side: BorderSide(
-                              color: Color.fromARGB(255, 216, 214, 214),
-                              width: 5))),
-                  child: const Icon(Icons.chevron_left,
-                      color: Color.fromARGB(255, 155, 152, 152)),
-                  onPressed: () {
+              ),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (context) {
                         return TopPage(0);
                       },
                     ));
                   },
-                )
-              ],
+                  borderRadius: BorderRadius.circular(24.r),
+                  child: Container(
+                    width: 48.w,
+                    height: 48.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      size: 20.sp,
+                      color: kColorTextDarkGrey,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // SizedBox(height: 4.h),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w400,
+              color: kColorText,
+              height: 1.4,
             ),
           ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              subtitle,
-              style: TextStyle(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w300,
-                  color: kColorTextDarkGrey),
-            ),
-          )
         ],
       ),
     );
@@ -106,14 +116,18 @@ class _AttendeePageState extends State<AttendeePage> {
       } else if (response.statusCode >= 400) {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Internet Error occurred.')));
+        return null;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('Something went wrong. Try again later')));
+        return null;
       }
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error: $e')));
+      return null;
     }
+    return null;
   }
 
   @override
@@ -121,7 +135,6 @@ class _AttendeePageState extends State<AttendeePage> {
     super.initState();
   }
 
-  @override
   showSnackBar(color, text) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(backgroundColor: color, content: Text(text)),
@@ -131,7 +144,7 @@ class _AttendeePageState extends State<AttendeePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey.shade50,
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -140,21 +153,81 @@ class _AttendeePageState extends State<AttendeePage> {
               _Header(
                   title: 'Wellbee Member',
                   subtitle: 'You can add Member up to 10!'),
-              FutureBuilder(
-                future: _fetchAttendee(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No attendee registered.'));
-                  } else {
-                    final attendeeList = snapshot.data!;
-                    return Expanded(
-                      child: ListView.builder(
+              SizedBox(height: 8.h),
+              Expanded(
+                child: FutureBuilder(
+                  future: _fetchAttendee(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(kColorPrimaryThin),
+                          strokeWidth: 3,
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(32.w),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                size: 64.sp,
+                                color: Colors.grey.shade400,
+                              ),
+                              SizedBox(height: 16.h),
+                              Text(
+                                'Error: ${snapshot.error}',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: kColorTextDarkGrey,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(32.w),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.person_add_outlined,
+                                size: 64.sp,
+                                color: Colors.grey.shade300,
+                              ),
+                              SizedBox(height: 16.h),
+                              Text(
+                                'No attendee registered.',
+                                style: TextStyle(
+                                  fontSize: 18.sp,
+                                  color: kColorTextDarkGrey,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                              Text(
+                                'Tap the + button to add a member',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: kColorText,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    } else {
+                      final attendeeList = snapshot.data!;
+                      return ListView.builder(
+                        padding: EdgeInsets.only(bottom: 100.h),
                         itemCount: attendeeList.length,
                         itemBuilder: (context, index) {
                           if (attendeeList[index]['goal'] == null) {
@@ -163,36 +236,53 @@ class _AttendeePageState extends State<AttendeePage> {
                           if (attendeeList[index]['reason'] == null) {
                             attendeeList[index]['reason'] = '';
                           }
-                          return InkWell(
-                              child: AttendeeDisplay(
-                                  attendeeName: attendeeList[index]['name'],
-                                  gender: attendeeList[index]['gender'],
-                                  dateOfBirth: attendeeList[index]
-                                      ['date_of_birth'],
-                                  goal: attendeeList[index]['goal']),
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => AttendeeUpdatePage(
-                                        attendeeList: attendeeList[index])));
-                              });
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: 4.h),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(20.r),
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => AttendeeUpdatePage(
+                                          attendeeList: attendeeList[index])));
+                                },
+                                child: AttendeeDisplay(
+                                    attendeeName: attendeeList[index]['name'],
+                                    gender: attendeeList[index]['gender'],
+                                    dateOfBirth: attendeeList[index]
+                                        ['date_of_birth'],
+                                    goal: attendeeList[index]['goal']),
+                              ),
+                            ),
+                          );
                         },
-                      ),
-                    );
-                  }
-                },
+                      );
+                    }
+                  },
+                ),
               ),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.large(
-        backgroundColor: Color.fromARGB(255, 65, 174, 147),
-        // label: Text('+', style: TextStyle(fontSize: 40)),
-        child: Icon(Icons.add, size: 40.h, color: Colors.white),
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => AttendeeAddPage()));
         },
+        backgroundColor: kColorPrimaryThin,
+        elevation: 4,
+        extendedPadding: EdgeInsets.symmetric(horizontal: 24.w),
+        icon: Icon(Icons.add, size: 28.sp, color: Colors.white),
+        label: Text(
+          'Add Member',
+          style: TextStyle(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }

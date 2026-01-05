@@ -49,7 +49,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
                 {'error': f'start_day\'s type is not valid:{e}'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
+        
         try:
             # add
             total_price = int(fetched_total_price)
@@ -402,11 +402,7 @@ class CheckInViewSet(viewsets.ModelViewSet):
 
        reservation_id = get_object_or_404(Reservation,id=fetch_reservation)
 
-    #    my_overlap_checkin = CheckIn.objects.filter(
-    #        reservation = fetch_reservation
-    #    )
-    #    if my_overlap_checkin.exists():
-    #     raise ValidationError('Same reservation already exists')
+
 
        check_in = CheckIn.objects.create(
            reservation = reservation_id,
@@ -422,37 +418,86 @@ class CheckInViewSet(viewsets.ModelViewSet):
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
-# class MyCheckInViewSet(viewsets.ModelViewSet):
-#     queryset = CheckIn.objects.all()
-#     serializer_class = serializers.CheckInSerializer
-
-#     @action(detail=True)
-#     def perform_create(self, serializer):
-#         serializer.save(user_id=self.request.user.id)
-
-#     @action(detail=True)
-#     def get_queryset(self):
-#         # このuserProfileの中には自分のid情報が入っているから、ここに合うもののみ持ってこれる＋情報の変更ができる
-#         return self.queryset.filter(user_id=self.request.user.id)
-    
-#     def destroy(self, request, *args,**kwargs):
-#         response={'messages': 'Deleting is not allowed!'}
-#         return Response(response, status=status.HTTP_400_BAD_REQUEST)
-    
-#     def update(self, request, *args,**kwargs):
-#         response={'messages': 'Updating this data is not allowed!'}
-#         return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
 class CourseViewSet(viewsets.ModelViewSet):
-    queryset = Course.objects.all()
+    """
+    コース管理（スタッフ専用）。
+    - list: is_open=True のコース一覧（デフォルト）
+    - create/update/partial_update: コース情報更新（asset_image_path も含む）
+    - destroy: 論理削除として is_open=False に変更
+    """
+
     serializer_class = serializers.CourseSerializer
-    # permission_classes=[IsStaffUser]
+    permission_classes = [IsStaffUser]
+    queryset = Course.objects.all()
 
     def get_queryset(self):
-        return self.queryset.order_by('course_name')
+        # 通常の list は公開コースのみ。クエリパラメータ include_closed=true なら全件。
+        if self.action == "list":
+            include_closed = self.request.query_params.get("include_closed") == "true"
+            if include_closed:
+                return Course.objects.all().order_by("id")
+            return Course.objects.filter(is_open=True).order_by("id")
+        return super().get_queryset()
+    
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[IsStaffUser],
+        url_path="all_course",
+    )
+    def fetch_all_course(self, request):
+        courses = Course.objects.filter(is_open=True).order_by("id")
+        serializer = self.get_serializer(courses, many=True)
+        return Response(serializer.data)
     
     def perform_create(self, serializer):
-        serializer.save(self)
+        serializer.save()
+
+    def destroy(self, request, *args, **kwargs):
+        """物理削除の代わりに is_open=False をセットして論理削除する。"""
+        instance = self.get_object()
+        instance.is_open = False
+        instance.save(update_fields=["is_open"])
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    @action(
+        detail=True,
+        methods=["delete"],
+        permission_classes=[IsStaffUser],
+        url_path="hard_delete",
+    )
+    def hard_delete(self, request, pk=None):
+        """データベースからの完全削除（物理削除）。"""
+        instance = self.get_object()
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[IsStaffUser],
+        url_path="deleted_courses",
+    )
+    def fetch_deleted_courses(self, request):
+        """論理削除されたコース（is_open=False）の一覧を取得。"""
+        courses = Course.objects.filter(is_open=False).order_by("id")
+        serializer = self.get_serializer(courses, many=True)
+        return Response(serializer.data)
+    
+    @action(
+        detail=True,
+        methods=["patch"],
+        permission_classes=[IsStaffUser],
+        url_path="restore",
+    )
+    def restore_course(self, request, pk=None):
+        """論理削除を解除（is_open=Trueに戻す）。"""
+        instance = self.get_object()
+        instance.is_open = True
+        instance.save(update_fields=["is_open"])
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
     
