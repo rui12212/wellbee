@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'corsheaders',
+    'storages',  # django-storages for S3
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -193,3 +194,21 @@ ACCOUNT_AUTHENTICATION_METHOD = 'phone_number'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# AWS S3 Configuration
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='s3-wellbee-images')
+AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='me-south-1')
+
+# S3のファイルを上書きしない（ファイル名が重複した場合、ランダム文字列を付与）
+AWS_S3_FILE_OVERWRITE = False
+
+# クエリパラメータなしのクリーンなURL
+AWS_QUERYSTRING_AUTH = False
+
+# デフォルトのストレージバックエンドをS3に設定
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# メディアファイルのURL（S3のURL）
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/'
