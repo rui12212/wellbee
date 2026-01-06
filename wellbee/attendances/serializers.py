@@ -44,17 +44,20 @@ class MembershipSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    asset_image_path = serializers.CharField(
-        required=False,
-        allow_blank=True,
-        allow_null=True
-    )
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model= Course
-        fields=('id', 'course_name','is_private','is_open','asset_image_path')
+        fields=('id', 'course_name','is_private','is_open','course_image','image_url')
         extra_kwargs = {
             'id': {'read_only': True},
             }
+
+    def get_image_url(self, obj):
+        """S3に保存された画像のフルURLを返す"""
+        if obj.course_image:
+            return obj.course_image.url
+        return None
 
 class AttendeeSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(source = 'user.id', read_only=True)

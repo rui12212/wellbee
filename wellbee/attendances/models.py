@@ -15,13 +15,12 @@ class Course(models.Model):
     course_name=models.CharField(verbose_name="course_name",max_length=25, default='Yoga',blank=False, null=False)
     is_private=models.BooleanField(verbose_name='is_private', default=False, null=False, blank=False)
     is_open=models.BooleanField(verbose_name='is_open',default=True, null=False, blank=False)
-    asset_image_path = models.CharField(
-        verbose_name="asset_image_path",
-        max_length=255,
-        blank=True,      # ← 既存データとの互換性のため「任意」扱い
-        null=True,       # ← DB的にもNULLを許可
+    course_image = models.ImageField(
+        verbose_name="course_image",
+        upload_to='courses/',  # S3のcourses/フォルダに保存
+        blank=True,
+        null=True,
     )
-
 
     def __str__(self):
         return self.course_name
