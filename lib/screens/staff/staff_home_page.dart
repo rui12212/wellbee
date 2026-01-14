@@ -164,7 +164,7 @@ class _StaffHomePageState extends State<StaffHomePage> {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (context) => MembershipAllCoursePage()),
+                          builder: (context) => CheckExpireMembershipPage()),
                     );
                   },
                 ),

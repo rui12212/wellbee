@@ -16,45 +16,7 @@ import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:http/http.dart' as http;
 import 'package:wellbee/ui_parts/color.dart';
-
-class _Header extends StatelessWidget {
-  String title;
-
-  _Header({
-    required this.title,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 50.h,
-      child: Row(
-        children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shape: const CircleBorder(
-                    side: BorderSide(
-                        color: Color.fromARGB(255, 206, 204, 204), width: 5))),
-            child: const Icon(Icons.chevron_left,
-                color: Color.fromARGB(255, 155, 152, 152)),
-            onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-                builder: (context) {
-                  return StaffTopPage(0);
-                },
-              ), ((route) => false));
-            },
-          )
-        ],
-      ),
-    );
-  }
-}
+import 'package:wellbee/ui_parts/course_image.dart';
 
 class AllCoursePage extends StatefulWidget {
   AllCoursePage({
@@ -115,140 +77,96 @@ class _AllCoursePageState extends State<AllCoursePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F7FA),
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.all(15),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _Header(title: 'All Course'),
-              FutureBuilder(
-                  future: _fetchAllCourse(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data == null) {
-                      return Center(
-                          child: Text('No course has been set on this day.'));
-                    } else {
-                      final fetchedCourseList = snapshot.data!;
-                      return Expanded(
-                          child: GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 16.0,
-                                mainAxisSpacing: 16.0,
-                              ),
-                              itemCount: fetchedCourseList.length,
-                              itemBuilder: (context, index) {
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                MonthlySlotPage(
-                                                    courseList:
-                                                        fetchedCourseList[
-                                                            index])));
-                                  },
-                                  child: _buildGridItem(
-                                      title: fetchedCourseList[index]
-                                          ['course_name'],
-                                      image: fetchedCourseList[index]['course_name'] == 'Yoga' ||
-                                              fetchedCourseList[index]['course_name'] ==
-                                                  'Kids Yoga(A)' ||
-                                              fetchedCourseList[index]['course_name'] ==
-                                                  'Kids Yoga(B)' ||
-                                              fetchedCourseList[index]
-                                                      ['course_name'] ==
-                                                  'Kids Yoga KG'
-                                          ? Image.asset(
-                                              'lib/assets/invi_course_pic/invi_yoga.png')
-                                          : fetchedCourseList[index]['course_name'] == 'Dance' ||
-                                                  fetchedCourseList[index]
-                                                          ['course_name'] ==
-                                                      'Kids Zumba' ||
-                                                  fetchedCourseList[index]
-                                                          ['course_name'] ==
-                                                      'Zumba'
-                                              ? Image.asset(
-                                                  'lib/assets/invi_course_pic/invi_dance.png')
-                                              : fetchedCourseList[index]['course_name'] == 'Karate' ||
-                                                      fetchedCourseList[index]
-                                                              ['course_name'] ==
-                                                          'Kids Karate'
-                                                  ? Image.asset('lib/assets/invi_course_pic/invi_karate.png')
-                                                  : fetchedCourseList[index]['course_name'] == 'Music' || fetchedCourseList[index]['course_name'] == 'Kids Music'
-                                                      ? Image.asset('lib/assets/invi_course_pic/invi_music.png')
-                                                      : fetchedCourseList[index]['course_name'] == 'Kids Gym(A)' || fetchedCourseList[index]['course_name'] == 'Kids Gym(B)'
-                                                          ? Image.asset('lib/assets/invi_course_pic/male_fitness.png')
-                                                          : fetchedCourseList[index]['course_name'] == 'Pilates'
-                                                              ? Image.asset('lib/assets/invi_course_pic/invi_pilates.png')
-                                                              : fetchedCourseList[index]['course_name'] == 'Family Pilates'
-                                                                  ? Image.asset('lib/assets/invi_course_pic/invi_family_pilates.png')
-                                                                  : fetchedCourseList[index]['course_name'] == 'Family Yoga'
-                                                                      ? Image.asset('lib/assets/invi_course_pic/invi_family_yoga.png')
-                                                                      : fetchedCourseList[index]['course_name'] == 'Private Yoga@Studio' || fetchedCourseList[index]['course_name'] == 'Private Yoga@Home'
-                                                                          ? Image.asset('lib/assets/invi_course_pic/private_yoga.png')
-                                                                          : fetchedCourseList[index]['course_name'] == 'Private Pilates@Studio' || fetchedCourseList[index]['course_name'] == 'Private Pilates@Home'
-                                                                              ? Image.asset('lib/assets/invi_course_pic/private_pilates.png')
-                                                                              : Image.asset('lib/assets/invi_course_pic/female_fitness.png')),
-                                );
-                              })
-                          // child: ListView.builder(
-                          //   itemCount: fetchedCourseList.length,
-                          //   itemBuilder: (context, index) {
-                          //     return Container(
-                          //       height: 90.h,
-                          //       child: Column(
-                          //         children: [
-                          //           ListTile(
-                          //             title: Container(
-                          //               child: Text(
-                          //                   fetchedCourseList[index]
-                          //                       ['course_name'],
-                          //                   style: TextStyle(
-                          //                       fontSize: 18.sp,
-                          //                       fontWeight: FontWeight.bold)),
-                          //             ),
-                          //             // subtitle: Row(
-                          //             //   children: [
-                          //             //     Text(
-                          //             //         '${fetchedCourseList[index]['original_price'].toString()}\$/month'),
-                          //             //   ],
-                          //             // ),
-                          //             trailing: ElevatedButton(
-                          //               onPressed: () {
-                          //                 Navigator.of(context).push(
-                          //                     MaterialPageRoute(
-                          //                         builder: (context) =>
-                          //                             MonthlySlotPage(
-                          //                                 courseList:
-                          //                                     fetchedCourseList[
-                          //                                         index])));
-                          //               },
-                          //               child: Text('Detail',
-                          //                   style: TextStyle(
-                          //                       fontWeight: FontWeight.w700,
-                          //                       color: kColorPrimary)),
-                          //             ),
-                          //           ),
-                          //           Divider(
-                          //               thickness: 0.2,
-                          //               color: kColorTextDarkGrey),
-                          //         ],
-                          //       ),
-                          //     );
-                          //   },
-                          // ),
-                          );
-                    }
-                  })
+              // ヘッダーセクション（固定）
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'All Courses',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 32.sp,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        Text(
+                          'Select a course to manage slots',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shape: const CircleBorder(
+                            side: BorderSide(
+                                color: Color.fromARGB(255, 206, 204, 204),
+                                width: 5))),
+                    child: const Icon(Icons.chevron_left,
+                        color: Color.fromARGB(255, 155, 152, 152)),
+                    onPressed: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                        builder: (context) {
+                          return StaffTopPage(0);
+                        },
+                      ), ((route) => false));
+                    },
+                  )
+                ],
+              ),
+              SizedBox(height: 24.h),
+              // コースリスト（スクロール可能）
+              Expanded(
+                child: FutureBuilder(
+                    future: _fetchAllCourse(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (!snapshot.hasData || snapshot.data == null) {
+                        return const Center(
+                            child: Text('No course has been set on this day.'));
+                      } else {
+                        final fetchedCourseList = snapshot.data!;
+                        return SingleChildScrollView(
+                          child: Column(
+                            children: fetchedCourseList
+                                .map<Widget>((course) => _buildCourseCard(
+                                      course: course,
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    MonthlySlotPage(
+                                                        courseList: course)));
+                                      },
+                                    ))
+                                .toList(),
+                          ),
+                        );
+                      }
+                    }),
+              ),
             ],
           ),
         ),
@@ -256,60 +174,137 @@ class _AllCoursePageState extends State<AllCoursePage> {
     );
   }
 
-  Widget _buildGridItem({
-    required Widget image,
-    required String title,
+  Widget _buildCourseCard({
+    required Map<String, dynamic> course,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        // gradient: LinearGradient(
-        //     begin: FractionalOffset.bottomRight,
-        //     end: FractionalOffset.topLeft,
-        //     colors: [
-        //       // kColorPrimary,
-        //       // Color.fromARGB(255, 188, 250, 216),
-        //     ],
-        //     stops: const [
-        //       0.7,
-        //       1.0
-        //     ]),
-        boxShadow: [
-          // BoxShadow(
-          //   color: Colors.black.withOpacity(0.8), // 影の色（半透明）
-          //   spreadRadius: 1, // 影の広がり
-          //   blurRadius: 10, // ぼかし具合
-          //   offset: Offset(2, 4), // 影の位置（X方向、Y方向）
-          // ),
-        ],
-        color: Color.fromARGB(255, 77, 156, 125),
-        borderRadius: BorderRadius.circular(12.0),
+    final String courseName = course['course_name'] ?? '';
+    final String? imageUrl = course['image_url'];
+    final bool isOpen = course['is_open'] ?? true;
+    final bool isPrivate = course['is_private'] ?? false;
+
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
       ),
-      padding: const EdgeInsets.all(4.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: 8.0.h),
-          Container(
-            child: image,
-            height: 80.h,
-            width: double.infinity.w,
+      margin: EdgeInsets.only(bottom: 16.h),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16.r),
+        child: Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.r),
+            color: Colors.white,
           ),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: title.length >= 13 ? 13.w : 18.w,
-              color: Colors.white,
-              shadows: [
-                Shadow(
-                  blurRadius: 20,
+          child: Row(
+            children: [
+              // 左側：画像アイコン
+              Container(
+                width: 80.w,
+                height: 80.w,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-              ],
-              fontWeight: FontWeight.w700,
-            ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12.r),
+                  child: buildCourseImage(imageUrl, courseName),
+                ),
+              ),
+              SizedBox(width: 16.w),
+              // 中央：テキスト情報
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      courseName,
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 8.h),
+                    Row(
+                      children: [
+                        if (!isOpen)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.w, vertical: 4.h),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFEBEE),
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: Text(
+                              'Closed',
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFFD32F2F),
+                              ),
+                            ),
+                          ),
+                        if (!isOpen && isPrivate) SizedBox(width: 6.w),
+                        if (isPrivate)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.w, vertical: 4.h),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF3E5F5),
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: Text(
+                              'Private',
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF7B1FA2),
+                              ),
+                            ),
+                          ),
+                        if (isOpen && !isPrivate)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.w, vertical: 4.h),
+                            decoration: BoxDecoration(
+                              color: kColorPrimary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: Text(
+                              'Open',
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w600,
+                                color: kColorPrimary,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              // 右側：矢印アイコン
+              Icon(
+                Icons.chevron_right,
+                color: Colors.grey[400],
+                size: 24.sp,
+              ),
+            ],
           ),
-          SizedBox(height: 4.0.h),
-          Spacer(),
-        ],
+        ),
       ),
     );
   }

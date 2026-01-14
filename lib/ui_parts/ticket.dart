@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wellbee/ui_function/provider.dart';
 import 'package:wellbee/ui_parts/color.dart';
+import 'package:wellbee/ui_parts/course_image.dart';
 // import 'package:intl/intl.dart';qq
 
 class _TicketShapeBorder extends ShapeBorder {
@@ -298,52 +299,10 @@ class TicketList extends StatelessWidget {
         times: membershipList['times'],
         max_join_times: membershipList['max_join_times'],
         already_join_times: membershipList['already_join_times'],
-        image: membershipList['course_name'] == 'Yoga' ||
-                membershipList['course_name'] == 'Kids Yoga(A)' ||
-                membershipList['course_name'] == 'Kids Yoga(B)' ||
-                membershipList['course_name'] == 'Kids Yoga KG'
-            ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
-            : membershipList['course_name'] == 'Dance' ||
-                    membershipList['course_name'] == 'Kids Zumba' ||
-                    membershipList['course_name'] == 'Zumba'
-                ? Image.asset('lib/assets/invi_course_pic/invi_dance.png')
-                : membershipList['course_name'] == 'Karate' ||
-                        membershipList['course_name'] == 'Kids Karate'
-                    ? Image.asset('lib/assets/invi_course_pic/invi_karate.png')
-                    : membershipList['course_name'] == 'Music' ||
-                            membershipList['course_name'] == 'Kids Music'
-                        ? Image.asset(
-                            'lib/assets/invi_course_pic/invi_music.png')
-                        : membershipList['course_name'] == 'Kids Gym(A)' ||
-                                membershipList['course_name'] == 'Kids Gym(B)'
-                            ? Image.asset(
-                                'lib/assets/invi_course_pic/male_fitness.png')
-                            : membershipList['course_name'] == 'Pilates'
-                                ? Image.asset(
-                                    'lib/assets/invi_course_pic/invi_pilates.png')
-                                : membershipList['course_name'] ==
-                                        'Family Pilates'
-                                    ? Image.asset(
-                                        'lib/assets/invi_course_pic/invi_family_pilates.png')
-                                    : membershipList['course_name'] ==
-                                            'Family Yoga'
-                                        ? Image.asset(
-                                            'lib/assets/invi_course_pic/invi_family_yoga.png')
-                                        : membershipList['course_name'] ==
-                                                    'Private Yoga@Studio' ||
-                                                membershipList['course_name'] ==
-                                                    'Private Yoga@Home'
-                                            ? Image.asset(
-                                                'lib/assets/invi_course_pic/private_yoga.png')
-                                            : membershipList['course_name'] ==
-                                                        'Private Pilates@Studio' ||
-                                                    membershipList[
-                                                            'course_name'] ==
-                                                        'Private Pilates@Home'
-                                                ? Image.asset(
-                                                    'lib/assets/invi_course_pic/private_pilates.png')
-                                                : Image.asset(
-                                                    'lib/assets/invi_course_pic/female_fitness.png'));
+        image: buildCourseImage(
+          membershipList['course_image_url'],
+          membershipList['course_name'],
+        ));
   }
 }
 
@@ -550,52 +509,10 @@ class MembershipTicketListState extends ConsumerState<MembershipTicketList> {
         times: widget.membershipList['times'],
         max_join_times: widget.membershipList['max_join_times'],
         already_join_times: widget.membershipList['already_join_times'],
-        image: widget.membershipList['course_name'] == 'Yoga' ||
-                widget.membershipList['course_name'] == 'Kids Yoga(A)' ||
-                widget.membershipList['course_name'] == 'Kids Yoga(B)' ||
-                widget.membershipList['course_name'] == 'Kids Yoga KG'
-            ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
-            : widget.membershipList['course_name'] == 'Dance' ||
-                    widget.membershipList['course_name'] == 'Kids Zumba' ||
-                    widget.membershipList['course_name'] == 'Zumba'
-                ? Image.asset('lib/assets/invi_course_pic/invi_dance.png')
-                : widget.membershipList['course_name'] == 'Karate' ||
-                        widget.membershipList['course_name'] == 'Kids Karate'
-                    ? Image.asset('lib/assets/invi_course_pic/invi_karate.png')
-                    : widget.membershipList['course_name'] == 'Music' ||
-                            widget.membershipList['course_name'] == 'Kids Music'
-                        ? Image.asset(
-                            'lib/assets/invi_course_pic/invi_music.png')
-                        : widget.membershipList['course_name'] ==
-                                    'Kids Gym(A)' ||
-                                widget.membershipList['course_name'] ==
-                                    'Kids Gym(B)'
-                            ? Image.asset(
-                                'lib/assets/invi_course_pic/male_fitness.png')
-                            : widget.membershipList['course_name'] == 'Pilates'
-                                ? Image.asset(
-                                    'lib/assets/invi_course_pic/invi_pilates.png')
-                                : widget.membershipList['course_name'] ==
-                                        'Family Pilates'
-                                    ? Image.asset(
-                                        'lib/assets/invi_course_pic/invi_family_pilates.png')
-                                    : widget.membershipList['course_name'] ==
-                                            'Family Yoga'
-                                        ? Image.asset(
-                                            'lib/assets/invi_course_pic/invi_family_yoga.png')
-                                        : widget.membershipList['course_name'] ==
-                                                    'Private Yoga@Studio' ||
-                                                widget.membershipList['course_name'] ==
-                                                    'Private Yoga@Home'
-                                            ? Image.asset(
-                                                'lib/assets/invi_course_pic/private_yoga.png')
-                                            : widget.membershipList['course_name'] ==
-                                                        'Private Pilates@Studio' ||
-                                                    widget.membershipList[
-                                                            'course_name'] ==
-                                                        'Private Pilates@Home'
-                                                ? Image.asset('lib/assets/invi_course_pic/private_pilates.png')
-                                                : Image.asset('lib/assets/invi_course_pic/female_fitness.png'));
+        image: buildCourseImage(
+          widget.membershipList['course_image_url'],
+          widget.membershipList['course_name'],
+        ));
   }
 }
 
@@ -804,51 +721,10 @@ class HealthSurveyTicketListState
         duration: widget.membershipList['duration'],
         last_survey_date: widget.last_survey_date,
         expire_date: widget.membershipList['expire_day'],
-        image: widget.membershipList['course_name'] == 'Yoga' ||
-                widget.membershipList['course_name'] == 'Kids Yoga(A)' ||
-                widget.membershipList['course_name'] == 'Kids Yoga(B)' ||
-                widget.membershipList['course_name'] == 'Kids Yoga KG'
-            ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
-            : widget.membershipList['course_name'] == 'Dance' ||
-                    widget.membershipList['course_name'] == 'Kids Zumba' ||
-                    widget.membershipList['course_name'] == 'Zumba'
-                ? Image.asset('lib/assets/invi_course_pic/invi_dance.png')
-                : widget.membershipList['course_name'] == 'Karate' ||
-                        widget.membershipList['course_name'] == 'Kids Karate'
-                    ? Image.asset('lib/assets/invi_course_pic/invi_karate.png')
-                    : widget.membershipList['course_name'] == 'Music' ||
-                            widget.membershipList['course_name'] == 'Kids Music'
-                        ? Image.asset(
-                            'lib/assets/invi_course_pic/invi_music.png')
-                        : widget.membershipList['course_name'] == 'Kids Gym(A)' ||
-                                widget.membershipList['course_name'] ==
-                                    'Kids Gym(B)'
-                            ? Image.asset(
-                                'lib/assets/invi_course_pic/male_fitness.png')
-                            : widget.membershipList['course_name'] == 'Pilates'
-                                ? Image.asset(
-                                    'lib/assets/invi_course_pic/invi_pilates.png')
-                                : widget.membershipList['course_name'] ==
-                                        'Family Pilates'
-                                    ? Image.asset(
-                                        'lib/assets/invi_course_pic/invi_family_pilates.png')
-                                    : widget.membershipList['course_name'] ==
-                                            'Family Yoga'
-                                        ? Image.asset(
-                                            'lib/assets/invi_course_pic/invi_family_yoga.png')
-                                        : widget.membershipList['course_name'] ==
-                                                    'Private Yoga@Studio' ||
-                                                widget.membershipList['course_name'] ==
-                                                    'Private Yoga@Home'
-                                            ? Image.asset(
-                                                'lib/assets/invi_course_pic/private_yoga.png')
-                                            : widget.membershipList['course_name'] ==
-                                                        'Private Pilates@Studio' ||
-                                                    widget.membershipList[
-                                                            'course_name'] ==
-                                                        'Private Pilates@Home'
-                                                ? Image.asset('lib/assets/invi_course_pic/private_pilates.png')
-                                                : Image.asset('lib/assets/invi_course_pic/female_fitness.png'));
+        image: buildCourseImage(
+          widget.membershipList['course_image_url'],
+          widget.membershipList['course_name'],
+        ));
   }
 }
 

@@ -11,6 +11,7 @@ import 'package:wellbee/screens/reservation/membership.dart';
 import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_parts/color.dart';
 import 'package:wellbee/ui_parts/box_decoration.dart';
+import 'package:wellbee/ui_parts/course_image.dart';
 import 'dart:ui';
 
 class UserDisplay extends StatelessWidget {
@@ -742,52 +743,10 @@ class ReservationTicketList extends StatelessWidget {
         date: reservationList['slot_date'],
         start_time: reservationList['slot_start_time'],
         end_time: reservationList['slot_end_time'],
-        image: reservationList['slot_course_name'] == 'Yoga' ||
-                reservationList['slot_course_name'] == 'Kids Yoga(A)' ||
-                reservationList['slot_course_name'] == 'Kids Yoga(B)' ||
-                reservationList['slot_course_name'] == 'Kids Yoga KG'
-            ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
-            : reservationList['slot_course_name'] == 'Dance' ||
-                    reservationList['slot_course_name'] == 'Kids Zumba' ||
-                    reservationList['slot_course_name'] == 'Zumba'
-                ? Image.asset('lib/assets/invi_course_pic/invi_dance.png')
-                : reservationList['slot_course_name'] == 'Karate' ||
-                        reservationList['slot_course_name'] == 'Kids Karate'
-                    ? Image.asset('lib/assets/invi_course_pic/invi_karate.png')
-                    : reservationList['slot_course_name'] == 'Music' ||
-                            reservationList['slot_course_name'] == 'Kids Music'
-                        ? Image.asset(
-                            'lib/assets/invi_course_pic/invi_music.png')
-                        : reservationList['slot_course_name'] == 'Kids Gym(A)' ||
-                                reservationList['slot_course_name'] ==
-                                    'Kids Gym(B)'
-                            ? Image.asset(
-                                'lib/assets/invi_course_pic/male_fitness.png')
-                            : reservationList['slot_course_name'] == 'Pilates'
-                                ? Image.asset(
-                                    'lib/assets/invi_course_pic/invi_pilates.png')
-                                : reservationList['slot_course_name'] ==
-                                        'Family Pilates'
-                                    ? Image.asset(
-                                        'lib/assets/invi_course_pic/invi_family_pilates.png')
-                                    : reservationList['slot_course_name'] ==
-                                            'Family Yoga'
-                                        ? Image.asset(
-                                            'lib/assets/invi_course_pic/invi_family_yoga.png')
-                                        : reservationList['slot_course_name'] ==
-                                                    'Private Yoga@Studio' ||
-                                                reservationList['slot_course_name'] ==
-                                                    'Private Yoga@Home'
-                                            ? Image.asset(
-                                                'lib/assets/invi_course_pic/private_yoga.png')
-                                            : reservationList['slot_course_name'] ==
-                                                        'Private Pilates@Studio' ||
-                                                    reservationList['slot_course_name'] ==
-                                                        'Private Pilates@Home'
-                                                ? Image.asset(
-                                                    'lib/assets/invi_course_pic/private_pilates.png')
-                                                : Image.asset(
-                                                    'lib/assets/invi_course_pic/female_fitness.png'));
+        image: buildCourseImage(
+          reservationList['slot_course_image_url'],
+          reservationList['slot_course_name'],
+        ));
   }
 }
 
@@ -807,52 +766,10 @@ class PastReservationTicketList extends StatelessWidget {
         date: reservationList['slot_date'],
         start_time: reservationList['slot_start_time'],
         end_time: reservationList['slot_end_time'],
-        image: reservationList['slot_course_name'] == 'Yoga' ||
-                reservationList['slot_course_name'] == 'Kids Yoga(A)' ||
-                reservationList['slot_course_name'] == 'Kids Yoga(B)' ||
-                reservationList['slot_course_name'] == 'Kids Yoga KG'
-            ? Image.asset('lib/assets/invi_course_pic/invi_yoga.png')
-            : reservationList['slot_course_name'] == 'Dance' ||
-                    reservationList['slot_course_name'] == 'Kids Zumba' ||
-                    reservationList['slot_course_name'] == 'Zumba'
-                ? Image.asset('lib/assets/invi_course_pic/invi_dance.png')
-                : reservationList['slot_course_name'] == 'Karate' ||
-                        reservationList['slot_course_name'] == 'Kids Karate'
-                    ? Image.asset('lib/assets/invi_course_pic/invi_karate.png')
-                    : reservationList['slot_course_name'] == 'Music' ||
-                            reservationList['slot_course_name'] == 'Kids Music'
-                        ? Image.asset(
-                            'lib/assets/invi_course_pic/invi_music.png')
-                        : reservationList['slot_course_name'] == 'Kids Gym(A)' ||
-                                reservationList['slot_course_name'] ==
-                                    'Kids Gym(B)'
-                            ? Image.asset(
-                                'lib/assets/invi_course_pic/male_fitness.png')
-                            : reservationList['slot_course_name'] == 'Pilates'
-                                ? Image.asset(
-                                    'lib/assets/invi_course_pic/invi_pilates.png')
-                                : reservationList['slot_course_name'] ==
-                                        'Family Pilates'
-                                    ? Image.asset(
-                                        'lib/assets/invi_course_pic/invi_family_pilates.png')
-                                    : reservationList['slot_course_name'] ==
-                                            'Family Yoga'
-                                        ? Image.asset(
-                                            'lib/assets/invi_course_pic/invi_family_yoga.png')
-                                        : reservationList['slot_course_name'] ==
-                                                    'Private Yoga@Studio' ||
-                                                reservationList['slot_course_name'] ==
-                                                    'Private Yoga@Home'
-                                            ? Image.asset(
-                                                'lib/assets/invi_course_pic/private_yoga.png')
-                                            : reservationList['slot_course_name'] ==
-                                                        'Private Pilates@Studio' ||
-                                                    reservationList['slot_course_name'] ==
-                                                        'Private Pilates@Home'
-                                                ? Image.asset(
-                                                    'lib/assets/invi_course_pic/private_pilates.png')
-                                                : Image.asset(
-                                                    'lib/assets/invi_course_pic/female_fitness.png'));
+        image: buildCourseImage(
+          reservationList['slot_course_image_url'],
+          reservationList['slot_course_name'],
+        ));
   }
 }
 

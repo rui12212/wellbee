@@ -139,11 +139,12 @@ def set_max_join_times(sender, instance, **kwargs):
 
 # ここ変更
 @receiver(pre_save, sender=Membership)
-def set_expire_day(sender, instance, **kwargs):
-    if instance.start_day:
-        instance.expire_day = (instance.start_day + relativedelta(months=instance.duration))
-    else:
-        instance.expire_day = (timezone.localdate() + relativedelta(months=instance.duration))
+def set_expire_day(sender, instance, created ,**kwargs):
+    # if created:
+      if instance.start_day:
+          instance.expire_day = (instance.start_day + relativedelta(months=instance.duration))
+      else:
+          instance.expire_day = (timezone.localdate() + relativedelta(months=instance.duration))
 
 @receiver(post_save, sender=Membership)
 def plus_point(sender, instance, created, **kwargs):

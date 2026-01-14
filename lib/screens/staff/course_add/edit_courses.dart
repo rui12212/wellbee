@@ -8,7 +8,7 @@ import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/staff/auth/staff_top_page.dart';
 import 'package:wellbee/screens/staff/course_add/deleted_courses.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
-import 'package:wellbee/ui_parts/images.dart';
+import 'package:wellbee/ui_parts/course_image.dart';
 
 class _Header extends StatelessWidget {
   final String title;
@@ -72,7 +72,6 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
   final TextEditingController _courseNameController = TextEditingController();
   bool _newIsOpen = true;
   bool _newIsPrivate = false;
-  String _newImagePath = fallbackAssetPath;
 
   String? _token;
   bool _isLoading = false;
@@ -142,7 +141,6 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
             'course_name': name,
             'is_open': _newIsOpen,
             'is_private': _newIsPrivate,
-            'asset_image_path': _newImagePath,
           }),
         ),
         Future.delayed(const Duration(seconds: 15),
@@ -189,94 +187,12 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
     }
   }
 
-  Future<void> _updateCourseImage(int courseId, String imagePath) async {
-    try {
-      await _ensureToken();
-      final url =
-          Uri.parse('${baseUri}attendances/course/$courseId/?token=$_token');
-      final response = await Future.any([
-        http.patch(
-          url,
-          headers: {
-            'Authorization': 'JWT $_token',
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode({'asset_image_path': imagePath}),
-        ),
-        Future.delayed(const Duration(seconds: 15),
-            () => throw TimeoutException('Request timeout')),
-      ]);
-      if (response.statusCode == 200) {
-        _showSnackBar(Colors.green, 'Image updated successfully');
-        _loadCourses();
-      } else {
-        _showSnackBar(
-            Colors.red, 'Failed to update image (${response.statusCode})');
-      }
-    } catch (e) {
-      _showSnackBar(Colors.red, 'Error: $e');
-    }
-  }
-
-  Future<void> _pickImageForCourse(int courseId) async {
-    final selected = await showModalBottomSheet<String>(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(12.0),
-                child: Text(
-                  'Select Image',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(
-                height: 300, // 適切な高さを設定（必要に応じて調整可能）
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: imageOptions.length,
-                  itemBuilder: (context, index) {
-                    final option = imageOptions[index];
-                    return ListTile(
-                      leading: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: Image.asset(
-                          option.path,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.broken_image),
-                        ),
-                      ),
-                      title: Text(option.label),
-                      subtitle: Text(option.path),
-                      onTap: () => Navigator.pop(context, option.path),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-    if (selected != null) {
-      _updateCourseImage(courseId, selected);
-    }
-  }
-
   Widget _buildCourseCard(Map<String, dynamic> course) {
     final courseId = course['id'] as int;
     final name = course['course_name'] as String? ?? '';
     final isOpen = course['is_open'] as bool? ?? false;
     final isPrivate = course['is_private'] as bool? ?? false;
-    final imagePath =
-        (course['asset_image_path'] as String?)?.isNotEmpty == true
-            ? course['asset_image_path'] as String
-            : fallbackAssetPath;
+    final imageUrl = course['image_url'] as String?;
 
     return Card(
       elevation: 2,
@@ -293,11 +209,7 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
                   color: const Color(0xFFEFEFEF),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Image.asset(fallbackAssetPath),
-                ),
+                child: buildCourseImage(imageUrl, name),
               ),
               SizedBox(width: 12.w),
               Expanded(
@@ -332,11 +244,6 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
             ]),
             Row(
               children: [
-                TextButton.icon(
-                  onPressed: () => _pickImageForCourse(courseId),
-                  icon: const Icon(Icons.image_outlined),
-                  label: const Text('Change Image'),
-                ),
                 TextButton.icon(
                   onPressed: () async {
                     final result = await showDialog<bool>(
@@ -413,49 +320,6 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
                   ),
                 ),
               ],
-            ),
-            SizedBox(height: 8.h),
-            Text('Select Image', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(
-              height: 80.h,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  final option = imageOptions[index];
-                  final isSelected = option.path == _newImagePath;
-                  return GestureDetector(
-                    onTap: () => setState(() => _newImagePath = option.path),
-                    child: Container(
-                      width: 80.w,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: isSelected
-                                ? Colors.green
-                                : Colors.grey.shade300,
-                            width: isSelected ? 2 : 1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.all(4),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Image.asset(
-                              option.path,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  Image.asset(fallbackAssetPath),
-                            ),
-                          ),
-                          SizedBox(height: 4.h),
-                          Text(option.label, style: TextStyle(fontSize: 12.sp)),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                separatorBuilder: (_, __) => SizedBox(width: 8.w),
-                itemCount: imageOptions.length,
-              ),
             ),
             SizedBox(height: 12.h),
             SizedBox(

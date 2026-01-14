@@ -9,6 +9,7 @@ class MembershipSerializer(serializers.ModelSerializer):
     attendee_gender = serializers.CharField(source='attendee.gender', read_only=True)
     attendee_birthday = serializers.DateField(source='attendee.date_of_birth', read_only=True)
     course_name = serializers.CharField(source='course.course_name', read_only=True)
+    course_image_url = serializers.SerializerMethodField()
     last_survey_date = serializers.DateTimeField(source='attendee.last_survey_date',read_only=True)
     # user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
@@ -19,13 +20,19 @@ class MembershipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Membership
         # fields = '__all__'
-        fields=('id','user_id','course','expire_day','start_day','minus','times','max_join_times','already_join_times','last_check_in','requested_join_times','duration','request_time', 'is_approved', 'total_price','attendee_name','attendee_gender','attendee_birthday','course_name','num_person','discounted_total_price','attendee','last_survey_date')
+        fields=('id','user_id','course','expire_day','start_day','minus','times','max_join_times','already_join_times','last_check_in','requested_join_times','duration','request_time', 'is_approved', 'total_price','attendee_name','attendee_gender','attendee_birthday','course_name','course_image_url','num_person','discounted_total_price','attendee','last_survey_date')
         extra_kwargs = {
             'user_id': {'read_only': True},
             'id': {'read_only': True},
             'course': {'read_only': True},
             }
-    
+
+    def get_course_image_url(self, obj):
+        """コースのS3画像URLを返す"""
+        if obj.course and obj.course.course_image:
+            return obj.course.course_image.url
+        return None
+
     # def create(self, validated_data):
     #     # 必要なフィールドを取得
     #     original_price = validated_data.get('original_price')
@@ -56,6 +63,7 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_image_url(self, obj):
         """S3に保存された画像のフルURLを返す"""
         if obj.course_image:
+            print(obj.course_image.url)
             return obj.course_image.url
         return None
 

@@ -17,6 +17,7 @@ import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:http/http.dart' as http;
 import 'package:wellbee/ui_parts/check_all_membership.dart';
 import 'package:wellbee/ui_parts/color.dart';
+import 'package:wellbee/ui_parts/course_image.dart';
 
 class _Header extends StatelessWidget {
   String title;
@@ -57,18 +58,18 @@ class _Header extends StatelessWidget {
   }
 }
 
-class MembershipAllCoursePage extends ConsumerStatefulWidget {
-  MembershipAllCoursePage({
+class CheckExpireMembershipPage extends ConsumerStatefulWidget {
+  CheckExpireMembershipPage({
     Key? key,
   }) : super(key: key);
 
   @override
-  _MembershipAllCoursePageState createState() =>
-      _MembershipAllCoursePageState();
+  _CheckExpireMembershipPageState createState() =>
+      _CheckExpireMembershipPageState();
 }
 
-class _MembershipAllCoursePageState
-    extends ConsumerState<MembershipAllCoursePage> {
+class _CheckExpireMembershipPageState
+    extends ConsumerState<CheckExpireMembershipPage> {
   final CalendarWeekController _controller = CalendarWeekController();
   String? token = '';
 
@@ -157,13 +158,13 @@ class _MembershipAllCoursePageState
     final isAllCourseSelected = ref.watch(isAllCourseSelectedProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F7FA),
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.all(15),
           child: Column(
             children: [
-              _Header(title: 'Check Membership'),
+              _Header(title: 'Membership Exp.'),
               Container(
                   height: 45.h,
                   child: Padding(
@@ -205,11 +206,6 @@ class _MembershipAllCoursePageState
                                       .read(
                                           isAllCourseSelectedProvider.notifier)
                                       .state = false;
-                                  // Navigator.of(context).push(
-                                  //     MaterialPageRoute(builder: (context) {
-                                  //   return CheckLastCheckInPage(
-                                  //       courseName: widget.courseName);
-                                  // }));
                                 }
                               : () {},
                           style: ButtonStyle(
@@ -248,7 +244,8 @@ class _MembershipAllCoursePageState
                       final fetchedDataList = snapshot.data!;
                       return Expanded(
                           child: isAllCourseSelected
-                              ? _buildGridItem(fetchedDataList: fetchedDataList)
+                              ? _buildCourseList(
+                                  fetchedDataList: fetchedDataList)
                               : buildCheckAllMembership(
                                   fetchedDataList: fetchedDataList));
                     }
@@ -260,102 +257,93 @@ class _MembershipAllCoursePageState
     );
   }
 
-  Widget _buildGridItem({
+  Widget _buildCourseList({
     required List<dynamic> fetchedDataList,
   }) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16.0,
-        mainAxisSpacing: 16.0,
-      ),
+    return ListView.builder(
       itemCount: fetchedDataList.length,
       itemBuilder: (context, index) {
-        return InkWell(
+        final course = fetchedDataList[index];
+        return _buildCourseCard(
+          course: course,
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => CheckMembershipPage(
-                    courseName: fetchedDataList[index]['course_name'])));
+                builder: (context) =>
+                    CheckMembershipPage(courseName: course['course_name'])));
           },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 77, 156, 125),
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 8.0.h),
-                Container(
-                    height: 80.h,
-                    width: double.infinity.w,
-                    child: fetchedDataList[index]['course_name'] == 'Yoga' ||
-                            fetchedDataList[index]['course_name'] ==
-                                'Kids Yoga(A)' ||
-                            fetchedDataList[index]['course_name'] ==
-                                'Kids Yoga(B)' ||
-                            fetchedDataList[index]['course_name'] ==
-                                'Kids Yoga KG'
-                        ? Image.asset(
-                            'lib/assets/invi_course_pic/invi_yoga.png')
-                        : fetchedDataList[index]['course_name'] == 'Dance' ||
-                                fetchedDataList[index]['course_name'] ==
-                                    'Kids Zumba' ||
-                                fetchedDataList[index]['course_name'] == 'Zumba'
-                            ? Image.asset(
-                                'lib/assets/invi_course_pic/invi_dance.png')
-                            : fetchedDataList[index]['course_name'] == 'Karate' ||
-                                    fetchedDataList[index]['course_name'] ==
-                                        'Kids Karate'
-                                ? Image.asset(
-                                    'lib/assets/invi_course_pic/invi_karate.png')
-                                : fetchedDataList[index]['course_name'] == 'Music' ||
-                                        fetchedDataList[index]['course_name'] ==
-                                            'Kids Music'
-                                    ? Image.asset(
-                                        'lib/assets/invi_course_pic/invi_music.png')
-                                    : fetchedDataList[index]['course_name'] ==
-                                                'Kids Gym(A)' ||
-                                            fetchedDataList[index]
-                                                    ['course_name'] ==
-                                                'Kids Gym(B)'
-                                        ? Image.asset(
-                                            'lib/assets/invi_course_pic/male_fitness.png')
-                                        : fetchedDataList[index]['course_name'] ==
-                                                'Pilates'
-                                            ? Image.asset('lib/assets/invi_course_pic/invi_pilates.png')
-                                            : fetchedDataList[index]['course_name'] == 'Family Pilates'
-                                                ? Image.asset('lib/assets/invi_course_pic/invi_family_pilates.png')
-                                                : fetchedDataList[index]['course_name'] == 'Family Yoga'
-                                                    ? Image.asset('lib/assets/invi_course_pic/invi_family_yoga.png')
-                                                    : fetchedDataList[index]['course_name'] == 'Private Yoga@Studio' || fetchedDataList[index]['course_name'] == 'Private Yoga@Home'
-                                                        ? Image.asset('lib/assets/invi_course_pic/private_yoga.png')
-                                                        : fetchedDataList[index]['course_name'] == 'Private Pilates@Studio' || fetchedDataList[index]['course_name'] == 'Private Pilates@Home'
-                                                            ? Image.asset('lib/assets/invi_course_pic/private_pilates.png')
-                                                            : Image.asset('lib/assets/invi_course_pic/female_fitness.png')),
-                Text(
-                  fetchedDataList[index]['course_name'],
-                  style: TextStyle(
-                    fontSize: fetchedDataList[index]['course_name'].length >= 13
-                        ? 13.w
-                        : 18.w,
-                    color: Colors.white,
-                    shadows: [
-                      Shadow(
-                        blurRadius: 20,
-                      ),
-                    ],
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                SizedBox(height: 4.0.h),
-                Spacer(),
-              ],
-            ),
-          ),
         );
       },
+    );
+  }
+
+  Widget _buildCourseCard({
+    required Map<String, dynamic> course,
+    required VoidCallback onTap,
+  }) {
+    final String courseName = course['course_name'] ?? '';
+    final String? imageUrl = course['image_url'];
+
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
+      ),
+      margin: EdgeInsets.only(bottom: 16.h),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16.r),
+        child: Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.r),
+            color: Colors.white,
+          ),
+          child: Row(
+            children: [
+              // 左側：画像アイコン
+              Container(
+                width: 80.w,
+                height: 80.w,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12.r),
+                  child: buildCourseImage(imageUrl, courseName),
+                ),
+              ),
+              SizedBox(width: 16.w),
+              // 中央：テキスト情報
+              Expanded(
+                child: Text(
+                  courseName,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              // 右側：矢印アイコン
+              Icon(
+                Icons.chevron_right,
+                color: Colors.grey[400],
+                size: 24.sp,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

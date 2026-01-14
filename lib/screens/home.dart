@@ -486,22 +486,36 @@ class _HomePageState extends State<HomePage> {
                                     Container(
                                       width: 130.w,
                                       height: 110.h,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: reservation[
-                                                          'slot_course_asset_image_path'] !=
-                                                      null &&
-                                                  reservation[
-                                                          'slot_course_asset_image_path']
-                                                      .toString()
-                                                      .isNotEmpty
-                                              ? AssetImage(reservation[
-                                                  'slot_course_asset_image_path'])
-                                              : AssetImage(
-                                                  'lib/assets/invi_course_pic/female_fitness.png'),
-                                        ),
-                                      ),
+                                      child: reservation['slot_course_image_url'] !=
+                                                  null &&
+                                              reservation['slot_course_image_url']
+                                                  .toString()
+                                                  .isNotEmpty
+                                          ? Image.network(
+                                              reservation['slot_course_image_url'],
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return Image.asset(
+                                                  'lib/assets/invi_course_pic/female_fitness.png',
+                                                  fit: BoxFit.cover,
+                                                );
+                                              },
+                                              loadingBuilder: (context, child, loadingProgress) {
+                                                if (loadingProgress == null) return child;
+                                                return Center(
+                                                  child: CircularProgressIndicator(
+                                                    value: loadingProgress.expectedTotalBytes != null
+                                                        ? loadingProgress.cumulativeBytesLoaded /
+                                                            loadingProgress.expectedTotalBytes!
+                                                        : null,
+                                                  ),
+                                                );
+                                              },
+                                            )
+                                          : Image.asset(
+                                              'lib/assets/invi_course_pic/female_fitness.png',
+                                              fit: BoxFit.cover,
+                                            ),
                                     )
                                   ],
                                 );
