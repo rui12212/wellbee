@@ -21,36 +21,62 @@ import 'package:http/http.dart' as http;
 import 'package:wellbee/ui_parts/dialogue_awesome.dart';
 
 class _Header extends StatelessWidget {
-  String title;
+  final String title;
+  final String subtitle;
 
-  _Header({
-    required this.title,
-  });
+  const _Header({required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50.h,
-      child: Row(
+      padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: title.length > 12
-                ? TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold)
-                : TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 30.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  borderRadius: BorderRadius.circular(24.r),
+                  child: Container(
+                    width: 48.w,
+                    height: 48.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      size: 20.sp,
+                      color: kColorTextDarkGrey,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            style: TextButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shape: const CircleBorder(
-                    side: BorderSide(
-                        color: Color.fromARGB(255, 206, 204, 204), width: 5))),
-            child: const Icon(Icons.chevron_left,
-                color: Color.fromARGB(255, 155, 152, 152)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          )
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w400,
+              color: kColorTextDarkGrey,
+              height: 1.4,
+            ),
+          ),
         ],
       ),
     );
@@ -261,7 +287,10 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
           padding: EdgeInsets.all(15),
           child: Column(
             children: [
-              _Header(title: '${widget.membershipList['course_name']} '),
+              _Header(
+                title: widget.membershipList['course_name'],
+                subtitle: 'Select date and time to reserve',
+              ),
               TableCalendar(
                 firstDay: kFirstDay,
                 lastDay: kLastDay,

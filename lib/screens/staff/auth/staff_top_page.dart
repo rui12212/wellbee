@@ -5,7 +5,6 @@ import 'package:wellbee/screens/attendee/attendee.dart';
 import 'package:wellbee/screens/qr/qr_user.dart';
 import 'package:wellbee/screens/reservation/membership.dart';
 import 'package:wellbee/screens/questionnaire/ex_survey.dart';
-import 'package:wellbee/screens/questionnaire/questinnaire_attendee.dart';
 import 'package:wellbee/screens/questionnaire/questionnaire_base.dart';
 import 'package:wellbee/screens/questionnaire/survey.dart';
 import 'package:wellbee/screens/staff/qr/qr_scanner.dart';

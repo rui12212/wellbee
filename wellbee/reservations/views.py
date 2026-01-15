@@ -399,7 +399,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
             if membership.requested_join_times >0:
                 membership.requested_join_times = F('requested_join_times') - 1
                 membership.save()
-            if  membership.requested_join_times==0:
+            if membership.requested_join_times==0:
                 membership.requested_join_times=0
             
             reservation.delete()

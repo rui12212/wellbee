@@ -36,9 +36,9 @@ class _Header extends StatelessWidget {
                 child: Text(
                   title,
                   style: TextStyle(
-                      fontSize: 30.sp,
-                      fontWeight: FontWeight.w600,
-                      color: kColorPrimary),
+                    fontSize: 30.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               Material(

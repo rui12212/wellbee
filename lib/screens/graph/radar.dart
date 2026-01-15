@@ -8,52 +8,62 @@ import 'package:wellbee/screens/graph/radar_extends.dart';
 import 'package:wellbee/ui_parts/color.dart';
 
 class _Header extends StatelessWidget {
-  String title;
-  String subtitle;
+  final String title;
+  final String subtitle;
 
-  _Header({required this.title, required this.subtitle});
+  const _Header({required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100.h,
+      padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Row(
-              children: [
-                Text(
+          Row(
+            children: [
+              Expanded(
+                child: Text(
                   title,
-                  style:
-                      TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 30.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shape: const CircleBorder(
-                          side: BorderSide(
-                              color: Color.fromARGB(255, 216, 214, 214),
-                              width: 5))),
-                  child: const Icon(Icons.chevron_left,
-                      color: Color.fromARGB(255, 155, 152, 152)),
-                  onPressed: () {
+              ),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
                     Navigator.of(context).pop();
                   },
-                )
-              ],
+                  borderRadius: BorderRadius.circular(24.r),
+                  child: Container(
+                    width: 48.w,
+                    height: 48.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      size: 20.sp,
+                      color: kColorTextDarkGrey,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w400,
+              color: kColorTextDarkGrey,
+              height: 1.4,
             ),
           ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              subtitle,
-              style: TextStyle(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w300,
-                  color: kColorTextDarkGrey),
-            ),
-          )
         ],
       ),
     );
@@ -140,7 +150,7 @@ class _RadarChartPageState extends State<RadarChartPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _Header(
+                const _Header(
                     title: 'Survey Detail',
                     subtitle: 'Your Physical & Mental status'),
                 // カテゴリのリスト表示（色付きのインジケーター付き）

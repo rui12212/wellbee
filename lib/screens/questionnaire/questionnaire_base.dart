@@ -14,67 +14,65 @@ import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:http/http.dart' as http;
 
 class _Header extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: TextButton(
-        style: TextButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shape: const CircleBorder(
-                side: BorderSide(
-                    color: Color.fromARGB(255, 216, 214, 214), width: 5))),
-        child: const Icon(Icons.chevron_left,
-            color: Color.fromARGB(255, 155, 152, 152)),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    );
-  }
-}
+  final String title;
+  final String subtitle;
 
-class _Question extends StatelessWidget {
-  String question;
-  String subQuestion;
-  String coloredText;
-  String krSub;
-
-  _Question(
-      {required this.question,
-      required this.subQuestion,
-      required this.coloredText,
-      required this.krSub});
+  const _Header({required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 140.h,
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: Text(question,
-                  style:
-                      TextStyle(fontSize: 24.h, fontWeight: FontWeight.w300)),
+      padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 30.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  borderRadius: BorderRadius.circular(24.r),
+                  child: Container(
+                    width: 48.w,
+                    height: 48.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      size: 20.sp,
+                      color: kColorTextDarkGrey,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w400,
+              color: kColorText,
+              height: 1.4,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(subQuestion,
-                    style: TextStyle(
-                        fontSize: 22.sp, fontWeight: FontWeight.w300)),
-                Text(coloredText,
-                    style: TextStyle(
-                        fontSize: 22.h,
-                        fontWeight: FontWeight.w700,
-                        color: kColorPrimary)),
-              ],
-            ),
-            Text(krSub,
-                style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w300)),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -158,23 +156,19 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
     return Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
-          child: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Center(
+                const _Header(
+                  title: 'Health Survey',
+                  subtitle: 'First, put Height & Weight',
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        _Header(),
-                        _Question(
-                            question: 'Welcome to Health Survey!',
-                            subQuestion: 'First, put ',
-                            coloredText: 'Height & Weight',
-                            krSub: 'دەستپێکێ درێژی و کێشا خو دانە'),
-                        SizedBox(
-                          height: 20.h,
-                        ),
+                        SizedBox(height: 20.h),
                         CircleAvatar(
                             radius: 110,
                             backgroundColor: Colors.grey,
@@ -218,9 +212,6 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                         SizedBox(
                           height: 10.h,
                         ),
-                        Text('*Do NOT put kg or cm. Put just number!',
-                            style: TextStyle(
-                                fontSize: 18.sp, fontWeight: FontWeight.w200)),
                         SizedBox(
                           height: 30.h,
                         ),
@@ -228,54 +219,58 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                           onPressed: () {
                             String heightText = _heightController.text.trim();
                             String weightText = _weightController.text.trim();
-                            int heightNum = int.parse(heightText);
-                            int weightNum = int.parse(weightText);
 
+                            // 空欄チェック
                             if (heightText.isEmpty || weightText.isEmpty) {
                               CustomAwesomeDialogueForFail(
                                 titleText: 'Error',
                                 desc: 'There is an empty field',
-                                // callback: _createReservation,
                               ).show(context);
                               return;
-                              // 最小値。heightが100より小さく、体重が15より小さければエラー
-                            } else if (heightNum < 100 || weightNum < 15) {
-                              CustomAwesomeDialogueForFail(
-                                titleText: 'Error',
-                                desc: 'Minimum height is 100cm /weight is 15kg',
-                                // callback: _createReservation,
-                              ).show(context);
-                              return;
-                              // 最小値。heightが200より大きく、体重が150より大きければエラー
-                            } else if (heightNum > 200 || weightNum > 150) {
-                              CustomAwesomeDialogueForFail(
-                                titleText: 'Error',
-                                desc: 'Minimum height is 100cm /weight is 15kg',
-                                // callback: _createReservation,
-                              ).show(context);
-                              return;
-                            } else {
-                              int? height = int.tryParse(heightText);
-                              int? weight = int.tryParse(weightText);
-
-                              if (height == null || weight == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          'Height and Weight must be integers')),
-                                );
-                              } else {
-                                Map<String, dynamic> baseBodyData = {
-                                  'height': heightText,
-                                  'weight': weightText,
-                                };
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => SurveyPage(
-                                          attendeeList: widget.attendeeList,
-                                          baseBodyData: baseBodyData,
-                                        )));
-                              }
                             }
+
+                            // 数字のみかチェック（tryParseで安全に変換）
+                            int? heightNum = int.tryParse(heightText);
+                            int? weightNum = int.tryParse(weightText);
+
+                            if (heightNum == null || weightNum == null) {
+                              CustomAwesomeDialogueForFail(
+                                titleText: 'Error',
+                                desc: 'Please enter numbers only',
+                              ).show(context);
+                              return;
+                            }
+
+                            // 最小値チェック
+                            if (heightNum < 100 || weightNum < 15) {
+                              CustomAwesomeDialogueForFail(
+                                titleText: 'Error',
+                                desc:
+                                    'Minimum height is 100cm / weight is 15kg',
+                              ).show(context);
+                              return;
+                            }
+
+                            // 最大値チェック
+                            if (heightNum > 200 || weightNum > 150) {
+                              CustomAwesomeDialogueForFail(
+                                titleText: 'Error',
+                                desc:
+                                    'Maximum height is 200cm / weight is 150kg',
+                              ).show(context);
+                              return;
+                            }
+
+                            // すべてのバリデーション通過
+                            Map<String, dynamic> baseBodyData = {
+                              'height': heightText,
+                              'weight': weightText,
+                            };
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => SurveyPage(
+                                      attendeeList: widget.attendeeList,
+                                      baseBodyData: baseBodyData,
+                                    )));
                           },
                           child: Text('GO TO NEXT',
                               style: TextStyle(
