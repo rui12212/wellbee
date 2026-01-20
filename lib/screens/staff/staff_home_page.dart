@@ -7,6 +7,7 @@ import 'package:wellbee/screens/staff/course_add/edit_courses.dart';
 import 'package:wellbee/screens/staff/dm/attendee_select.dart';
 import 'package:wellbee/screens/staff/health_survey/health_survey_expirely.dart';
 import 'package:wellbee/screens/staff/membership/all_course.dart';
+import 'package:wellbee/screens/staff/membership/membership_edit_list.dart';
 
 class StaffHomePage extends StatefulWidget {
   const StaffHomePage(
@@ -165,6 +166,16 @@ class _StaffHomePageState extends State<StaffHomePage> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                           builder: (context) => CheckExpireMembershipPage()),
+                    );
+                  },
+                ),
+                _buildMenuCard(
+                  icon: Icons.edit_note_outlined,
+                  title: 'Edit Membership',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const MembershipEditListPage()),
                     );
                   },
                 ),
