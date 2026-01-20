@@ -50,6 +50,41 @@ class MembershipSerializer(serializers.ModelSerializer):
     #     return membership
 
 
+class MembershipEditSerializer(serializers.ModelSerializer):
+    """スタッフ用Membership編集Serializer"""
+    attendee_name = serializers.CharField(source='attendee.name', read_only=True)
+    course_name = serializers.CharField(source='course.course_name', read_only=True)
+    user_phone = serializers.CharField(source='user.phone_number', read_only=True)
+
+    class Meta:
+        model = Membership
+        fields = (
+            'id', 'user', 'attendee', 'course', 'times', 'num_person',
+            'duration', 'offer', 'minus', 'is_approved', 'total_price',
+            'discount_rate', 'discounted_total_price', 'max_join_times',
+            'requested_join_times', 'already_join_times', 'request_time',
+            'start_day', 'expire_day', 'is_expired', 'last_check_in',
+            'attendee_name', 'course_name', 'user_phone'
+        )
+        extra_kwargs = {
+            # 読み取り専用フィールド
+            'id': {'read_only': True},
+            'user': {'read_only': True},
+            'attendee': {'read_only': True},
+            'request_time': {'read_only': True},
+            # 基本情報（読み取り専用）
+            'times': {'read_only': True},
+            'num_person': {'read_only': True},
+            'is_approved': {'read_only': True},
+            # 料金関連（読み取り専用）
+            'total_price': {'read_only': True},
+            'discount_rate': {'read_only': True},
+            'offer': {'read_only': True},
+            'minus': {'read_only': True},
+            'discounted_total_price': {'read_only': True},
+        }
+
+
 class CourseSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
 
