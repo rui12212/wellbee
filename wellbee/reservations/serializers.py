@@ -17,7 +17,7 @@ class SlotSerializer(serializers.ModelSerializer):
 
 class ReservationSerializer(serializers.ModelSerializer):
     slot_course_name = serializers.CharField(source='slot.course.course_name', read_only=True)
-    slot_course_asset_image_path = serializers.CharField(source='slot.course.asset_image_path', read_only=True, allow_null=True, allow_blank=True)
+    slot_course_image_url = serializers.SerializerMethodField()
     slot_start_time = serializers.TimeField(source='slot.start_time',read_only=True)
     slot_end_time = serializers.TimeField(source='slot.end_time', read_only=True)
     slot_date = serializers.DateField(source='slot.date', read_only=True)
@@ -36,8 +36,14 @@ class ReservationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model= Reservation
-        fields=('id','membership', 'date', 'slot', 'reserved_at','attended', 'updated_at','slot_course_name','slot_course_asset_image_path','slot_start_time','slot_end_time','slot_date','slot_reserved_people','slot_max_people','slot_is_cancelled','attendee_name','attendee_gender','attendee_birthday','attendee_goal','attendee_reason','user_phone','user_id','points','attendee_any_comment')
+        fields=('id','membership', 'date', 'slot', 'reserved_at','attended', 'updated_at','slot_course_name','slot_course_image_url','slot_start_time','slot_end_time','slot_date','slot_reserved_people','slot_max_people','slot_is_cancelled','attendee_name','attendee_gender','attendee_birthday','attendee_goal','attendee_reason','user_phone','user_id','points','attendee_any_comment')
         extra_kwargs = {
             # 'membership_id': {'read_only': True},
             # 'slot': {'read_only': True},
             }
+
+    def get_slot_course_image_url(self, obj):
+        """予約スロットのコースS3画像URLを返す"""
+        if obj.slot and obj.slot.course and obj.slot.course.course_image:
+            return obj.slot.course.course_image.url
+        return None

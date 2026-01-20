@@ -15,13 +15,12 @@ class Course(models.Model):
     course_name=models.CharField(verbose_name="course_name",max_length=25, default='Yoga',blank=False, null=False)
     is_private=models.BooleanField(verbose_name='is_private', default=False, null=False, blank=False)
     is_open=models.BooleanField(verbose_name='is_open',default=True, null=False, blank=False)
-    asset_image_path = models.CharField(
-        verbose_name="asset_image_path",
-        max_length=255,
-        blank=True,      # ← 既存データとの互換性のため「任意」扱い
-        null=True,       # ← DB的にもNULLを許可
+    course_image = models.ImageField(
+        verbose_name="course_image",
+        upload_to='courses/',  # S3のcourses/フォルダに保存
+        blank=True,
+        null=True,
     )
-
 
     def __str__(self):
         return self.course_name
@@ -126,25 +125,32 @@ class Membership(models.Model):
 # -minusを追加
 @receiver(pre_save, sender=Membership)
 def set_discounted_total_price(sender, instance, **kwargs):
-        # ポイント使用前金額計算＝オリジナルの合計金額からディスカウントをする
-        instance.discounted_total_price = ((instance.total_price - (instance.minus + instance.offer))) * instance.discount_rate
+        # 新規作成時のみ計算（pkがない = 新規作成）
+        if instance.pk is None:
+            # ポイント使用前金額計算＝オリジナルの合計金額からディスカウントをする
+            instance.discounted_total_price = ((instance.total_price - (instance.minus + instance.offer))) * instance.discount_rate
 
 
 @receiver(pre_save, sender=Membership)
 def set_max_join_times(sender, instance, **kwargs):
-    # もしCourseがPrivateでなかったら
-    if instance.course and not instance.course.is_private:
-        instance.max_join_times = int(instance.times * instance.duration * 4)
-    else:
-        instance.max_join_times = int(instance.times)
+    # 新規作成時のみ計算（pkがない = 新規作成）
+    if instance.pk is None:
+        # もしCourseがPrivateでなかったら
+        if instance.course and not instance.course.is_private:
+            instance.max_join_times = int(instance.times * instance.duration * 4)
+        else:
+            instance.max_join_times = int(instance.times)
 
 # ここ変更
 @receiver(pre_save, sender=Membership)
 def set_expire_day(sender, instance, **kwargs):
-    if instance.start_day:
-        instance.expire_day = (instance.start_day + relativedelta(months=instance.duration))
-    else:
-        instance.expire_day = (timezone.localdate() + relativedelta(months=instance.duration))
+    # 新規作成時のみ計算（pkがない = 新規作成）
+    # ※ pre_saveにはcreated引数は存在しないため削除
+    if instance.pk is None:
+        if instance.start_day:
+            instance.expire_day = (instance.start_day + relativedelta(months=instance.duration))
+        else:
+            instance.expire_day = (timezone.localdate() + relativedelta(months=instance.duration))
 
 @receiver(post_save, sender=Membership)
 def plus_point(sender, instance, created, **kwargs):

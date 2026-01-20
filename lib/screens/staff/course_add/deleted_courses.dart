@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/images.dart';
+import 'package:wellbee/ui_parts/course_image.dart';
 
 class _Header extends StatelessWidget {
   final String title;
@@ -160,10 +161,7 @@ class _DeletedCoursesPageState extends State<DeletedCoursesPage> {
     final courseId = course['id'] as int;
     final name = course['course_name'] as String? ?? '';
     final isPrivate = course['is_private'] as bool? ?? false;
-    final imagePath =
-        (course['asset_image_path'] as String?)?.isNotEmpty == true
-            ? course['asset_image_path'] as String
-            : fallbackAssetPath;
+    final imageUrl = course['image_url'] as String?;
 
     return Card(
       elevation: 2,
@@ -180,11 +178,7 @@ class _DeletedCoursesPageState extends State<DeletedCoursesPage> {
                   color: const Color(0xFFEFEFEF),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Image.asset(fallbackAssetPath),
-                ),
+                child: buildCourseImage(imageUrl, name),
               ),
               SizedBox(width: 12.w),
               Expanded(

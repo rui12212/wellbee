@@ -14,45 +14,65 @@ import 'package:http/http.dart' as http;
 import 'package:wellbee/ui_parts/dialogue_awesome.dart';
 
 class _Header extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: TextButton(
-        style: TextButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shape: const CircleBorder(
-                side: BorderSide(
-                    color: Color.fromARGB(255, 216, 214, 214), width: 5))),
-        child: const Icon(Icons.chevron_left,
-            color: Color.fromARGB(255, 155, 152, 152)),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    );
-  }
-}
+  final String title;
+  final String subtitle;
 
-class _Question extends StatelessWidget {
-  final String question;
-
-  _Question({
-    required this.question,
-  });
+  const _Header({required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 12.h, bottom: 10.h),
-      child: Row(
+    return Container(
+      padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 30.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) {
+                        return TopPage(0);
+                      },
+                    ));
+                  },
+                  borderRadius: BorderRadius.circular(24.r),
+                  child: Container(
+                    width: 48.w,
+                    height: 48.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      size: 20.sp,
+                      color: kColorTextDarkGrey,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
           Text(
-            question,
+            subtitle,
             style: TextStyle(
-                fontSize: 30.sp,
-                fontWeight: FontWeight.w600,
-                color: kColorPrimary),
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w400,
+              color: kColorText,
+              height: 1.4,
+            ),
           ),
         ],
       ),
@@ -338,10 +358,10 @@ class _AttendeeAddPageState extends State<AttendeeAddPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                _Question(question: 'Add Member'),
-                _Header(),
-              ]),
+              _Header(
+                title: 'Add Member',
+                subtitle: 'Fill in the member information',
+              ),
               Expanded(
                 child: SingleChildScrollView(
                   child: Padding(

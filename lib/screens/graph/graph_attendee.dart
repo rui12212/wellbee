@@ -11,43 +11,65 @@ import 'package:http/http.dart' as http;
 import 'package:wellbee/ui_parts/display.dart';
 
 class _Header extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: TextButton(
-        style: TextButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shape: const CircleBorder(
-                side: BorderSide(
-                    color: Color.fromARGB(255, 216, 214, 214), width: 5))),
-        child: const Icon(Icons.chevron_left,
-            color: Color.fromARGB(255, 155, 152, 152)),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    );
-  }
-}
+  final String title;
+  final String subtitle;
 
-class _Question extends StatelessWidget {
-  String question;
-
-  _Question({
-    required this.question,
-  });
+  const _Header({required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 80.h,
-        child: Column(
-          children: [
-            Text(question,
-                style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w300))
-          ],
-        ));
+      padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 30.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  borderRadius: BorderRadius.circular(24.r),
+                  child: Container(
+                    width: 48.w,
+                    height: 48.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      size: 20.sp,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w400,
+              color: Colors.grey[600],
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -111,12 +133,14 @@ class _GraphAttendeePageState extends State<GraphAttendeePage> {
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _Header(),
-                _Question(question: 'Who\'s result?'),
-                Container(
+          child: Column(
+            children: [
+              const _Header(
+                title: 'Health Result',
+                subtitle: 'Choose a member to view results',
+              ),
+              Expanded(
+                child: Container(
                   height: 610.sp,
                   child: FutureBuilder(
                     future: _fetchAttendee(),
@@ -159,8 +183,8 @@ class _GraphAttendeePageState extends State<GraphAttendeePage> {
                     },
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

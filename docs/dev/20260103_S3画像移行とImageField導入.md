@@ -94,7 +94,7 @@ class Course(models.Model):
                     ▼
 ┌─────────────────────────────────────────────────────────┐
 │                  AWS S3 Bucket                           │
-│  wellbee-images (開発・本番共通)                          │
+│  s3-wellbee-images (開発・本番共通)                       │
 │  ├── courses/                                           │
 │  │   ├── yoga_abc123.jpg                               │
 │  │   ├── pilates_def456.jpg                            │
@@ -110,14 +110,14 @@ class Course(models.Model):
 
 ### 3.2 環境構成（重要）
 
-**S3バケット**: 1つのみ（`wellbee-images`）
+**S3バケット**: 1つのみ（`s3-wellbee-images`）
 - 開発環境と本番環境で同じバケットを使用
 - 開発環境でアップロードした画像がそのまま本番環境でも使用可能
 - コスト削減とシンプルな構成
 
 **フォルダ構造**:
 ```
-wellbee-images/
+s3-wellbee-images/
 └── courses/
     ├── yoga_abc123.jpg
     ├── pilates_def456.jpg
@@ -180,7 +180,7 @@ class Course(models.Model):
 
 #### 4.1.1 S3バケットの作成
 
-**バケット名**: `wellbee-images`
+**バケット名**: `s3-wellbee-images`
 
 **設定**:
 ```
@@ -200,7 +200,7 @@ class Course(models.Model):
             "Effect": "Allow",
             "Principal": "*",
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::wellbee-images/courses/*"
+            "Resource": "arn:aws:s3:::s3-wellbee-images/courses/*"
         }
     ]
 }
@@ -224,8 +224,8 @@ class Course(models.Model):
                 "s3:ListBucket"
             ],
             "Resource": [
-                "arn:aws:s3:::wellbee-images",
-                "arn:aws:s3:::wellbee-images/*"
+                "arn:aws:s3:::s3-wellbee-images",
+                "arn:aws:s3:::s3-wellbee-images/*"
             ]
         }
     ]
@@ -290,7 +290,7 @@ INSTALLED_APPS = [
 # AWS S3 設定
 AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='wellbee-images')
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='s3-wellbee-images')
 AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='me-south-1')
 
 # S3のファイルを上書きしない（ファイル名が重複した場合、ランダム文字列を付与）
@@ -313,7 +313,7 @@ MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaw
 # AWS S3
 AWS_ACCESS_KEY_ID=AKIA...
 AWS_SECRET_ACCESS_KEY=...
-AWS_STORAGE_BUCKET_NAME=wellbee-images
+AWS_STORAGE_BUCKET_NAME=s3-wellbee-images
 AWS_S3_REGION_NAME=me-south-1
 ```
 
@@ -322,7 +322,7 @@ AWS_S3_REGION_NAME=me-south-1
 # AWS S3（開発環境と同じ認証情報・バケット）
 AWS_ACCESS_KEY_ID=AKIA...
 AWS_SECRET_ACCESS_KEY=...
-AWS_STORAGE_BUCKET_NAME=wellbee-images
+AWS_STORAGE_BUCKET_NAME=s3-wellbee-images
 AWS_S3_REGION_NAME=me-south-1
 ```
 
@@ -501,7 +501,7 @@ class CourseSerializer(serializers.ModelSerializer):
     "course_name": "Yoga",
     "is_private": false,
     "is_open": true,
-    "image_url": "https://wellbee-images.s3.me-south-1.amazonaws.com/courses/invi_yoga_abc123.png",
+    "image_url": "https://s3-wellbee-images.s3.me-south-1.amazonaws.com/courses/invi_yoga_abc123.png",
     "course_image": "courses/invi_yoga_abc123.png"
 }
 ```
@@ -593,17 +593,17 @@ CachedNetworkImage(
 
 ## 5. 実装手順
 
-### 5.1 フェーズ1: AWS S3のセットアップ（優先度: 高）
+### 5.1 フェーズ1: AWS S3のセットアップ（優先度: 高）✅ 完了
 
-- [ ] S3バケット作成（`wellbee-images`）
-- [ ] バケットポリシー設定（パブリック読み取り許可）
-- [ ] CORS設定
-- [ ] バージョニング有効化
-- [ ] IAMユーザー作成（`wellbee-s3-uploader`）
-- [ ] IAMポリシーアタッチ
-- [ ] アクセスキー発行
-- [ ] `.env`ファイルにAWS認証情報追加
-- [ ] `.env.prod`ファイルにAWS認証情報追加（同じ内容）
+- [x] S3バケット作成（`s3-wellbee-images`）
+- [x] バケットポリシー設定（パブリック読み取り許可）
+- [x] CORS設定
+- [x] バージョニング有効化
+- [x] IAMユーザー作成（`wellbee-s3-uploader`）
+- [x] IAMポリシーアタッチ
+- [x] アクセスキー発行
+- [x] `.env`ファイルにAWS認証情報追加
+- [x] `.env.prod`ファイルにAWS認証情報追加（同じ内容）
 
 ### 5.2 フェーズ2: Django側の実装（優先度: 高）
 
@@ -685,7 +685,7 @@ CachedNetworkImage(
    ↓
 2. Django Adminで画像をアップロード
    ↓
-3. S3（wellbee-images/courses/）に画像が保存
+3. S3（s3-wellbee-images/courses/）に画像が保存
    ↓
 4. DBに画像のパス（courses/yoga_abc123.jpg）が保存
    ↓
@@ -788,19 +788,19 @@ S3のバージョニング機能を活用:
 
 ## 11. タスクチェックリスト
 
-### AWS側
-- [ ] S3バケット作成（`wellbee-images`）
-- [ ] バケットポリシー設定
-- [ ] CORS設定
-- [ ] バージョニング有効化
-- [ ] IAMユーザー作成（`wellbee-s3-uploader`）
-- [ ] アクセスキー発行
+### AWS側 ✅ 完了
+- [x] S3バケット作成（`s3-wellbee-images`）
+- [x] バケットポリシー設定
+- [x] CORS設定
+- [x] バージョニング有効化
+- [x] IAMユーザー作成（`wellbee-s3-uploader`）
+- [x] アクセスキー発行
 
 ### Django側
 - [ ] パッケージインストール（django-storages, Pillow）
 - [ ] settings.py設定
-- [ ] .env設定
-- [ ] .env.prod設定
+- [x] .env設定
+- [x] .env.prod設定
 - [ ] モデル変更
 - [ ] マイグレーション
 - [ ] Serializer更新
@@ -832,7 +832,7 @@ S3のバージョニング機能を活用:
 ### 12.2 参考情報
 
 **S3のURL形式**:
-- パス形式: `https://wellbee-images.s3.me-south-1.amazonaws.com/courses/yoga.jpg`
+- パス形式: `https://s3-wellbee-images.s3.me-south-1.amazonaws.com/courses/yoga.jpg`
 
 **ImageFieldのupload_to**:
 - `upload_to='courses/'` → S3上のパス: `courses/ファイル名`

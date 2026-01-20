@@ -11,6 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:wellbee/screens/questionnaire/questionnaire_attendee.dart';
 import 'package:wellbee/version/version_info.dart';
 import 'package:wellbee/main.dart';
 import 'package:wellbee/screens/attendee/attendee.dart';
@@ -19,7 +20,6 @@ import 'package:wellbee/screens/graph/graph_attendee.dart';
 import 'package:wellbee/screens/point/point.dart';
 import 'package:wellbee/screens/reservation/membership.dart';
 import 'package:wellbee/screens/qr/qr_reservation.dart';
-import 'package:wellbee/screens/questionnaire/questinnaire_attendee.dart';
 import 'package:wellbee/ui_parts/color.dart';
 import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
@@ -486,22 +486,47 @@ class _HomePageState extends State<HomePage> {
                                     Container(
                                       width: 130.w,
                                       height: 110.h,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: reservation[
-                                                          'slot_course_asset_image_path'] !=
-                                                      null &&
-                                                  reservation[
-                                                          'slot_course_asset_image_path']
-                                                      .toString()
-                                                      .isNotEmpty
-                                              ? AssetImage(reservation[
-                                                  'slot_course_asset_image_path'])
-                                              : AssetImage(
-                                                  'lib/assets/invi_course_pic/female_fitness.png'),
-                                        ),
-                                      ),
+                                      child: reservation[
+                                                      'slot_course_image_url'] !=
+                                                  null &&
+                                              reservation[
+                                                      'slot_course_image_url']
+                                                  .toString()
+                                                  .isNotEmpty
+                                          ? Image.network(
+                                              reservation[
+                                                  'slot_course_image_url'],
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return Image.asset(
+                                                  'lib/assets/invi_course_pic/female_fitness.png',
+                                                  fit: BoxFit.cover,
+                                                );
+                                              },
+                                              loadingBuilder: (context, child,
+                                                  loadingProgress) {
+                                                if (loadingProgress == null)
+                                                  return child;
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes!
+                                                        : null,
+                                                  ),
+                                                );
+                                              },
+                                            )
+                                          : Image.asset(
+                                              'lib/assets/invi_course_pic/female_fitness.png',
+                                              fit: BoxFit.cover,
+                                            ),
                                     )
                                   ],
                                 );

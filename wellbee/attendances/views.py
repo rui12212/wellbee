@@ -210,8 +210,9 @@ class MembershipViewSet(viewsets.ModelViewSet):
         memberships = Membership.objects.filter(
             expire_day__gte = today_date
         ).order_by('expire_day').annotate(
-             attendee_name = F('attendee__name'),
-                course_name = F('course__course_name')
+            attendee_name = F('attendee__name'),
+            course_name = F('course__course_name'),
+            user_phone = F('user__phone_number')
         )
         serializer = self.get_serializer(memberships, many=True)
         return Response(serializer.data)
@@ -230,8 +231,15 @@ class MembershipViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(memberships, many=True)
         return Response(serializer.data)
-    
 
+    @action(detail=True, methods=['patch'], permission_classes=[IsStaffUser], url_path='edit')
+    def edit_membership(self, request, pk=None):
+        """スタッフによるMembership編集"""
+        membership = self.get_object()
+        edit_serializer = serializers.MembershipEditSerializer(membership, data=request.data, partial=True)
+        edit_serializer.is_valid(raise_exception=True)
+        edit_serializer.save()
+        return Response(edit_serializer.data, status=status.HTTP_200_OK)
 
 
 class AttendeeViewSet(viewsets.ModelViewSet):
