@@ -83,6 +83,9 @@ class _MembershipEditListPageState extends State<MembershipEditListPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
+  // ScrollController for scroll navigation
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -93,7 +96,24 @@ class _MembershipEditListPageState extends State<MembershipEditListPage> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void _scrollToBottom() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
   }
 
   Future<void> _fetchAllMembership() async {
@@ -175,43 +195,93 @@ class _MembershipEditListPageState extends State<MembershipEditListPage> {
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Column(
             children: [
+              // Fixed Header
               _Header(
                 title: 'Edit Membership',
                 subtitle: 'Select membership to edit',
               ),
-              // Filter Section
-              _buildFilterSection(),
-              SizedBox(height: 10.h),
-              // Results count
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '${filteredMemberships.length} memberships found',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ),
-              SizedBox(height: 10.h),
-              // Membership List
+              // Scrollable content below header
               Expanded(
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : filteredMemberships.isEmpty
-                        ? Center(
+                child: Stack(
+                  children: [
+                    SingleChildScrollView(
+                      controller: _scrollController,
+                      child: Column(
+                        children: [
+                          // Filter Section
+                          _buildFilterSection(),
+                          SizedBox(height: 10.h),
+                          // Results count
+                          Align(
+                            alignment: Alignment.centerLeft,
                             child: Text(
-                              'No memberships found',
-                              style: TextStyle(fontSize: 18.sp),
+                              '${filteredMemberships.length} memberships found',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Colors.grey[600],
+                              ),
                             ),
-                          )
-                        : ListView.builder(
-                            itemCount: filteredMemberships.length,
-                            itemBuilder: (context, index) {
-                              final membership = filteredMemberships[index];
-                              return _buildMembershipCard(membership);
-                            },
                           ),
+                          SizedBox(height: 10.h),
+                          // Membership List
+                          if (isLoading)
+                            Padding(
+                              padding: EdgeInsets.only(top: 50.h),
+                              child: const Center(
+                                  child: CircularProgressIndicator()),
+                            )
+                          else if (filteredMemberships.isEmpty)
+                            Padding(
+                              padding: EdgeInsets.only(top: 50.h),
+                              child: Center(
+                                child: Text(
+                                  'No memberships found',
+                                  style: TextStyle(fontSize: 18.sp),
+                                ),
+                              ),
+                            )
+                          else
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: filteredMemberships.length,
+                              itemBuilder: (context, index) {
+                                final membership = filteredMemberships[index];
+                                return _buildMembershipCard(membership);
+                              },
+                            ),
+                        ],
+                      ),
+                    ),
+                    // Scroll navigation buttons
+                    Positioned(
+                      right: 0,
+                      bottom: 16.h,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Scroll to top button
+                          FloatingActionButton.small(
+                            heroTag: 'listScrollTop',
+                            onPressed: _scrollToTop,
+                            backgroundColor: kColorPrimary.withOpacity(0.5),
+                            child: const Icon(Icons.keyboard_arrow_up,
+                                color: Colors.white),
+                          ),
+                          SizedBox(height: 8.h),
+                          // Scroll to bottom button
+                          FloatingActionButton.small(
+                            heroTag: 'listScrollBottom',
+                            onPressed: _scrollToBottom,
+                            backgroundColor: kColorPrimary.withOpacity(0.5),
+                            child: const Icon(Icons.keyboard_arrow_down,
+                                color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
