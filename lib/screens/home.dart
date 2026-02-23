@@ -25,6 +25,9 @@ import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/dialogue_awesome.dart';
 import 'package:wellbee/ui_parts/display.dart';
+import 'package:wellbee/screens/mailbox/mailbox_list.dart';
+import 'package:wellbee/services/fcm_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../assets/inet.dart';
 import 'package:http/http.dart' as http;
 
@@ -104,6 +107,38 @@ String? token = '';
 class _HomePageState extends State<HomePage> {
   bool isUpdateNeeded = false;
   bool isIos = false;
+  int _unreadCount = 0;
+
+  Future<void> _fetchUnreadCount() async {
+    try {
+      final token = await SharedPrefs.fetchAccessToken();
+      if (token == null) return;
+      var url = Uri.parse(
+          '${baseUri}attendances/mailbox/unread-count/?token=$token');
+      var response = await http.get(url, headers: {
+        "Authorization": 'JWT $token',
+        "Content-Type": "application/json"
+      });
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (mounted) {
+          setState(() {
+            _unreadCount = data['unread_count'] ?? 0;
+          });
+        }
+      }
+    } catch (e) {
+      // silently fail
+    }
+  }
+
+  void _initFCM() {
+    final fcmService = FCMService();
+    fcmService.initialize();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _fetchUnreadCount();
+    });
+  }
 
   @override
   showSnackBar(color, text) {
@@ -297,6 +332,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     judgeOSType();
+    _initFCM();
+    _fetchUnreadCount();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       bool? updateNeeded = await checkVersionInformation();
       if (updateNeeded != null && updateNeeded == true) {
@@ -346,22 +383,53 @@ class _HomePageState extends State<HomePage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              (Text('Next Reservation is...',
+                              Text('Next Reservation is...',
                                   style: TextStyle(
                                       fontSize: 20.sp,
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.white))),
-                              // ElevatedButton(
-                              //   style: ElevatedButton.styleFrom(
-                              //     backgroundColor: kColorPrimary,
-                              //     minimumSize: Size(10, 30),
-                              //   ),
-                              //   onPressed: () {
-                              //     showAwesomeDialog();
-                              //   },
-                              //   child: Text('Leave',
-                              //       style: TextStyle(color: Colors.white60)),
-                              // ),
+                                      color: Colors.white)),
+                              GestureDetector(
+                                onTap: () async {
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const MailboxListPage()),
+                                  );
+                                  _fetchUnreadCount();
+                                },
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Icon(Icons.mail_outline,
+                                        color: Colors.white, size: 28.sp),
+                                    if (_unreadCount > 0)
+                                      Positioned(
+                                        right: -6,
+                                        top: -6,
+                                        child: Container(
+                                          padding: EdgeInsets.all(4.w),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          constraints: BoxConstraints(
+                                            minWidth: 18.w,
+                                            minHeight: 18.w,
+                                          ),
+                                          child: Text(
+                                            '$_unreadCount',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 11.sp,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                           FutureBuilder(

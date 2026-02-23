@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wellbee/screens/staff/calendar/calendar.dart';
 import 'package:wellbee/screens/staff/course/course.dart';
 import 'package:wellbee/screens/staff/course_add/edit_courses.dart';
-import 'package:wellbee/screens/staff/dm/attendee_select.dart';
+import 'package:wellbee/screens/staff/notification/notification_home.dart';
 import 'package:wellbee/screens/staff/health_survey/health_survey_expirely.dart';
 import 'package:wellbee/screens/staff/membership/all_course.dart';
 import 'package:wellbee/screens/staff/membership/membership_edit_list.dart';
@@ -191,17 +191,17 @@ class _StaffHomePageState extends State<StaffHomePage> {
                 ),
                 _buildMenuCard(
                   icon: Icons.message_outlined,
-                  title: 'Auto Message',
+                  title: 'Notification',
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (context) => MessageAttendeeSelectPage()),
+                          builder: (context) => const NotificationHomePage()),
                     );
                   },
                 ),
                 _buildMenuCard(
                   icon: Icons.notifications_active_outlined,
-                  title: 'Course Notification',
+                  title: 'DM',
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
