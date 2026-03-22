@@ -14,9 +14,10 @@ from pathlib import Path
 import environ
 import os
 
-# AWSでSNSサービスを使用するため
-AWS_REGION = 'me-south-1'  
-SNS_TOPIC_ARN = 'arn:aws:iam::779846817718:role/PasswordReser_wellbee'
+# Twilio Verify API（WhatsApp OTP）
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID', '')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN', '')
+TWILIO_VERIFY_SERVICE_SID = os.environ.get('TWILIO_VERIFY_SERVICE_SID', '')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

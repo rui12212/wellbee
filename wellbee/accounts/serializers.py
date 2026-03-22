@@ -32,25 +32,43 @@ class StaffTokenObtainPairSerializer(TokenObtainPairSerializer):
             raise serializers.ValidationError('User is not a staff')
         return  data
     
-class PasswordResetRequestSerializer(serializers.ModelSerializer):
+class PasswordResetRequestSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=11)
-    secret_words = serializers.CharField()
+    country_code = serializers.CharField(max_length=8)
 
-    def validate(self,attrs):
-        phone_number = attrs.get('phone_number')
-        secret_words = attrs.get('secret_words')
-        try:
-            user = User.objects.get(phone_number=phone_number, secret_words=secret_words)
-        except User.DoesNotExist:
-            raise serializers.ValidationError('phone number or secret words is not correct')
-        attrs['user'] = user
-        return attrs
-    
-class PasswordResetSerializer(serializers.ModelSerializer):
-    new_password = serializers.CharField(write_only=True,required=True, validators=[validate_password])
-    confirm_password = serializers.CharField(write_only=True,required=True)
+    def validate_phone_number(self, value):
+        if not User.objects.filter(phone_number=value).exists():
+            raise serializers.ValidationError('User with this phone number does not exist.')
+        return value
 
-    def validate(self,attrs):
-        if attrs['new_password'] !=attrs['confirm_password']:
-            raise serializers.ValidationError({'password':'password does not match'})
+
+class PasswordResetVerifyOtpSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(max_length=11)
+    country_code = serializers.CharField(max_length=8)
+    otp_code = serializers.CharField(max_length=6)
+
+    def validate_phone_number(self, value):
+        if not User.objects.filter(phone_number=value).exists():
+            raise serializers.ValidationError('User with this phone number does not exist.')
+        return value
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    reset_token = serializers.UUIDField()
+    new_password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    confirm_password = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['confirm_password']:
+            raise serializers.ValidationError({'confirm_password': 'Passwords do not match.'})
         return attrs
+
+
+class StaffPasswordResetSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(max_length=11)
+    new_password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+
+    def validate_phone_number(self, value):
+        if not User.objects.filter(phone_number=value).exists():
+            raise serializers.ValidationError('User with this phone number does not exist.')
+        return value

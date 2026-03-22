@@ -10,7 +10,8 @@ from rest_framework.permissions import AllowAny
 from accounts.forms import StaffLoginForm
 from wellbee.permissions import UserPermission
 from . import serializers
-from .models import User, Profile
+from .models import User, Profile, PasswordResetToken
+from . import twilio_service
 from django.views.generic import ListView
 from rest_framework.decorators import action
 from django.db.models import F
@@ -20,6 +21,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework_simplejwt.views import TokenObtainPairView
 import json
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 
 
 # viewsでは、このクラスでデータをどのように扱うかを設定している。更新する？登録する？とかを
@@ -129,26 +131,116 @@ def staff_login(request):
     else:
         return JsonResponse({'success':False, 'message': 'Invalid request method'})
     
-class PasswordResetRequestViewSet(viewsets.ModelViewSet):
+class PasswordResetRequestView(generics.GenericAPIView):
     serializer_class = serializers.PasswordResetRequestSerializer
+    permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response({'message': 'User confirmed. Reset password'}, status=status.HTTP_200_OK)
-    
-class PasswordResetConfirmViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.PasswordResetSerializer
+
+        phone_number = serializer.validated_data['phone_number']
+        country_code = serializer.validated_data['country_code']
+
+        # レートリミット: 同一電話番号は1分間に1リクエストまで
+        cache_key = f'pwd_reset_request_{phone_number}'
+        if cache.get(cache_key):
+            return Response(
+                {'error': 'Please wait before requesting another OTP.'},
+                status=status.HTTP_429_TOO_MANY_REQUESTS
+            )
+
+        success = twilio_service.send_otp_via_whatsapp(phone_number, country_code)
+        if not success:
+            return Response(
+                {'error': 'Failed to send OTP. Please try again.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+        cache.set(cache_key, True, timeout=60)
+        return Response({'message': 'OTP sent to your WhatsApp.'}, status=status.HTTP_200_OK)
+
+
+class PasswordResetVerifyOtpView(generics.GenericAPIView):
+    serializer_class = serializers.PasswordResetVerifyOtpSerializer
+    permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
-        phone_number = request.data.get('phone_number')
-        secret_words = request.data.get('secret_words')
-        new_password = request.data.get('new_password')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        phone_number = serializer.validated_data['phone_number']
+        country_code = serializer.validated_data['country_code']
+        otp_code = serializer.validated_data['otp_code']
+
+        is_valid = twilio_service.verify_otp(phone_number, country_code, otp_code)
+        if not is_valid:
+            return Response(
+                {'error': 'Invalid or expired OTP.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = User.objects.get(phone_number=phone_number)
+        token = PasswordResetToken.objects.create(user=user)
+        return Response({'reset_token': str(token.reset_token)}, status=status.HTTP_200_OK)
+
+
+class PasswordResetConfirmView(generics.GenericAPIView):
+    serializer_class = serializers.PasswordResetConfirmSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        reset_token = serializer.validated_data['reset_token']
+        new_password = serializer.validated_data['new_password']
 
         try:
-            user = User.objects.get(phone_number=phone_number, secret_words=secret_words)
-            user.set_password(new_password)
-            user.save()
-            return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
-        except User.DoesNotExist:
-            return Response({"error": "Phone number or secret words is not correct"}, status=status.HTTP_400_BAD_REQUEST)
+            token_obj = PasswordResetToken.objects.get(reset_token=reset_token)
+        except PasswordResetToken.DoesNotExist:
+            return Response(
+                {'error': 'Invalid or expired reset token.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not token_obj.is_valid:
+            return Response(
+                {'error': 'Invalid or expired reset token.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = token_obj.user
+        user.set_password(new_password)
+        user.save()
+
+        token_obj.is_used = True
+        token_obj.save()
+
+        return Response({'message': 'Password reset successfully.'}, status=status.HTTP_200_OK)
+
+
+class StaffPasswordResetView(generics.GenericAPIView):
+    serializer_class = serializers.StaffPasswordResetSerializer
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            return Response(
+                {'error': 'Staff permission required.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        phone_number = serializer.validated_data['phone_number']
+        new_password = serializer.validated_data['new_password']
+
+        user = User.objects.get(phone_number=phone_number)
+        user.set_password(new_password)
+        user.save()
+
+        return Response(
+            {'message': 'Password reset successfully.', 'phone_number': phone_number},
+            status=status.HTTP_200_OK
+        )

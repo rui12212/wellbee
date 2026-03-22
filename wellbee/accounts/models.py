@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
-# from django.utiles import timezone
-# ここからはUser登録時に作成されるカスタムUser作成で必要になるimport
+from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin, BaseUserManager
 import uuid
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -63,3 +62,33 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user_name
+
+
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(
+        'User',
+        on_delete=models.CASCADE,
+        related_name='password_reset_tokens'
+    )
+    reset_token = models.UUIDField(default=uuid.uuid4, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.expires_at = timezone.now() + timedelta(minutes=30)
+        super().save(*args, **kwargs)
+
+    @property
+    def is_valid(self):
+        return not self.is_used and timezone.now() < self.expires_at
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['reset_token']),
+            models.Index(fields=['user']),
+        ]
+
+    def __str__(self):
+        return f'PasswordResetToken for {self.user.phone_number}'

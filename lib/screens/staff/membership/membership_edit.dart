@@ -129,7 +129,8 @@ class _MembershipEditPageState extends State<MembershipEditPage> {
   Future<void> _fetchCourses() async {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
-      var url = Uri.parse('${baseUri}attendances/course/all_course');
+      var url =
+          Uri.parse('${baseUri}attendances/course/all_course/?token=$token');
       var response = await http.get(url, headers: {
         "Authorization": 'JWT $token',
         "Content-Type": "application/json"
@@ -153,7 +154,8 @@ class _MembershipEditPageState extends State<MembershipEditPage> {
     try {
       token = await SharedPrefs.fetchStaffAccessToken();
       final membershipId = widget.membership['id'];
-      var url = Uri.parse('${baseUri}attendances/membership/$membershipId/edit/');
+      var url = Uri.parse(
+          '${baseUri}attendances/membership/$membershipId/edit/?token=$token');
 
       Map<String, dynamic> data = {
         'course': selectedCourseId,
@@ -220,8 +222,8 @@ class _MembershipEditPageState extends State<MembershipEditPage> {
     }
   }
 
-  Future<void> _selectDate(
-      BuildContext context, DateTime? initialDate, Function(DateTime) onSelect) async {
+  Future<void> _selectDate(BuildContext context, DateTime? initialDate,
+      Function(DateTime) onSelect) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate ?? DateTime.now(),
@@ -353,14 +355,20 @@ class _MembershipEditPageState extends State<MembershipEditPage> {
             _buildReadOnlyRow('Membership ID', m['id']?.toString() ?? 'N/A'),
             _buildReadOnlyRow('User Phone', m['user_phone'] ?? 'N/A'),
             _buildReadOnlyRow('Times/Week', m['times']?.toString() ?? 'N/A'),
-            _buildReadOnlyRow('Num Person', m['num_person']?.toString() ?? 'N/A'),
-            _buildReadOnlyRow('Is Approved', m['is_approved'] == true ? 'Yes' : 'No'),
-            _buildReadOnlyRow('Total Price', m['total_price']?.toString() ?? 'N/A'),
-            _buildReadOnlyRow('Discount Rate', '${((1 - (m['discount_rate'] ?? 1)) * 100).toInt()}% OFF'),
+            _buildReadOnlyRow(
+                'Num Person', m['num_person']?.toString() ?? 'N/A'),
+            _buildReadOnlyRow(
+                'Is Approved', m['is_approved'] == true ? 'Yes' : 'No'),
+            _buildReadOnlyRow(
+                'Total Price', m['total_price']?.toString() ?? 'N/A'),
+            _buildReadOnlyRow('Discount Rate',
+                '${((1 - (m['discount_rate'] ?? 1)) * 100).toInt()}% OFF'),
             _buildReadOnlyRow('Offer', m['offer']?.toString() ?? '0'),
             _buildReadOnlyRow('Minus (Points)', m['minus']?.toString() ?? '0'),
-            _buildReadOnlyRow('Discounted Price', m['discounted_total_price']?.toString() ?? 'N/A'),
-            _buildReadOnlyRow('Request Time', m['request_time']?.toString().substring(0, 10) ?? 'N/A'),
+            _buildReadOnlyRow('Discounted Price',
+                m['discounted_total_price']?.toString() ?? 'N/A'),
+            _buildReadOnlyRow('Request Time',
+                m['request_time']?.toString().substring(0, 10) ?? 'N/A'),
           ],
         ),
       ),
@@ -501,7 +509,8 @@ class _MembershipEditPageState extends State<MembershipEditPage> {
               children: [
                 Text(
                   'Is Expired',
-                  style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+                  style:
+                      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
                 ),
                 Switch(
                   value: isExpired,

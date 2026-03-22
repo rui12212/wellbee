@@ -7,8 +7,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 class QueryParameterJWTAuthentication(JWTAuthentication):
+    # 認証スキップ対象パス（AllowAny ビューでも AuthenticationFailed が先に発火するため除外）
+    UNAUTHENTICATED_PATHS = {
+        '/accounts/create/',
+        '/accounts/password-reset/request/',
+        '/accounts/password-reset/verify-otp/',
+        '/accounts/password-reset/confirm/',
+    }
+
     def authenticate(self, request):
-        if request.method == 'POST' and request.path == '/accounts/create/':
+        if request.method == 'POST' and request.path in self.UNAUTHENTICATED_PATHS:
             return None
 
         # URLからtokenを取得
