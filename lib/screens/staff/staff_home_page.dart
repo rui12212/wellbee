@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wellbee/screens/staff/calendar/calendar.dart';
 import 'package:wellbee/screens/staff/course/course.dart';
 import 'package:wellbee/screens/staff/course_add/edit_courses.dart';
-import 'package:wellbee/screens/staff/notification/notification_home.dart';
 import 'package:wellbee/screens/staff/health_survey/health_survey_expirely.dart';
 import 'package:wellbee/screens/staff/membership/all_course.dart';
 import 'package:wellbee/screens/staff/membership/membership_edit_list.dart';
+import 'package:wellbee/screens/staff/user_password_reset.dart';
 
 class StaffHomePage extends StatefulWidget {
   const StaffHomePage(
@@ -190,25 +190,17 @@ class _StaffHomePageState extends State<StaffHomePage> {
                   },
                 ),
                 _buildMenuCard(
-                  icon: Icons.message_outlined,
-                  title: 'Notification',
+                  icon: Icons.lock_reset_outlined,
+                  title: 'Password Reset',
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (context) => const NotificationHomePage()),
+                          builder: (context) =>
+                              const UserPasswordResetPage()),
                     );
                   },
                 ),
-                _buildMenuCard(
-                  icon: Icons.notifications_active_outlined,
-                  title: 'DM',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => CheckHealthSurveyPage()),
-                    );
-                  },
-                ),
+
                 SizedBox(height: 16.h),
               ],
             ),

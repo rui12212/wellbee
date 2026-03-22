@@ -11,6 +11,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:wellbee/firebase_options.dart';
 import 'package:wellbee/version/version_info.dart';
 import 'package:wellbee/screens/first_attendee_add.dart';
+import 'package:wellbee/screens/pass_reset_request.dart';
 import 'package:wellbee/screens/staff/auth/staff_signin.dart';
 import 'package:wellbee/screens/staff/auth/staff_top_page.dart';
 import 'package:wellbee/ui_parts/color.dart';
@@ -415,6 +416,20 @@ class _SignInPageState extends State<SignInPage> {
                   child: Text('Sign In',
                       style: TextStyle(
                           color: kColorPrimary, fontWeight: FontWeight.w700)),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const PassResetRequestPage(),
+                  ));
+                },
+                child: Text(
+                  'Forgot password?',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 14.sp,
+                  ),
                 ),
               ),
               _Footer(callback: onLaunchUrl),

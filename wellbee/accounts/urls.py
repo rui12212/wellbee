@@ -1,33 +1,36 @@
-# from rest_framework.routers import DefaultRouter
 from django.urls import path
 from django.conf.urls import include
 from . import views
-from .views import CreateUserView, ProfileViewSet, StaffTokenObtainPairView, UserViewSet,PasswordResetRequestViewSet,PasswordResetConfirmViewSet
+from .views import (
+    CreateUserView,
+    ProfileViewSet,
+    StaffTokenObtainPairView,
+    UserViewSet,
+    PasswordResetRequestView,
+    PasswordResetVerifyOtpView,
+    PasswordResetConfirmView,
+    StaffPasswordResetView,
+)
 from rest_framework import routers
-# MyUserView,CreateStaffView,StaffViewSet
-# from .views import ProfileViewSet
-# from .views import MyProfileListView
 
-app_name='accounts'
+app_name = 'accounts'
 
-router=routers.DefaultRouter()
-# profileというパスに対して、ProfileViewSetのViewを紐づけてあげる
+router = routers.DefaultRouter()
 router.register('profile', views.ProfileViewSet)
-# router.register('users',views.UserViewSet)
-router.register(r'users',UserViewSet,basename='users')
-router.register(r'password-reset/request', PasswordResetRequestViewSet,basename='password_reset_request')
-router.register(r'password-reset/confirm', PasswordResetConfirmViewSet,basename='password_reset_confirm')
-# models.pyを参考にして、下記のurlpatternsを適切に書き換えてください
-
-
+router.register(r'users', UserViewSet, basename='users')
 
 urlpatterns = [
     path('create/', CreateUserView.as_view(), name='users-create'),
-    # path('update-points/<uuid:user_id>', views.update_points, name='update_points'),
-    # path('user/all/',UserViewSet.as_view(), name='users-all'),
-    # path('users/<pk>/retrieve/',MyUserView.as_view(), name='my-user'),
-    # path('profile/<uuid:id>/',MyProfileListView.as_view(), name='users-profile'),
     path('staff_login/', views.staff_login, name='staff_login'),
     path('api/staff/token/', StaffTokenObtainPairView.as_view(), name='token_obtain_pair'),
+
+    # パスワードリセット（一般ユーザー・認証不要）
+    path('password-reset/request/', PasswordResetRequestView.as_view(), name='password_reset_request'),
+    path('password-reset/verify-otp/', PasswordResetVerifyOtpView.as_view(), name='password_reset_verify_otp'),
+    path('password-reset/confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+
+    # パスワードリセット（スタッフ手動・JWT認証必須）
+    path('staff/password-reset/', StaffPasswordResetView.as_view(), name='staff_password_reset'),
+
     path('', include(router.urls)),
 ]

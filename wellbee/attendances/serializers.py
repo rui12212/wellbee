@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from attendances.models import Course, Interview, Membership, Attendee, CheckIn, NotificationDaysSetting, UserMessage, UserFCMToken
+from attendances.models import Course, Interview, Membership, Attendee, CheckIn
 from accounts.models import User
 
 
@@ -136,60 +136,3 @@ class CheckInSerializer(serializers.ModelSerializer):
             'id': {'read_only': True},
             'checked_by': {'read_only': True},
             }
-
-# class PaymentSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model=Payment
-#         fields=('membership', 'discount_rate', 'discounted_total_price', 'points_used','payment_date')
-#         extra_kwargs = {
-#             'membership': {'read_only': True},
-#         }
-
-
-class NotificationDaysSettingSerializer(serializers.ModelSerializer):
-    """通知日数設定Serializer"""
-    class Meta:
-        model = NotificationDaysSetting
-        fields = ('id', 'days_before_expire', 'message', 'is_active', 'created_at', 'updated_at')
-        extra_kwargs = {
-            'id': {'read_only': True},
-            'created_at': {'read_only': True},
-            'updated_at': {'read_only': True},
-        }
-
-
-class UserMessageSerializer(serializers.ModelSerializer):
-    """ユーザーメッセージSerializer"""
-    class Meta:
-        model = UserMessage
-        fields = ('id', 'title', 'content', 'is_read', 'read_at', 'created_at')
-        extra_kwargs = {
-            'id': {'read_only': True},
-            'is_read': {'read_only': True},
-            'read_at': {'read_only': True},
-            'created_at': {'read_only': True},
-        }
-
-
-class UserFCMTokenSerializer(serializers.ModelSerializer):
-    """FCMトークンSerializer"""
-    class Meta:
-        model = UserFCMToken
-        fields = ('id', 'token', 'device_type', 'is_active', 'created_at', 'updated_at')
-        extra_kwargs = {
-            'id': {'read_only': True},
-            'is_active': {'read_only': True},
-            'created_at': {'read_only': True},
-            'updated_at': {'read_only': True},
-        }
-
-
-class TargetUserSerializer(serializers.Serializer):
-    """送信対象ユーザーSerializer（プレビュー用）"""
-    user_id = serializers.UUIDField()
-    phone_number = serializers.CharField()
-    attendee_name = serializers.CharField()
-    membership_id = serializers.IntegerField()
-    course_name = serializers.CharField()
-    expire_day = serializers.DateField()
-
