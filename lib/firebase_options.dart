@@ -50,7 +50,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCm4ldV71O_GzeUqCPSPJTpewUdYZQSGAo',
+    apiKey: 'REMOVED',
     appId: '1:852819913883:android:d854ce91cb5f7111322a3e',
     messagingSenderId: '852819913883',
     projectId: 'wellbee-fitness',
@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCDMEHhYu69NtjQAmG1PkrGHgz2FImVcCU',
+    apiKey: 'REMOVED',
     appId: '1:852819913883:ios:a5a4e157a5001bb7322a3e',
     messagingSenderId: '852819913883',
     projectId: 'wellbee-fitness',
