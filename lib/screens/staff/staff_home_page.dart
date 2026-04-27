@@ -7,6 +7,7 @@ import 'package:wellbee/screens/staff/course_add/edit_courses.dart';
 import 'package:wellbee/screens/staff/health_survey/health_survey_expirely.dart';
 import 'package:wellbee/screens/staff/membership/all_course.dart';
 import 'package:wellbee/screens/staff/membership/membership_edit_list.dart';
+import 'package:wellbee/screens/staff/qr_after_add_staff/add_staff_user.dart';
 import 'package:wellbee/screens/staff/user_password_reset.dart';
 
 class StaffHomePage extends StatefulWidget {
@@ -197,6 +198,16 @@ class _StaffHomePageState extends State<StaffHomePage> {
                       MaterialPageRoute(
                           builder: (context) =>
                               const UserPasswordResetPage()),
+                    );
+                  },
+                ),
+                _buildMenuCard(
+                  icon: Icons.person_add_outlined,
+                  title: 'Add Staff User',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const AddStaffUserPage()),
                     );
                   },
                 ),

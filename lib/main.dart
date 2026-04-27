@@ -172,6 +172,7 @@ int mobileNumber = 0;
 class _SignInPageState extends State<SignInPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String _fullPhoneNumber = '';
   String? token = '';
   bool? isAttendee = false;
   bool isToken = false;
@@ -294,7 +295,7 @@ class _SignInPageState extends State<SignInPage> {
       var url = Uri.parse('${baseUri}authen/jwt/create/');
       var response = await Future.any([
         http.post(url, body: {
-          'phone_number': _phoneController.text,
+          'phone_number': _fullPhoneNumber,
           'password': _passwordController.text,
         }),
         Future.delayed(const Duration(seconds: 15),
@@ -388,7 +389,9 @@ class _SignInPageState extends State<SignInPage> {
                   label: 'Mobile Number',
                   hintText: 'ex) 7501234567',
                   controller: _phoneController,
-                ).phoneFieldDecoration()),
+                ).phoneFieldDecoration(
+                  onPhoneChanged: (number) => _fullPhoneNumber = number,
+                )),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0).w,

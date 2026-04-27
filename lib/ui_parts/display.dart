@@ -615,31 +615,16 @@ class _ReservationTicket extends StatelessWidget {
                                   color: kColorText,
                                 ),
                               ),
-                              // SizedBox(height: 4),
-                              Text(
-                                course_name,
-                                style: TextStyle(
-                                  fontSize: course_name == 'Family Pilates' ||
-                                          course_name == 'Family Yoga' ||
-                                          course_name == 'Kids Karate' ||
-                                          course_name == 'Kids Gym(A)' ||
-                                          course_name == 'Kids Gym(B)' ||
-                                          course_name == 'Kids Yoga(A)' ||
-                                          course_name == 'Kids Yoga(B)' ||
-                                          course_name == 'Kids Yoga KG' ||
-                                          course_name == 'Kids Zumba'
-                                      ? 14.w
-                                      : course_name == 'Private Yoga@Studio' ||
-                                              course_name ==
-                                                  'Private Yoga@Home' ||
-                                              course_name ==
-                                                  'Private Pilates@Studio' ||
-                                              course_name ==
-                                                  'Private Pilates@Home'
-                                          ? 12.w
-                                          : 17.w,
-                                  color: kColorTextDark,
-                                  // fontWeight: FontWeight.bold,
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  course_name,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontSize: 17.w,
+                                    color: kColorTextDark,
+                                  ),
                                 ),
                               ),
                             ],
@@ -836,31 +821,16 @@ class _PastReservationTicket extends StatelessWidget {
                                   color: kColorText,
                                 ),
                               ),
-                              // SizedBox(height: 4),
-                              Text(
-                                course_name,
-                                style: TextStyle(
-                                  fontSize: course_name == 'Family Pilates' ||
-                                          course_name == 'Family Yoga' ||
-                                          course_name == 'Kids Karate' ||
-                                          course_name == 'Kids Gym(A)' ||
-                                          course_name == 'Kids Gym(B)' ||
-                                          course_name == 'Kids Yoga(A)' ||
-                                          course_name == 'Kids Yoga(B)' ||
-                                          course_name == 'Kids Yoga KG' ||
-                                          course_name == 'Kids Zumba'
-                                      ? 14.w
-                                      : course_name == 'Private Yoga@Studio' ||
-                                              course_name ==
-                                                  'Private Yoga@Home' ||
-                                              course_name ==
-                                                  'Private Pilates@Studio' ||
-                                              course_name ==
-                                                  'Private Pilates@Home'
-                                          ? 12.w
-                                          : 17.w,
-                                  color: kColorTextDark,
-                                  // fontWeight: FontWeight.bold,
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  course_name,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontSize: 17.w,
+                                    color: kColorTextDark,
+                                  ),
                                 ),
                               ),
                             ],

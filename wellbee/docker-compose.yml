@@ -40,14 +40,8 @@ services:
    restart: always
    environment:
      MYSQL_ROOT_PASSWORD: Kruike221
-     SECRET_KEY: django
-    #  ALLOWED_HOSTS: localhost
-     DEBUG: True
      MYSQL_ROOT_HOST: '%'
-
      MYSQL_DATABASE: "wellbee"
-     MYSQL_USER: root
-     MYSQL_PASSWORD: Kruike221
      MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
    volumes:
      - db_data:/var/lib/mysql

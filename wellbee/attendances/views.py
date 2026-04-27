@@ -24,16 +24,16 @@ class MembershipViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.MembershipSerializer
     permission_classes = [MembershipPermission]
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
         # staff_user = request.user
-        data = self.request.data
+        data = request.data
         customer_user_id = data.get('user')
         attendee_id = data.get('attendee')
         fetched_course = data.get('course')
         duration = data.get('duration')
         minus = data.get('minus')
         discount_rate=data.get('discount_rate')
-        fetched_offer=data.get('offer')
+        fetched_currency=data.get('currency', 'USD')
         fetched_total_price=data.get('total_price')
         start_date_str = data.get('start_day')
         fetched_times = data.get('times')
@@ -49,19 +49,24 @@ class MembershipViewSet(viewsets.ModelViewSet):
                 {'error': f'start_day\'s type is not valid:{e}'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
+        if fetched_currency not in ('USD', 'IQD'):
+            return Response(
+                {'error': 'currency must be USD or IQD.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         try:
             # add
             total_price = int(fetched_total_price)
             duration = int(duration)
             minus=int(minus)
-            offer=int(fetched_offer)
             discount_rate=float(discount_rate)
             times=int(fetched_times)
 
         except (ValueError, TypeError) as e:
             return Response({'error': '${e}: Invalid input types.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         if course.is_private == False:
          membership = Membership.objects.create(
                 user_id = customer_user.id,
@@ -70,7 +75,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
                 duration=duration,
                 minus=minus,
                 times=times,
-                offer=offer,
+                currency=fetched_currency,
                 start_day=start_date,
                 discount_rate=discount_rate,
                 total_price = total_price,
@@ -86,7 +91,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
                 discount_rate=discount_rate,
                 total_price = total_price,
                 times=times,
-                offer = offer
+                currency=fetched_currency,
             )
         serializer = self.get_serializer(membership)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -349,8 +354,8 @@ class InterviewViewSet(viewsets.ModelViewSet):
         else:
             return Interview.objects.all()
         
-    def perform_create(self,serializer):
-        data = self.request.data
+    def create(self, request, *args, **kwargs):
+        data = request.data
 
         fetched_attendee_id = data.get('attendee_id')
         fetched_emotion_state = data.get('emotion_state')
@@ -358,7 +363,7 @@ class InterviewViewSet(viewsets.ModelViewSet):
         fetched_any_comment = data.get('any_comment')
         if fetched_any_comment =='':
             fetched_any_comment = None
-        
+
         attendee_id = get_object_or_404(Attendee, id = fetched_attendee_id)
 
         interview = Interview.objects.create(
@@ -402,15 +407,13 @@ class CheckInViewSet(viewsets.ModelViewSet):
     #     return Response(serializer.data,status=status.HTTP_200_OK)
     
 
-    def perform_create(self, serializer):
-       data = self.request.data
-       checked_user = self.request.user
+    def create(self, request, *args, **kwargs):
+       data = request.data
+       checked_user = request.user
        fetch_reservation = data.get('reservation')
        fetched_num_person = data.get('num_person')
 
-       reservation_id = get_object_or_404(Reservation,id=fetch_reservation)
-
-
+       reservation_id = get_object_or_404(Reservation, id=fetch_reservation)
 
        check_in = CheckIn.objects.create(
            reservation = reservation_id,

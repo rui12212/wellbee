@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -50,7 +41,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'REMOVED',
+    apiKey: 'AIzaSyCm4ldV71O_GzeUqCPSPJTpewUdYZQSGAo',
     appId: '1:852819913883:android:d854ce91cb5f7111322a3e',
     messagingSenderId: '852819913883',
     projectId: 'wellbee-fitness',
@@ -58,11 +49,42 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'REMOVED',
+    apiKey: 'AIzaSyCDMEHhYu69NtjQAmG1PkrGHgz2FImVcCU',
+    appId: '1:852819913883:ios:a5a4e157a5001bb7322a3e',
+    messagingSenderId: '852819913883',
+    projectId: 'wellbee-fitness',
+    storageBucket: 'wellbee-fitness.firebasestorage.app',
+    iosClientId: '852819913883-ea6gs9io8imka7vf7qndgghm37b37698.apps.googleusercontent.com',
+    iosBundleId: 'com.wellbee.fitness',
+  );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCIJlrgLVgJ_XzbUw0Yv7FvwO489m7gkpE',
+    appId: '1:852819913883:web:c4d422f0bca0aabe322a3e',
+    messagingSenderId: '852819913883',
+    projectId: 'wellbee-fitness',
+    authDomain: 'wellbee-fitness.firebaseapp.com',
+    storageBucket: 'wellbee-fitness.firebasestorage.app',
+    measurementId: 'G-NT731VWRBN',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyCDMEHhYu69NtjQAmG1PkrGHgz2FImVcCU',
     appId: '1:852819913883:ios:a5a4e157a5001bb7322a3e',
     messagingSenderId: '852819913883',
     projectId: 'wellbee-fitness',
     storageBucket: 'wellbee-fitness.firebasestorage.app',
     iosBundleId: 'com.wellbee.fitness',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyCIJlrgLVgJ_XzbUw0Yv7FvwO489m7gkpE',
+    appId: '1:852819913883:web:105f2b66fbb8cfa2322a3e',
+    messagingSenderId: '852819913883',
+    projectId: 'wellbee-fitness',
+    authDomain: 'wellbee-fitness.firebaseapp.com',
+    storageBucket: 'wellbee-fitness.firebasestorage.app',
+    measurementId: 'G-TMG11KKY12',
+  );
+
 }

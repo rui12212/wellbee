@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>REMOVED</string>
+	<string>AIzaSyCDMEHhYu69NtjQAmG1PkrGHgz2FImVcCU</string>
 	<key>GCM_SENDER_ID</key>
 	<string>852819913883</string>
 	<key>PLIST_VERSION</key>
@@ -26,5 +26,9 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:852819913883:ios:a5a4e157a5001bb7322a3e</string>
+	<key>CLIENT_ID</key>
+	<string>852819913883-ea6gs9io8imka7vf7qndgghm37b37698.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.852819913883-ea6gs9io8imka7vf7qndgghm37b37698</string>
 </dict>
 </plist>

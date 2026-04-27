@@ -7,17 +7,14 @@ from rest_framework.response import Response
 from rest_framework import generics, viewsets, status
 from rest_framework.permissions import AllowAny
 
-from accounts.forms import StaffLoginForm
 from wellbee.permissions import UserPermission
 from . import serializers
 from .models import User, Profile, PasswordResetToken
 from . import twilio_service
-from django.views.generic import ListView
+from . import firebase_service
+from .normalizer import normalize_phone
 from rest_framework.decorators import action
 from django.db.models import F
-from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework_simplejwt.views import TokenObtainPairView
 import json
 from django.contrib.auth import get_user_model
@@ -110,27 +107,9 @@ class ProfileViewSet(viewsets.ModelViewSet):
     # permission_classes = (AllowAny,)
 
 class StaffTokenObtainPairView(TokenObtainPairView):
-    serializer_class = serializers.StaffTokenObtainPairSerializer
+    serializer_class = serializers.StaffLoginSerializer
 
-@csrf_exempt
-def staff_login(request):
-    if request.method == "POST":
-        form = StaffLoginForm(request.POST)
-        if form.is_valid():
-            phone_number = form.cleaned_data['phone_number']
-            password = form.cleaned_data['password']
-            user = authenticate(request, phone_number=phone_number, password=password)
 
-            if user is not None and user.is_staff:
-                login(request, user)
-                return JsonResponse({'success':True, 'message':'Sign in success', 'redirect_url':'/staff_home/'})
-            else:
-                return JsonResponse({'success':False,'message': "Invalid credentials or not a staff member"})
-        else:
-            return JsonResponse({'success':False, 'message':'Form data is not valid'})
-    else:
-        return JsonResponse({'success':False, 'message': 'Invalid request method'})
-    
 class PasswordResetRequestView(generics.GenericAPIView):
     serializer_class = serializers.PasswordResetRequestSerializer
     permission_classes = (AllowAny,)
@@ -220,6 +199,45 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         return Response({'message': 'Password reset successfully.'}, status=status.HTTP_200_OK)
 
 
+class PasswordResetVerifyFirebaseView(generics.GenericAPIView):
+    permission_classes = (AllowAny,)
+    authentication_classes = []
+
+    def post(self, request, *args, **kwargs):
+        id_token = request.data.get('firebase_id_token')
+        if not id_token:
+            return Response(
+                {'error': 'Firebase ID token is required.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        decoded = firebase_service.verify_id_token(id_token)
+        if decoded is None:
+            return Response(
+                {'error': 'Invalid or expired Firebase token.'},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        phone_e164 = decoded.get('phone_number')
+        if not phone_e164:
+            return Response(
+                {'error': 'No phone number associated with this token.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        phone_e164 = normalize_phone(phone_e164)
+
+        try:
+            user = User.objects.get(phone_number=phone_e164)
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'Phone number not registered.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        token = PasswordResetToken.objects.create(user=user)
+        return Response({'reset_token': str(token.reset_token)}, status=status.HTTP_200_OK)
+
+
 class StaffPasswordResetView(generics.GenericAPIView):
     serializer_class = serializers.StaffPasswordResetSerializer
 
@@ -243,4 +261,24 @@ class StaffPasswordResetView(generics.GenericAPIView):
         return Response(
             {'message': 'Password reset successfully.', 'phone_number': phone_number},
             status=status.HTTP_200_OK
+        )
+
+
+class StaffCreateUserView(generics.GenericAPIView):
+    serializer_class = serializers.StaffCreateUserSerializer
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            return Response(
+                {'error': 'Staff permission required.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        return Response(
+            {'message': 'Staff user created successfully.', 'phone_number': user.phone_number},
+            status=status.HTTP_201_CREATED
         )

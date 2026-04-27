@@ -13,6 +13,7 @@ import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/color.dart';
 import 'package:wellbee/ui_parts/dialogue_awesome.dart';
 import 'package:wellbee/ui_parts/survey_question.dart';
+import 'package:wellbee/ui_parts/text_scale.dart';
 
 class SurveyPage extends StatefulWidget {
   late Map<dynamic, dynamic> attendeeList;
@@ -110,6 +111,7 @@ class _SurveyPageState extends State<SurveyPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: (context, child) => TextScaleFactor(child: child!),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Container(

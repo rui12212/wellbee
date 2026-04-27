@@ -1,154 +1,142 @@
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
-import 'package:wellbee/assets/inet.dart';
-import 'package:wellbee/screens/attendee/attendee_add.dart';
-import 'package:wellbee/screens/staff/qr_after_attendee/health_interview.dart';
-import 'package:wellbee/ui_function/shared_prefs.dart';
-import 'package:http/http.dart' as http;
-import 'package:wellbee/ui_parts/color.dart';
-import 'package:wellbee/ui_parts/display.dart';
-import 'package:wellbee/screens/attendee/attendee_update.dart';
 
-class _Header extends StatelessWidget {
-  String title;
-  String subtitle;
-  Map<String, dynamic> attendeeList;
-
-  _Header(
-      {required this.title,
-      required this.subtitle,
-      required this.attendeeList});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 100.h,
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Row(
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(fontSize: 30.w, fontWeight: FontWeight.bold),
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shape: const CircleBorder(
-                          side: BorderSide(
-                              color: Color.fromARGB(255, 216, 214, 214),
-                              width: 5))),
-                  child: const Icon(Icons.chevron_left,
-                      color: Color.fromARGB(255, 155, 152, 152)),
-                  onPressed: () {
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-                      builder: (context) {
-                        return HealthInterviewPage(attendeeList: attendeeList);
-                      },
-                    ), ((route) => false));
-                  },
-                )
-              ],
-            ),
-          ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              subtitle,
-              style: TextStyle(
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.w300,
-                  color: kColorTextDarkGrey),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class InterviewDetailPage extends StatefulWidget {
-  Map<String, dynamic> interviewList;
-  Map<String, dynamic> attendeeList;
-  InterviewDetailPage(
+class InterviewDetailPage extends StatelessWidget {
+  final Map<String, dynamic> interviewList;
+  final Map<String, dynamic> attendeeList;
+  const InterviewDetailPage(
       {Key? key, required this.interviewList, required this.attendeeList})
       : super(key: key);
 
   @override
-  _InterviewDetailPageState createState() => _InterviewDetailPageState();
-}
-
-class _InterviewDetailPageState extends State<InterviewDetailPage> {
-  String? token = '';
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  showSnackBar(color, text) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(backgroundColor: color, content: Text(text)),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7F8FA),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      width: 40.w,
+                      height: 40.w,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(Icons.chevron_left,
+                          color: Colors.grey.shade600, size: 22.sp),
+                    ),
+                  ),
+                  SizedBox(width: 14.w),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Interview Detail',
+                          style: TextStyle(
+                              fontSize: 12.sp, color: Colors.grey.shade500)),
+                      Text(
+                        interviewList['attendee_name'] ?? '',
+                        style: TextStyle(
+                            fontSize: 22.sp, fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 24.h),
+              _sectionCard(
+                icon: Icons.sentiment_satisfied_alt_outlined,
+                iconColor: const Color(0xFF077CE3),
+                title: 'Emotion',
+                body: interviewList['emotion_state'] ?? '',
+              ),
+              SizedBox(height: 12.h),
+              _sectionCard(
+                icon: Icons.directions_run_outlined,
+                iconColor: const Color(0xFF039674),
+                title: 'Physical',
+                body: interviewList['physical_state'] ?? '',
+              ),
+              SizedBox(height: 12.h),
+              _sectionCard(
+                icon: Icons.comment_outlined,
+                iconColor: const Color(0xFFD4A017),
+                title: 'Comment',
+                body: (interviewList['any_comment'] == null ||
+                        interviewList['any_comment'] == '')
+                    ? 'No comment'
+                    : interviewList['any_comment'],
+              ),
+              SizedBox(height: 24.h),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _Header(
-                    title: '${widget.interviewList['attendee_name']}',
-                    subtitle: 'Interview of Member',
-                    attendeeList: widget.attendeeList),
-                Container(
-                    padding: EdgeInsets.all(15),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 20.h),
-                        Text('Emotion',
-                            style: TextStyle(
-                                fontSize: 28.sp, fontWeight: FontWeight.bold)),
-                        Text(widget.interviewList['emotion_state'],
-                            style: TextStyle(fontSize: 20.sp)),
-                        SizedBox(height: 30.h),
-                        Text('Physic',
-                            style: TextStyle(
-                                fontSize: 28.sp, fontWeight: FontWeight.bold)),
-                        Text(widget.interviewList['physical_state'],
-                            style: TextStyle(fontSize: 20.sp)),
-                        SizedBox(height: 30.h),
-                        Text('Comment',
-                            style: TextStyle(
-                                fontSize: 28.sp, fontWeight: FontWeight.bold)),
-                        Text(
-                            widget.interviewList['any_comment'] == null
-                                ? 'No comment'
-                                : widget.interviewList['any_comment'],
-                            style: TextStyle(fontSize: 20.sp)),
-                        SizedBox(height: 30.h),
-                      ],
-                    ))
-              ],
-            ),
+  Widget _sectionCard({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String body,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-        ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32.w,
+                height: 32.w,
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: iconColor, size: 16.sp),
+              ),
+              SizedBox(width: 10.w),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey.shade700)),
+            ],
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            body,
+            style: TextStyle(
+                fontSize: 15.sp, color: Colors.grey.shade700, height: 1.5),
+          ),
+        ],
       ),
     );
   }

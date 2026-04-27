@@ -5,14 +5,23 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # 環境変数
 .env
 .env.prod
+
+# Firebase
+wellbee/firebase_service_account.json
+lib/firebase_options.dart
+
+# Android ローカル環境設定
+android/gradle.properties
 
 # androidのkey(今後バージョン更新に必要)
 /android/app/key.jks

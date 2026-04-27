@@ -407,7 +407,7 @@ class _StaffRadarChartPageState extends State<StaffRadarChartPage> {
         values: [categoryValues[0]],
       ),
       RawDataSet(
-        title: 'Sleep : The quality of the sleep: $sleepScore',
+        title: 'Sleep : Sleep Quality: $sleepScore',
         color: Colors.pink,
         values: [categoryValues[1]],
       ),

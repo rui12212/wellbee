@@ -70,9 +70,10 @@ class CustomTextBox<Widget> {
     );
   }
 
-  phoneFieldDecoration() {
+  phoneFieldDecoration({Function(String)? onPhoneChanged}) {
     return IntlPhoneField(
       controller: controller,
+      disableLengthCheck: true,
       decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: ThemeColors.letterColor),
@@ -88,7 +89,15 @@ class CustomTextBox<Widget> {
           )),
       initialCountryCode: 'IQ',
       onChanged: (phone) {
-        // print(phone.completeNumber);
+        if (onPhoneChanged != null) {
+          final complete = phone.completeNumber;
+          final cc = phone.countryCode;
+          final national = complete.substring(cc.length);
+          final normalized = national.startsWith('0')
+              ? '$cc${national.substring(1)}'
+              : complete;
+          onPhoneChanged(normalized);
+        }
       },
     );
   }
@@ -142,9 +151,10 @@ class LeftCustomTextBox<Widget> {
     );
   }
 
-  phoneFieldDecoration() {
+  phoneFieldDecoration({Function(String)? onPhoneChanged}) {
     return IntlPhoneField(
       controller: controller,
+      disableLengthCheck: true,
       decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: ThemeColors.letterColor),
@@ -160,7 +170,15 @@ class LeftCustomTextBox<Widget> {
           )),
       initialCountryCode: 'IQ',
       onChanged: (phone) {
-        // print(phone.completeNumber);
+        if (onPhoneChanged != null) {
+          final complete = phone.completeNumber;
+          final cc = phone.countryCode;
+          final national = complete.substring(cc.length);
+          final normalized = national.startsWith('0')
+              ? '$cc${national.substring(1)}'
+              : complete;
+          onPhoneChanged(normalized);
+        }
       },
     );
   }
@@ -221,9 +239,10 @@ class LongCustomTextBox<Widget> {
     );
   }
 
-  phoneFieldDecoration() {
+  phoneFieldDecoration({Function(String)? onPhoneChanged}) {
     return IntlPhoneField(
       controller: controller,
+      disableLengthCheck: true,
       decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: ThemeColors.letterColor),
@@ -239,7 +258,15 @@ class LongCustomTextBox<Widget> {
           )),
       initialCountryCode: 'IQ',
       onChanged: (phone) {
-        // print(phone.completeNumber);
+        if (onPhoneChanged != null) {
+          final complete = phone.completeNumber;
+          final cc = phone.countryCode;
+          final national = complete.substring(cc.length);
+          final normalized = national.startsWith('0')
+              ? '$cc${national.substring(1)}'
+              : complete;
+          onPhoneChanged(normalized);
+        }
       },
     );
   }

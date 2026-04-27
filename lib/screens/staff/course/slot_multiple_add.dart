@@ -79,6 +79,17 @@ class _AddSlotPageState extends ConsumerState<AddSlotPage> {
             padding: const EdgeInsets.all(10), child: Text('$numPeople ppl')));
   });
 
+  List<DropdownMenuItem<String>> get startTimeItems => List.generate(13, (i) {
+        final label = '${(11 + i).toString().padLeft(2, '0')}:00';
+        return DropdownMenuItem(value: label, child: Text(label));
+      });
+
+  List<DropdownMenuItem<String>> get endTimeItems => List.generate(13, (i) {
+        final hour = 12 + i;
+        final label = hour == 24 ? '24:00' : '${hour.toString().padLeft(2, '0')}:00';
+        return DropdownMenuItem(value: label, child: Text(label));
+      });
+
   @override
   void initState() {
     super.initState();
@@ -88,61 +99,69 @@ class _AddSlotPageState extends ConsumerState<AddSlotPage> {
     });
   }
 
+  Future<void> _createSlot() async {
+    final startTime = ref.read(startTimeProvider);
+    final endTime = ref.read(endTimeProvider);
+    final maxPeople = ref.read(maxCapacityProvider);
+    final riverSlotList = ref.read(slotListProvider);
+
+    try {
+      final token = await SharedPrefs.fetchStaffAccessToken();
+      final url = Uri.parse('${baseUri}reservations/slot/?token=$token');
+      final headers = {
+        "Authorization": "JWT $token",
+        "Content-Type": "application/json",
+      };
+
+      final futures = riverSlotList.map((dateTime) {
+        final date = DateFormat('yyyy-MM-dd').format(dateTime);
+        return Future.any([
+          http.post(
+            url,
+            headers: headers,
+            body: jsonEncode({
+              "course": widget.courseList['course_name'],
+              "date": date,
+              "start_time": startTime,
+              "end_time": endTime == '24:00' ? '00:00' : endTime,
+              'max_people': maxPeople,
+            }),
+          ),
+          Future.delayed(const Duration(seconds: 15),
+              () => throw TimeoutException('Request timeout')),
+        ]);
+      });
+
+      final responses = await Future.wait(futures);
+
+      if (!mounted) return;
+      final failed = responses.where((r) => r.statusCode != 201).toList();
+      if (failed.isNotEmpty) {
+        showSnackBar(Colors.red,
+            '${failed.length} slot(s) failed. Error: ${failed.first.body}');
+        return;
+      }
+
+      showSnackBar(kColorPrimary,
+          '${responses.length} slot(s) created successfully.');
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (context) =>
+                MonthlySlotPage(courseList: widget.courseList)),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showSnackBar(Colors.red, '$e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final startTime = ref.watch(startTimeProvider);
     final endTime = ref.watch(endTimeProvider);
     final riverSlotList = ref.watch(slotListProvider);
     final maxPeople = ref.watch(maxCapacityProvider);
-
-    Future<void> _createSlot() async {
-      try {
-        final token = await SharedPrefs.fetchStaffAccessToken();
-        final List<String> formattedSlotList = [];
-        riverSlotList.forEach((dateTime) {
-          final String formattedDate =
-              DateFormat('yyyy-MM-dd').format(dateTime);
-          formattedSlotList.add(formattedDate);
-        });
-        var url = Uri.parse('${baseUri}reservations/slot/?token=$token');
-
-        for (int i = 0; i < formattedSlotList.length; i++) {
-          var response = await Future.any([
-            http.post(
-              url,
-              headers: {
-                "Authorization": "JWT $token",
-                "Content-Type": "application/json"
-              },
-              body: jsonEncode({
-                "course": widget.courseList['course_name'],
-                "date": formattedSlotList[i],
-                "start_time": startTime,
-                "end_time": endTime,
-                'max_people': maxPeople,
-              }),
-            ),
-            Future.delayed(const Duration(seconds: 15),
-                () => throw TimeoutException('Request timeout'))
-          ]);
-          if (response.statusCode == 201) {
-            showSnackBar(kColorPrimary, 'Slot created successfully.');
-
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-              builder: (context) {
-                return MonthlySlotPage(courseList: widget.courseList);
-              },
-            ), ((route) => false));
-          } else if (response.statusCode >= 400) {
-            showSnackBar(Colors.red, 'Error: ${response.body}');
-          } else {
-            showSnackBar(Colors.red, 'Something went wrong. Try again later');
-          }
-        }
-      } catch (e) {
-        showSnackBar(Colors.red, '$e');
-      }
-    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -232,48 +251,7 @@ class _AddSlotPageState extends ConsumerState<AddSlotPage> {
                               isExpanded: true,
                               style: TextStyle(
                                   fontSize: 22.sp, color: Colors.black),
-                              items: const [
-                                DropdownMenuItem(
-                                  value: '11:00',
-                                  child: Text('11:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '12:00',
-                                  child: Text('12:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '13:00',
-                                  child: Text('13:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '14:00',
-                                  child: Text('14:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '15:00',
-                                  child: Text('15:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '16:00',
-                                  child: Text('16:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '17:00',
-                                  child: Text('17:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '18:00',
-                                  child: Text('18:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '19:00',
-                                  child: Text('19:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '20:00',
-                                  child: Text('20:00'),
-                                ),
-                              ],
+                              items: startTimeItems,
                               value: startTime,
                               onChanged: (value) {
                                 if (value != null) {
@@ -305,48 +283,7 @@ class _AddSlotPageState extends ConsumerState<AddSlotPage> {
                               isExpanded: true,
                               style: TextStyle(
                                   fontSize: 22.sp, color: Colors.black),
-                              items: const [
-                                DropdownMenuItem(
-                                  value: '11:00',
-                                  child: Text('11:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '12:00',
-                                  child: Text('12:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '13:00',
-                                  child: Text('13:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '14:00',
-                                  child: Text('14:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '15:00',
-                                  child: Text('15:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '16:00',
-                                  child: Text('16:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '17:00',
-                                  child: Text('17:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '18:00',
-                                  child: Text('18:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '19:00',
-                                  child: Text('19:00'),
-                                ),
-                                DropdownMenuItem(
-                                  value: '20:00',
-                                  child: Text('20:00'),
-                                ),
-                              ],
+                              items: endTimeItems,
                               value: endTime,
                               onChanged: (value) {
                                 if (value != null) {

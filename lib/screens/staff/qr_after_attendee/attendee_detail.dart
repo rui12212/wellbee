@@ -1,85 +1,11 @@
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
-import 'package:wellbee/assets/inet.dart';
-import 'package:wellbee/screens/attendee/attendee_add.dart';
-import 'package:wellbee/screens/staff/qr_after_attendee/attendee_all.dart';
 import 'package:wellbee/screens/staff/qr_after_attendee/health_interview.dart';
-import 'package:wellbee/screens/staff/qr_after_attendee/interview_detail.dart';
-import 'package:wellbee/ui_function/shared_prefs.dart';
-import 'package:http/http.dart' as http;
 import 'package:wellbee/ui_parts/color.dart';
-import 'package:wellbee/ui_parts/display.dart';
-import 'package:wellbee/screens/attendee/attendee_update.dart';
-
-class _Header extends StatelessWidget {
-  String title;
-  String subtitle;
-  String userId;
-
-  _Header({required this.title, required this.subtitle, required this.userId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 90.h,
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Row(
-              children: [
-                Text(
-                  title,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 30.w, fontWeight: FontWeight.bold),
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shape: const CircleBorder(
-                          side: BorderSide(
-                              color: Color.fromARGB(255, 216, 214, 214),
-                              width: 5))),
-                  child: const Icon(Icons.chevron_left,
-                      color: Color.fromARGB(255, 155, 152, 152)),
-                  onPressed: () {
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-                      builder: (context) {
-                        return StaffAttendeeAllPage(userId: userId);
-                      },
-                    ), ((route) => false));
-                  },
-                )
-              ],
-            ),
-          ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              subtitle,
-              style: TextStyle(
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.w300,
-                  color: kColorTextDarkGrey),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
 
 class StaffAttendeeDetailPage extends StatefulWidget {
-  Map<String, dynamic> attendeeList;
-  StaffAttendeeDetailPage({Key? key, required this.attendeeList})
+  final Map<String, dynamic> attendeeList;
+  const StaffAttendeeDetailPage({Key? key, required this.attendeeList})
       : super(key: key);
 
   @override
@@ -88,114 +14,162 @@ class StaffAttendeeDetailPage extends StatefulWidget {
 }
 
 class _StaffAttendeeDetailPageState extends State<StaffAttendeeDetailPage> {
-  String? token = '';
-
-  // Future<List<dynamic>?> _fetchAttendee() async {
-  //   try {
-  //     token = await SharedPrefs.fetchAccessToken();
-  //     var url = Uri.parse('${baseUri}attendances/attendee/staff_attendee/');
-  //     var response = await Future.any([
-  //       http.get(url, headers: {"Authorization": 'JWT $token'}),
-  //       Future.delayed(const Duration(seconds: 15),
-  //           () => throw TimeoutException("Request timeout"))
-  //     ]);
-  //     if (response.statusCode == 200) {
-  //       List<dynamic> data = jsonDecode(response.body);
-  //       if (data.isNotEmpty) {
-  //         return data;
-  //       }
-  //     } else if (response.statusCode >= 400) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text('Internet Error occurred.')));
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //           content: Text('Something went wrong. Try again later')));
-  //     }
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text('Error: $e')));
-  //   }
-  // }
-
   @override
-  void initState() {
-    super.initState();
-    print(widget.attendeeList);
-  }
-
-  @override
-  showSnackBar(color, text) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(backgroundColor: color, content: Text(text)),
+  Widget build(BuildContext context) {
+    final a = widget.attendeeList;
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7F8FA),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      width: 40.w,
+                      height: 40.w,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(Icons.chevron_left,
+                          color: Colors.grey.shade600, size: 22.sp),
+                    ),
+                  ),
+                  SizedBox(width: 14.w),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Member Detail',
+                          style: TextStyle(
+                              fontSize: 12.sp, color: Colors.grey.shade500)),
+                      Text(
+                        a['name'] ?? '',
+                        style: TextStyle(
+                            fontSize: 22.sp, fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 24.h),
+              _sectionCard(
+                icon: Icons.flag_outlined,
+                iconColor: kColorPrimary,
+                title: 'Goal',
+                body: (a['goal'] == null || a['goal'] == '')
+                    ? 'No comment'
+                    : a['goal'],
+              ),
+              SizedBox(height: 12.h),
+              _sectionCard(
+                icon: Icons.lightbulb_outline,
+                iconColor: const Color(0xFFD4A017),
+                title: 'Reason',
+                body: (a['reason'] == null || a['reason'] == '')
+                    ? 'No comment'
+                    : a['reason'],
+              ),
+              SizedBox(height: 12.h),
+              _sectionCard(
+                icon: Icons.comment_outlined,
+                iconColor: const Color(0xFF039674),
+                title: 'Comment',
+                body: (a['any_comment'] == null || a['any_comment'] == '')
+                    ? 'No comment'
+                    : a['any_comment'],
+              ),
+              SizedBox(height: 32.h),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) =>
+                            HealthInterviewPage(attendeeList: a)));
+                  },
+                  icon: Icon(Icons.health_and_safety_outlined, size: 20.sp),
+                  label: Text('Health Interview',
+                      style: TextStyle(
+                          fontSize: 16.sp, fontWeight: FontWeight.w600)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kColorPrimary,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14.r)),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+              SizedBox(height: 24.h),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _Header(
-                  title: 'Goal of Member',
-                  subtitle: 'Goal & Reason of joining',
-                  userId: widget.attendeeList['user'],
-                ),
-                Container(
-                    padding: EdgeInsets.all(15),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 20.h),
-                        Text('Goal',
-                            style: TextStyle(
-                                fontSize: 28.sp, fontWeight: FontWeight.bold)),
-                        Text(
-                            widget.attendeeList['goal'] == null ||
-                                    widget.attendeeList['goal'] == ''
-                                ? 'No comment'
-                                : widget.attendeeList['goal'],
-                            style: TextStyle(fontSize: 20.sp)),
-                        SizedBox(height: 30.h),
-                        Text('Reason',
-                            style: TextStyle(
-                                fontSize: 28.sp, fontWeight: FontWeight.bold)),
-                        Text(
-                            widget.attendeeList['reason'] == null ||
-                                    widget.attendeeList['reason'] == ''
-                                ? 'No comment'
-                                : widget.attendeeList['any_comment'],
-                            style: TextStyle(fontSize: 20.sp)),
-                        SizedBox(height: 30.h),
-                        Text('Comment',
-                            style: TextStyle(
-                                fontSize: 28.sp, fontWeight: FontWeight.bold)),
-                        Text(
-                            widget.attendeeList['any_comment'] == null ||
-                                    widget.attendeeList['any_comment'] == ''
-                                ? 'No comment'
-                                : widget.attendeeList['any_comment'],
-                            style: TextStyle(fontSize: 20.sp)),
-                        SizedBox(height: 30.h),
-                        ElevatedButton(
-                            child: Text('Health Interview',
-                                style: TextStyle(
-                                    color: kColorPrimary, fontSize: 20.sp)),
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => HealthInterviewPage(
-                                      attendeeList: widget.attendeeList)));
-                            }),
-                        SizedBox(height: 30.h),
-                      ],
-                    ))
-              ],
-            ),
+  Widget _sectionCard({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String body,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-        ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32.w,
+                height: 32.w,
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: iconColor, size: 16.sp),
+              ),
+              SizedBox(width: 10.w),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey.shade700)),
+            ],
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            body,
+            style:
+                TextStyle(fontSize: 15.sp, color: Colors.grey.shade700, height: 1.5),
+          ),
+        ],
       ),
     );
   }

@@ -130,6 +130,25 @@ class _QrReservationPageState extends State<QrReservationPage> {
     }
   }
 
+  Future<List<dynamic>?> _fetchAndCleanReservations() async {
+    final data = await _fetchReservation();
+    if (data == null || data.isEmpty) return data;
+
+    final dateOfToday = DateTime.parse(
+        DateFormat('yyyy-MM-dd').format(DateTime.now()));
+
+    final toDelete = data.where((e) {
+      final reservationDate = DateTime.parse(e['date']);
+      return reservationDate.isBefore(dateOfToday) && !(e['attended'] as bool);
+    }).toList();
+
+    for (final e in toDelete) {
+      await _deletePastReservation(e['id']);
+    }
+    data.removeWhere((e) => toDelete.contains(e));
+    return data;
+  }
+
   Future<List<dynamic>?> _cancelReservation(int reservationId) async {
     try {
       token = await SharedPrefs.fetchAccessToken();
@@ -175,9 +194,7 @@ class _QrReservationPageState extends State<QrReservationPage> {
             () => throw TimeoutException("Request timeout"))
       ]);
       if (response.statusCode == 204) {
-        // List<dynamic> data = jsonDecode(response.body);
-        showSnackBar(kColorPrimary, 'Past reservation automatically deleted');
-        setState(() {});
+        // 削除成功。呼び出し元の _fetchAndCleanReservations がリストを更新するため setState 不要
       } else if (response.statusCode >= 400) {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Internet Error occurred')));
@@ -229,7 +246,7 @@ class _QrReservationPageState extends State<QrReservationPage> {
                 subtitle: 'Tap to show QR code / Swipe left to cancel',
               ),
               FutureBuilder(
-                future: _fetchReservation(),
+                future: _fetchAndCleanReservations(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -275,33 +292,13 @@ class _QrReservationPageState extends State<QrReservationPage> {
                     );
                   } else {
                     final fetchedReservationList = snapshot.data!;
-                    final today = DateTime.now();
-                    final String formattedDate =
-                        DateFormat('yyyy-MM-dd').format(today);
-                    final dateOfToday = DateTime.parse(formattedDate);
-                    // final deleteList = [];
-                    fetchedReservationList.forEach(
-                      (e) async {
-                        final DateTime reservationDate =
-                            DateTime.parse(e['date']);
-                        final bool isAttended = e['attended'];
-                        final bool is_cancelled = e['slot_is_cancelled'];
-                        // print(dateOfToday);
-                        // print(e['date']);
-                        // 過去の予約で、参加していないものは消す
-                        if ((reservationDate.isBefore(dateOfToday) &&
-                                isAttended == false) ||
-                            // 過去の予約で、Slotがキャンセルされたものを削除する
-                            (reservationDate.isBefore(dateOfToday) &&
-                                is_cancelled == true &&
-                                isAttended == false)) {
-                          // deleteList.add(e['id']);
-                          await _deletePastReservation(e['id']);
-                        } else {
-                          return;
-                        }
-                      },
-                    );
+                    fetchedReservationList.sort((a, b) {
+                      final aDate = DateTime.parse(
+                          '${a['slot_date']} ${a['slot_end_time']}');
+                      final bDate = DateTime.parse(
+                          '${b['slot_date']} ${b['slot_end_time']}');
+                      return aDate.compareTo(bDate);
+                    });
                     return Expanded(
                       child: ListView.builder(
                           itemCount: fetchedReservationList.length,
@@ -323,8 +320,7 @@ class _QrReservationPageState extends State<QrReservationPage> {
                             // setState(() {});
                             return Column(
                               children: [
-                                isAttended == true && is_before
-                                    // is_cancelled == false
+                                isAttended == true
                                     ? Opacity(
                                         opacity: 0.4,
                                         child: PastReservationTicketList(

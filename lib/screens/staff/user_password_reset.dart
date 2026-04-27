@@ -21,6 +21,7 @@ class _UserPasswordResetPageState extends State<UserPasswordResetPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  String _fullPhoneNumber = '';
   bool _isLoading = false;
   String? _token;
 
@@ -43,7 +44,7 @@ class _UserPasswordResetPageState extends State<UserPasswordResetPage> {
   }
 
   Future<void> _resetPassword() async {
-    final phoneNumber = _phoneController.text.trim();
+    final phoneNumber = _fullPhoneNumber;
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
@@ -73,7 +74,8 @@ class _UserPasswordResetPageState extends State<UserPasswordResetPage> {
     await DialogGenerator.showLoadingDialog(context: context);
 
     try {
-      final url = Uri.parse('${baseUri}accounts/staff/password-reset/');
+      final url = Uri.parse(
+          '${baseUri}accounts/staff/password-reset/?token=$_token');
       final response = await Future.any([
         http.post(
           url,
@@ -156,12 +158,12 @@ class _UserPasswordResetPageState extends State<UserPasswordResetPage> {
                           TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
                     ),
                     SizedBox(height: 32.h),
-                    PasswordCustomTextBox(
+                    CustomTextBox(
                       label: 'Phone Number',
-                      hintText: '07501234567',
+                      hintText: '7501234567',
                       controller: _phoneController,
-                      isPassword: false,
-                      inputType: TextInputType.phone,
+                    ).phoneFieldDecoration(
+                      onPhoneChanged: (number) => _fullPhoneNumber = number,
                     ),
                     SizedBox(height: 16.h),
                     PasswordCustomTextBox(

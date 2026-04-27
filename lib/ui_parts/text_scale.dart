@@ -1,42 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+/// アプリ全体で OS の文字サイズ拡大設定を無効化するラッパー。
+///
+/// `MaterialApp.builder` で全画面をラップして使う。`textScaler` を
+/// 1.0 までにクランプすることで、ユーザーの OS 設定（Android Font size /
+/// iOS Dynamic Type）でテキストが拡大してもレイアウトが崩れないようにする。
+///
+/// Flutter 3.16+ で deprecated になった `textScaleFactor` ではなく、
+/// 新しい `TextScaler` API を使用している。
 class TextScaleFactor extends StatelessWidget {
-  TextScaleFactor({
+  const TextScaleFactor({
     super.key,
     required this.child,
   });
+
   final Widget child;
-  // 上限値
-  static const _maxTextScaleFactor = 1.0;
-  static const _midTextScaleFactor = 1.0;
-  static const _minTextScaleFactor = 1.0;
-  // 端末サイズ(横幅)
-  static final _minDeviceSizeWidth = 350.0;
-  static final _maxDeviceSizeWidth = 400.0;
+
+  /// 許容する最大スケール。1.0 = 拡大不可。
+  static const double _maxScale = 1.0;
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final screenWidthSize = MediaQuery.of(context).size.width;
-    // print(mediaQuery);
-    // 倍率の上限値
-    double upperTextScaleFactor;
-    // 400px以上の端末
-    if (screenWidthSize >= _maxDeviceSizeWidth) {
-      upperTextScaleFactor = _maxTextScaleFactor;
-      // 380以上400px未満の端末
-    } else if (screenWidthSize >= _minDeviceSizeWidth) {
-      upperTextScaleFactor = _midTextScaleFactor;
-      // 380px未満の端末
-    } else {
-      upperTextScaleFactor = _minTextScaleFactor;
-    }
-    final textScaleFactor =
-        mediaQuery.textScaleFactor.clamp(0.0, upperTextScaleFactor);
     return MediaQuery(
       data: mediaQuery.copyWith(
-        textScaleFactor: textScaleFactor,
+        textScaler: mediaQuery.textScaler.clamp(
+          maxScaleFactor: _maxScale,
+        ),
       ),
       child: child,
     );

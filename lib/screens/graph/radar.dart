@@ -428,7 +428,7 @@ class _RadarChartPageState extends State<RadarChartPage> {
         values: [categoryValues[0]],
       ),
       RawDataSet(
-        title: 'Sleep : The quality of the sleep: $sleepScore',
+        title: 'Sleep : Sleep Quality: $sleepScore',
         color: Colors.pink,
         values: [categoryValues[1]],
       ),

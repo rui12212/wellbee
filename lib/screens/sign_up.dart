@@ -79,8 +79,8 @@ class _SignUpFormState extends State<_SignUpForm> {
   final TextEditingController _rephoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repasswordController = TextEditingController();
-  // final TextEditingController _otpController = TextEditingController();
-  // String _verificationId = '';
+  String _fullPhoneNumber = '';
+  String _fullRephoneNumber = '';
   bool _isLoading = false;
 
   @override
@@ -93,10 +93,10 @@ class _SignUpFormState extends State<_SignUpForm> {
 
   Future<void> _registerUser() async {
     if (_passwordController.text == _repasswordController.text &&
-        _phoneController.text == _rephoneController.text) {
+        _fullPhoneNumber == _fullRephoneNumber) {
       try {
-        if (_phoneController.text.isEmpty ||
-            _rephoneController.text.isEmpty ||
+        if (_fullPhoneNumber.isEmpty ||
+            _fullRephoneNumber.isEmpty ||
             _passwordController.text.isEmpty ||
             _repasswordController.text.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -113,7 +113,7 @@ class _SignUpFormState extends State<_SignUpForm> {
         // アカウントの作成
         var url = Uri.parse('${baseUri}accounts/create/');
         var response = await http.post(url, body: {
-          'phone_number': _phoneController.text,
+          'phone_number': _fullPhoneNumber,
           'password': _passwordController.text,
         });
 
@@ -121,7 +121,7 @@ class _SignUpFormState extends State<_SignUpForm> {
           // 作成成功したら、Token作成
           var url = Uri.parse('${baseUri}authen/jwt/create/');
           var response = await http.post(url, body: {
-            'phone_number': _phoneController.text,
+            'phone_number': _fullPhoneNumber,
             'password': _passwordController.text,
           });
           // 作成したTokenを取得し、SharedPrefsに保存
@@ -195,7 +195,9 @@ class _SignUpFormState extends State<_SignUpForm> {
               label: 'Phone number',
               hintText: 'Your phone number',
               controller: _phoneController,
-            ).phoneFieldDecoration()),
+            ).phoneFieldDecoration(
+              onPhoneChanged: (number) => _fullPhoneNumber = number,
+            )),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -204,7 +206,9 @@ class _SignUpFormState extends State<_SignUpForm> {
               label: 'Confirm Phone number',
               hintText: 'Re-confirm Your phone number',
               controller: _rephoneController,
-            ).phoneFieldDecoration()),
+            ).phoneFieldDecoration(
+              onPhoneChanged: (number) => _fullRephoneNumber = number,
+            )),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0).w,

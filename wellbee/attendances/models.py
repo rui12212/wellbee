@@ -82,12 +82,9 @@ class Membership(models.Model):
         (0.4, '60% OFF'),
     )
 
-    OFFER=(
-        (0,'No offer'),
-        (48,'1 month free(3 months)'),
-        (42,'1 month free(6 months)'),
-        (30,'1 month free(12 months)'),
-        (45,'1 month free(Kids 3 months)'),
+    CURRENCY=(
+        ('USD', 'USD'),
+        ('IQD', 'IQD'),
     )
 
     user = models.ForeignKey(User, verbose_name='user',on_delete=models.SET_NULL, null=True)
@@ -98,8 +95,8 @@ class Membership(models.Model):
     # modify to default setting
     num_person = models.IntegerField(verbose_name='num_person', default=1, blank=False, null=False)
     duration=models.IntegerField(verbose_name="duration", choices=DURATION,blank= False, null=False,)
-    offer = models.IntegerField(verbose_name="offer", choices=OFFER, blank=True, null=True,default=0)
-    minus=models.IntegerField(verbose_name="minus",default=0,blank= False, null=False)  
+    currency = models.CharField(verbose_name="currency", max_length=3, choices=CURRENCY, default='USD', blank=False, null=False)
+    minus=models.IntegerField(verbose_name="minus",default=0,blank= False, null=False)
     is_approved=models.BooleanField(verbose_name='is_approved', default=True)
     total_price =models.IntegerField(verbose_name='total_price',blank= False, null=False)
     discount_rate=models.FloatField(verbose_name="discount_rate", choices=DISCOUNT_RATE,blank= False, null=False)
@@ -128,7 +125,7 @@ def set_discounted_total_price(sender, instance, **kwargs):
         # 新規作成時のみ計算（pkがない = 新規作成）
         if instance.pk is None:
             # ポイント使用前金額計算＝オリジナルの合計金額からディスカウントをする
-            instance.discounted_total_price = ((instance.total_price - (instance.minus + instance.offer))) * instance.discount_rate
+            instance.discounted_total_price = (instance.total_price - instance.minus) * instance.discount_rate
 
 
 @receiver(pre_save, sender=Membership)

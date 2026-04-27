@@ -1,65 +1,53 @@
-# # <For ECRへimage push>
-# version: '3.9'
-# services:
-#  app:
-#    container_name: "wellbee-docker"
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    image: 779846817718.dkr.ecr.me-south-1.amazonaws.com/ecr-wellbee-studio:latest
-#    working_dir: /wellbee
-#    expose:
-#       - "8000"
-#    volumes:
-#      - .:/wellbee
-#   #  command: sh -c "chmod +x /wellbee/entrypoint.sh && /wellbee/entrypoint.sh"
-#    command: sh -c "chmod +x /wellbee/entrypoint.prod.sh && /wellbee/entrypoint.prod.sh"
-#    env_file:
-#       # - .env
-#       - .env.prod
-#  web:
-#    container_name: web
-#    build: 
-#      context: .
-#      dockerfile: nginx/Dockerfile
-#    volumes:
-#       - ./static:/static
-#    # ローカルの80番ボートをコンテナの80番ポートとつなぐ
-#    ports:
-#       - "80:80"
-#    # 先にappを起動してからwebを起動する
-#    depends_on:
-#       - app
-
-
-# <ECRへimage push前>
 version: '3.9'
+
+# Instance 1（アプリサーバー）用
+# DBはInstance 2で docker-compose.db.yml を使って起動する
+# .env.prod の DATABASE_HOST に Instance 2 のプライベートIPを設定すること
+
 services:
- app:
-   container_name: "wellbee-docker"
-   build:
-     context: .
-     dockerfile: Dockerfile
-   working_dir: /wellbee
-   expose:
+  app-prod:
+    container_name: app-prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
       - "8000"
-   volumes:
-     - .:/wellbee
-   command: sh -c "chmod +x /wellbee/entrypoint.sh && /wellbee/entrypoint.sh"
-   env_file:
-      # - .env
+    volumes:
+      - static:/wellbee/static
+    env_file:
       - .env.prod
- web:
-   container_name: web
-   build: 
-     context: .
-     dockerfile: nginx/Dockerfile
-   volumes:
-      - ./static:/static
-   # ローカルの80番ボートをコンテナの80番ポートとつなぐ
-   ports:
+    restart: always
+
+  # 審査提出時のみ起動する（通常は停止していてよい）
+  # 起動: docker compose -f docker-compose.prod.yml --profile review up -d app-review
+  app-review:
+    container_name: app-review
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "8000"
+    volumes:
+      - static:/wellbee/static
+    env_file:
+      - .env.prod
+    restart: always
+    profiles:
+      - review
+
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    volumes:
+      - static:/static
+    ports:
       - "80:80"
-   # 先にappを起動してからwebを起動する
-   depends_on:
-      - app
-  
+      - "443:443"
+    depends_on:
+      - app-prod
+    restart: always
+
+volumes:
+  static:

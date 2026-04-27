@@ -1,22 +1,24 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:wellbee/ui_parts/color.dart';
 import '../assets/inet.dart';
-import '../ui_parts/show_dialogue.dart';
 import 'pass_reset_confirm.dart';
 
 class PassResetOtpPage extends StatefulWidget {
   final String phoneNumber;
-  final String countryCode;
+  final String verificationId;
+  final int? resendToken;
 
   const PassResetOtpPage({
     super.key,
     required this.phoneNumber,
-    required this.countryCode,
+    required this.verificationId,
+    this.resendToken,
   });
 
   @override
@@ -28,6 +30,16 @@ class _PassResetOtpPageState extends State<PassResetOtpPage> {
   bool _isLoading = false;
   int _resendCooldown = 0;
   Timer? _timer;
+  late String _verificationId;
+  int? _resendToken;
+
+  @override
+  void initState() {
+    super.initState();
+    _verificationId = widget.verificationId;
+    _resendToken = widget.resendToken;
+    _startCooldown();
+  }
 
   @override
   void dispose() {
@@ -57,47 +69,32 @@ class _PassResetOtpPageState extends State<PassResetOtpPage> {
     if (_resendCooldown > 0) return;
 
     setState(() => _isLoading = true);
-    await DialogGenerator.showLoadingDialog(context: context);
 
-    try {
-      final url = Uri.parse('${baseUri}accounts/password-reset/request/');
-      final response = await Future.any([
-        http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'phone_number': widget.phoneNumber,
-            'country_code': widget.countryCode,
-          }),
-        ),
-        Future.delayed(
-          const Duration(seconds: 15),
-          () => throw TimeoutException('Request timeout'),
-        ),
-      ]);
-
-      if (!mounted) return;
-      Navigator.pop(context);
-
-      if (response.statusCode == 200) {
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: widget.phoneNumber,
+      forceResendingToken: _resendToken,
+      verificationCompleted: (PhoneAuthCredential credential) {},
+      verificationFailed: (FirebaseAuthException e) {
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message ?? 'Failed to resend code.')),
+        );
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        if (!mounted) return;
+        setState(() {
+          _isLoading = false;
+          _verificationId = verificationId;
+          _resendToken = resendToken;
+        });
         _startCooldown();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('OTP resent to your WhatsApp.')),
+          const SnackBar(content: Text('Verification code resent via SMS.')),
         );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to resend OTP. Please try again.')),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
   }
 
   Future<void> _verifyOtp() async {
@@ -110,33 +107,31 @@ class _PassResetOtpPageState extends State<PassResetOtpPage> {
     }
 
     setState(() => _isLoading = true);
-    await DialogGenerator.showLoadingDialog(context: context);
 
     try {
-      final url = Uri.parse('${baseUri}accounts/password-reset/verify-otp/');
-      final response = await Future.any([
-        http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'phone_number': widget.phoneNumber,
-            'country_code': widget.countryCode,
-            'otp_code': otp,
-          }),
-        ),
-        Future.delayed(
-          const Duration(seconds: 15),
-          () => throw TimeoutException('Request timeout'),
-        ),
-      ]);
+      final credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId,
+        smsCode: otp,
+      );
+
+      final userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final idToken = await userCredential.user!.getIdToken();
+
+      final url = Uri.parse('${baseUri}accounts/password-reset/verify-firebase/');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true'},
+        body: jsonEncode({'firebase_id_token': idToken}),
+      );
 
       if (!mounted) return;
-      Navigator.pop(context);
+      debugPrint('Response status: ${response.statusCode}');
+      debugPrint('Response body: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final resetToken = data['reset_token'] as String;
-        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -144,15 +139,20 @@ class _PassResetOtpPageState extends State<PassResetOtpPage> {
           ),
         );
       } else {
-        if (!mounted) return;
         final body = jsonDecode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(body['error'] as String? ?? 'Invalid or expired OTP.')),
+          SnackBar(content: Text(body['error'] as String? ?? 'Failed to verify. Please try again.')),
         );
       }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      debugPrint('FirebaseAuthException code: ${e.code}, message: ${e.message}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${e.code}: ${e.message}')),
+      );
     } catch (e) {
       if (!mounted) return;
-      Navigator.pop(context);
+      debugPrint('Unexpected error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
@@ -190,7 +190,7 @@ class _PassResetOtpPageState extends State<PassResetOtpPage> {
                     ),
                     SizedBox(height: 8.h),
                     Text(
-                      'A 6-digit code was sent to your WhatsApp.',
+                      'A 6-digit code was sent to ${widget.phoneNumber} via SMS.',
                       style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
                     ),
                     SizedBox(height: 32.h),
@@ -220,13 +220,22 @@ class _PassResetOtpPageState extends State<PassResetOtpPage> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _verifyOtp,
-                        child: Text(
-                          'Verify',
-                          style: TextStyle(
-                            color: kColorPrimary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                        child: _isLoading
+                            ? SizedBox(
+                                height: 20.h,
+                                width: 20.w,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: kColorPrimary,
+                                ),
+                              )
+                            : Text(
+                                'Verify',
+                                style: TextStyle(
+                                  color: kColorPrimary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                       ),
                     ),
                     SizedBox(height: 16.h),
@@ -235,8 +244,8 @@ class _PassResetOtpPageState extends State<PassResetOtpPage> {
                         onPressed: _resendCooldown > 0 ? null : _resendOtp,
                         child: Text(
                           _resendCooldown > 0
-                              ? 'Resend OTP (${_resendCooldown}s)'
-                              : 'Resend OTP',
+                              ? 'Resend Code (${_resendCooldown}s)'
+                              : 'Resend Code',
                           style: TextStyle(
                             color: _resendCooldown > 0
                                 ? Colors.grey

@@ -73,17 +73,7 @@ int mobileNumber = 0;
 class _StaffSignInPageState extends State<StaffSignInPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String? token = '';
-
-  Future<void> fetchToken() async {
-    token = await SharedPrefs.fetchAccessToken();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchToken();
-  }
+  String _fullPhoneNumber = '';
 
   @override
   void dispose() {
@@ -103,10 +93,10 @@ class _StaffSignInPageState extends State<StaffSignInPage> {
       // ダイアログを呼び出す
       await DialogGenerator.showLoadingDialog(context: context);
 
-      var url = Uri.parse('${baseUri}accounts/api/staff/token/?token=$token');
+      var url = Uri.parse('${baseUri}accounts/api/staff/token/');
       var response = await Future.any([
         http.post(url, body: {
-          'phone_number': _phoneController.text,
+          'phone_number': _fullPhoneNumber,
           'password': _passwordController.text,
         }),
         Future.delayed(const Duration(seconds: 15),
@@ -179,7 +169,9 @@ class _StaffSignInPageState extends State<StaffSignInPage> {
                   label: 'Mobile Number',
                   hintText: '7501234567',
                   controller: _phoneController,
-                ).phoneFieldDecoration()),
+                ).phoneFieldDecoration(
+                  onPhoneChanged: (number) => _fullPhoneNumber = number,
+                )),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),

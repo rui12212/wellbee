@@ -148,8 +148,8 @@ class SlotViewSet(viewsets.ModelViewSet):
         slot_serializer = serializers.SlotSerializer(slot,many=True)
         return Response(slot_serializer.data)
     
-    def perform_create(self,request):
-        data = self.request.data
+    def create(self, request, *args, **kwargs):
+        data = request.data
 
         fetched_course = data.get('course')
         fetched_date = data.get('date')
@@ -196,8 +196,8 @@ class ReservationViewSet(viewsets.ModelViewSet):
     permission_classes = [ReservationPermission]
 
     # ★ここは何度でも見るべき場所だな。フロントエント側のリクエストデータを参照している
-    def perform_create(self, serializer):
-        data = self.request.data
+    def create(self, request, *args, **kwargs):
+        data = request.data
         membership_id = data.get('membership')
         slot = data.get('slot')
 

@@ -1,12 +1,9 @@
-import 'dart:async';
-import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:http/http.dart' as http;
 import 'package:wellbee/ui_parts/color.dart';
-import '../assets/inet.dart';
-import '../ui_parts/show_dialogue.dart';
 import 'pass_reset_otp.dart';
 
 class PassResetRequestPage extends StatefulWidget {
@@ -18,7 +15,7 @@ class PassResetRequestPage extends StatefulWidget {
 
 class _PassResetRequestPageState extends State<PassResetRequestPage> {
   final TextEditingController _phoneController = TextEditingController();
-  String _countryCode = '+964';
+  String _fullPhoneNumber = '';
   bool _isLoading = false;
 
   @override
@@ -28,8 +25,7 @@ class _PassResetRequestPageState extends State<PassResetRequestPage> {
   }
 
   Future<void> _sendOtp() async {
-    final phoneNumber = _phoneController.text.trim();
-    if (phoneNumber.isEmpty) {
+    if (_fullPhoneNumber.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter your phone number.')),
       );
@@ -37,63 +33,53 @@ class _PassResetRequestPageState extends State<PassResetRequestPage> {
     }
 
     setState(() => _isLoading = true);
-    await DialogGenerator.showLoadingDialog(context: context);
 
-    try {
-      final url = Uri.parse('${baseUri}accounts/password-reset/request/');
-      final response = await Future.any([
-        http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'phone_number': phoneNumber,
-            'country_code': _countryCode,
-          }),
-        ),
-        Future.delayed(
-          const Duration(seconds: 15),
-          () => throw TimeoutException('Request timeout'),
-        ),
-      ]);
+    // APNsトークンを事前取得してFirebaseがPhone Authで使えるようにする
+    await FirebaseMessaging.instance.requestPermission();
+    String? apnsToken;
+    for (int i = 0; i < 5 && apnsToken == null; i++) {
+      apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+      if (apnsToken == null) await Future.delayed(const Duration(seconds: 1));
+    }
+    if (apnsToken == null) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Push notification setup is not complete. Please check your device settings.')),
+        );
+      }
+      return;
+    }
 
-      if (!mounted) return;
-      Navigator.pop(context);
-
-      if (response.statusCode == 200) {
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: _fullPhoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) {
+        // Android auto-verification (not used in this flow)
+      },
+      verificationFailed: (FirebaseAuthException e) {
         if (!mounted) return;
+        debugPrint('verificationFailed code: ${e.code}, message: ${e.message}, details: ${e.toString()}, phone: $_fullPhoneNumber');
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${e.code}: ${e.message}')),
+        );
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        if (!mounted) return;
+        setState(() => _isLoading = false);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => PassResetOtpPage(
-              phoneNumber: phoneNumber,
-              countryCode: _countryCode,
+              phoneNumber: _fullPhoneNumber,
+              verificationId: verificationId,
+              resendToken: resendToken,
             ),
           ),
         );
-      } else if (response.statusCode == 429) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Please wait before requesting another OTP.')),
-        );
-      } else {
-        if (!mounted) return;
-        final body = jsonDecode(response.body);
-        final errorMsg = (body['error'] ?? body['phone_number']?.first) as String? ??
-            'Phone number not found.';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMsg)),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
   }
 
   @override
@@ -125,7 +111,7 @@ class _PassResetRequestPageState extends State<PassResetRequestPage> {
                     ),
                     SizedBox(height: 8.h),
                     Text(
-                      'Enter your phone number to receive\na verification code via WhatsApp.',
+                      'Enter your phone number to receive\na verification code via SMS.',
                       style: TextStyle(
                         fontSize: 14.sp,
                         color: Colors.grey[600],
@@ -151,29 +137,37 @@ class _PassResetRequestPageState extends State<PassResetRequestPage> {
                         ),
                       ),
                       onChanged: (phone) {
-                        _countryCode = '+${phone.countryCode}';
+                        // E.164: completeNumberの国番号直後の先頭0を除去
+                        // phone.countryCode は "+964" のように+付きで返る
+                        final complete = phone.completeNumber; // 例: +96407083280250
+                        final cc = phone.countryCode;          // 例: +964
+                        final national = complete.substring(cc.length); // 例: 07083280250
+                        _fullPhoneNumber = national.startsWith('0')
+                            ? '$cc${national.substring(1)}'  // +9647083280250
+                            : complete;
                       },
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'If you don\'t use WhatsApp, please contact staff.',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Colors.grey[500],
-                      ),
                     ),
                     SizedBox(height: 24.h),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _sendOtp,
-                        child: Text(
-                          'Send OTP',
-                          style: TextStyle(
-                            color: kColorPrimary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                        child: _isLoading
+                            ? SizedBox(
+                                height: 20.h,
+                                width: 20.w,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: kColorPrimary,
+                                ),
+                              )
+                            : Text(
+                                'Send Code',
+                                style: TextStyle(
+                                  color: kColorPrimary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                       ),
                     ),
                   ],

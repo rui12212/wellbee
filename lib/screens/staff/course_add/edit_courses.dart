@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/screens/staff/auth/staff_top_page.dart';
 import 'package:wellbee/screens/staff/course_add/deleted_courses.dart';
@@ -72,6 +74,8 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
   final TextEditingController _courseNameController = TextEditingController();
   bool _newIsOpen = true;
   bool _newIsPrivate = false;
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
 
   String? _token;
   bool _isLoading = false;
@@ -91,6 +95,16 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
 
   Future<void> _ensureToken() async {
     _token ??= await SharedPrefs.fetchStaffAccessToken();
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+    if (picked != null) {
+      setState(() => _selectedImage = File(picked.path));
+    }
   }
 
   Future<void> _loadCourses() async {
@@ -130,29 +144,56 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
     try {
       await _ensureToken();
       final url = Uri.parse('${baseUri}attendances/course/?token=$_token');
-      final response = await Future.any([
-        http.post(
-          url,
-          headers: {
-            'Authorization': 'JWT $_token',
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode({
-            'course_name': name,
-            'is_open': _newIsOpen,
-            'is_private': _newIsPrivate,
-          }),
-        ),
-        Future.delayed(const Duration(seconds: 15),
-            () => throw TimeoutException('Request timeout')),
-      ]);
+      final request = http.MultipartRequest('POST', url)
+        ..headers['Authorization'] = 'JWT $_token'
+        ..fields['course_name'] = name
+        ..fields['is_open'] = _newIsOpen.toString()
+        ..fields['is_private'] = _newIsPrivate.toString();
+      if (_selectedImage != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+              'course_image', _selectedImage!.path),
+        );
+      }
+      final streamed = await request.send().timeout(const Duration(seconds: 15));
+      final response = await http.Response.fromStream(streamed);
       if (response.statusCode == 201) {
         _courseNameController.clear();
+        setState(() => _selectedImage = null);
         _showSnackBar(Colors.green, 'Course added successfully');
         _loadCourses();
       } else {
         _showSnackBar(
             Colors.red, 'Failed to add course (${response.statusCode})');
+      }
+    } catch (e) {
+      _showSnackBar(Colors.red, 'Error: $e');
+    }
+  }
+
+  Future<void> _updateCourseImage(int courseId) async {
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+    if (picked == null) return;
+    try {
+      await _ensureToken();
+      final url =
+          Uri.parse('${baseUri}attendances/course/$courseId/?token=$_token');
+      final request = http.MultipartRequest('PATCH', url)
+        ..headers['Authorization'] = 'JWT $_token'
+        ..files.add(
+          await http.MultipartFile.fromPath('course_image', picked.path),
+        );
+      final streamed = await request.send().timeout(const Duration(seconds: 15));
+      final response = await http.Response.fromStream(streamed);
+      if (response.statusCode == 200) {
+        _showSnackBar(Colors.green, 'Image updated successfully');
+        _loadCourses();
+      } else {
+        _showSnackBar(
+            Colors.red, 'Failed to update image (${response.statusCode})');
       }
     } catch (e) {
       _showSnackBar(Colors.red, 'Error: $e');
@@ -201,15 +242,34 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
         child: Column(
           children: [
             Row(children: [
-              Container(
-                width: 80.w,
-                height: 80.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: const Color(0xFFEFEFEF),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: buildCourseImage(imageUrl, name),
+              Stack(
+                children: [
+                  Container(
+                    width: 80.w,
+                    height: 80.w,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: const Color(0xFFEFEFEF),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: buildCourseImage(imageUrl, name),
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: GestureDetector(
+                      onTap: () => _updateCourseImage(courseId),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Icon(Icons.edit, color: Colors.white, size: 16.sp),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(width: 12.w),
               Expanded(
@@ -226,14 +286,14 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
                         Chip(
                           label: Text(isOpen ? 'Open' : 'Closed'),
                           backgroundColor: isOpen
-                              ? Colors.green.withOpacity(0.15)
-                              : Colors.grey.withOpacity(0.2),
+                              ? Colors.green.withValues(alpha: 0.15)
+                              : Colors.grey.withValues(alpha: 0.2),
                         ),
                         Chip(
                           label: Text(isPrivate ? 'Private' : 'Public'),
                           backgroundColor: isPrivate
-                              ? Colors.orange.withOpacity(0.15)
-                              : Colors.blue.withOpacity(0.15),
+                              ? Colors.orange.withValues(alpha: 0.15)
+                              : Colors.blue.withValues(alpha: 0.15),
                         ),
                       ],
                     ),
@@ -320,6 +380,55 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 12.h),
+            GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                width: double.infinity,
+                height: 120.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFEFEF),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: _selectedImage != null
+                    ? Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.file(_selectedImage!, fit: BoxFit.cover),
+                          Positioned(
+                            right: 8,
+                            top: 8,
+                            child: GestureDetector(
+                              onTap: () =>
+                                  setState(() => _selectedImage = null),
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.black54,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.close,
+                                    color: Colors.white, size: 16),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add_photo_alternate_outlined,
+                              size: 36.sp, color: Colors.grey),
+                          SizedBox(height: 6.h),
+                          Text('Tap to select image (optional)',
+                              style: TextStyle(
+                                  color: Colors.grey, fontSize: 14.sp)),
+                        ],
+                      ),
+              ),
             ),
             SizedBox(height: 12.h),
             SizedBox(

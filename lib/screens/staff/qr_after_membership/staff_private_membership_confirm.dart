@@ -103,7 +103,7 @@ class _StaffPrivateMembershipConfirmPageState
               'attendee': widget.attendeeList['id'],
               'course': widget.membershipMap['course'],
               'total_price': widget.membershipMap['total_price'],
-              'offer': widget.membershipMap['offer'],
+              'currency': widget.membershipMap['currency'],
               'duration': widget.membershipMap['duration'],
               'times': widget.membershipMap['times'],
               'minus': widget.membershipMap['minus'],
@@ -235,7 +235,16 @@ class _StaffPrivateMembershipConfirmPageState
                           ),
                           _DetailRow(
                             title: 'Total Price:',
-                            value: '${widget.membershipMap['total_price']} \$',
+                            value:
+                                '${widget.membershipMap['total_price']} ${widget.membershipMap['currency']}',
+                          ),
+                          SizedBox(
+                            height: 5.h,
+                          ),
+                          _DetailRow(
+                            title: 'Currency:',
+                            value:
+                                '${widget.membershipMap['currency']}',
                           ),
                           SizedBox(
                             height: 10.h,
@@ -244,12 +253,10 @@ class _StaffPrivateMembershipConfirmPageState
                           SizedBox(
                             height: 10.h,
                           ),
-                          SizedBox(
-                            height: 5.h,
-                          ),
                           _SumDetailRow(
                             title: 'Discount(\$):',
-                            value: '-${widget.membershipMap['minus']} \$',
+                            value:
+                                '-${widget.membershipMap['minus']} ${widget.membershipMap['currency']}',
                           ),
                           SizedBox(
                             height: 5.h,
@@ -261,7 +268,8 @@ class _StaffPrivateMembershipConfirmPageState
                           ),
                           _SumDetailRow(
                             title: 'Final Price:',
-                            value: '${finalPrice}\$',
+                            value:
+                                '$finalPrice ${widget.membershipMap['currency']}',
                           )
                         ],
                       ),

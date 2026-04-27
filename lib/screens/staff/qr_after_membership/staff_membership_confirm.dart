@@ -104,7 +104,7 @@ class _StaffMembershipConfirmPageState
               'course': widget.membershipMap['course'],
               'total_price': widget.membershipMap['total_price'],
               'duration': widget.membershipMap['duration'],
-              'offer': widget.membershipMap['offer'],
+              'currency': widget.membershipMap['currency'],
               'minus': widget.membershipMap['minus'],
               'times': 1,
               'start_day': widget.membershipMap['start_day'],
@@ -150,9 +150,9 @@ class _StaffMembershipConfirmPageState
   // }
 
   calcFinalDiscountedPrice() {
-    final value = (widget.membershipMap['total_price'] -
-            (widget.membershipMap['offer'] + widget.membershipMap['minus'])) *
-        (widget.membershipMap['discount_rate']);
+    final value =
+        (widget.membershipMap['total_price'] - widget.membershipMap['minus']) *
+            (widget.membershipMap['discount_rate']);
     final convertedValue = value.toInt();
     finalPrice = convertedValue;
   }
@@ -181,10 +181,8 @@ class _StaffMembershipConfirmPageState
                   SizedBox(
                     height: 10.h,
                   ),
-                  SingleChildScrollView(
-                    child: Container(
+                  Container(
                       padding: EdgeInsets.all(30),
-                      height: 600.h,
                       width: 390.w,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -228,7 +226,16 @@ class _StaffMembershipConfirmPageState
                           ),
                           _DetailRow(
                             title: 'Total Price:',
-                            value: '${widget.membershipMap['total_price']} \$',
+                            value:
+                                '${widget.membershipMap['total_price']} ${widget.membershipMap['currency']}',
+                          ),
+                          SizedBox(
+                            height: 5.h,
+                          ),
+                          _DetailRow(
+                            title: 'Currency:',
+                            value:
+                                '${widget.membershipMap['currency']}',
                           ),
                           SizedBox(
                             height: 10.h,
@@ -238,15 +245,9 @@ class _StaffMembershipConfirmPageState
                             height: 10.h,
                           ),
                           _SumDetailRow(
-                            title: 'Special Offer:',
-                            value: '-${widget.membershipMap['offer']}\$',
-                          ),
-                          SizedBox(
-                            height: 5.h,
-                          ),
-                          _SumDetailRow(
                             title: 'Discount(\$):',
-                            value: '-${widget.membershipMap['minus']} \$',
+                            value:
+                                '-${widget.membershipMap['minus']} ${widget.membershipMap['currency']}',
                           ),
                           SizedBox(
                             height: 5.h,
@@ -258,11 +259,11 @@ class _StaffMembershipConfirmPageState
                           ),
                           _SumDetailRow(
                             title: 'Final Price:',
-                            value: '${finalPrice}\$',
+                            value:
+                                '$finalPrice ${widget.membershipMap['currency']}',
                           )
                         ],
                       ),
-                    ),
                   ),
                   SizedBox(
                     height: 30.h,
@@ -312,9 +313,17 @@ class _DetailRow extends StatelessWidget {
               fontWeight: FontWeight.w300,
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w300),
+          SizedBox(width: 8.w),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerRight,
+              child: Text(
+                value,
+                maxLines: 1,
+                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w300),
+              ),
+            ),
           ),
         ],
       ),

@@ -196,24 +196,17 @@ ACCOUNT_AUTHENTICATION_METHOD = 'phone_number'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# AWS S3 Configuration
+# Cloudflare R2 / AWS S3 Configuration
 AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='s3-wellbee-images')
-# ここを指定しないとdefaultでは、us-south-...が入ってしまう
-AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='me-south-1')
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='wellbee-images')
+AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='auto')
+AWS_S3_ENDPOINT_URL = env('AWS_S3_ENDPOINT_URL', default=None)
+AWS_S3_CUSTOM_DOMAIN = env('AWS_S3_CUSTOM_DOMAIN', default=None)
 
-# S3のカスタムドメイン（リージョン指定が必要）これをフロントに私す
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
-
-# S3のファイルを上書きしない（ファイル名が重複した場合、ランダム文字列を付与）
 AWS_S3_FILE_OVERWRITE = False
-
-# クエリパラメータなしのクリーンなURL
 AWS_QUERYSTRING_AUTH = False
 
-# デフォルトのストレージバックエンドをS3に設定
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-# メディアファイルのURL（S3のURL）
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'

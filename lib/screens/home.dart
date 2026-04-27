@@ -3,19 +3,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wellbee/screens/questionnaire/questionnaire_attendee.dart';
-import 'package:wellbee/version/version_info.dart';
 import 'package:wellbee/main.dart';
+import 'package:wellbee/services/version_check_service.dart';
 import 'package:wellbee/screens/attendee/attendee.dart';
-import 'package:wellbee/screens/graph/graph.dart';
 import 'package:wellbee/screens/graph/graph_attendee.dart';
 import 'package:wellbee/screens/point/point.dart';
 import 'package:wellbee/screens/reservation/membership.dart';
@@ -25,7 +20,6 @@ import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/dialogue_awesome.dart';
 import 'package:wellbee/ui_parts/display.dart';
-import 'package:wellbee/screens/mailbox/mailbox_list.dart';
 import 'package:wellbee/services/fcm_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../assets/inet.dart';
@@ -105,8 +99,6 @@ List<Map<String, dynamic>> myReservations = [];
 String? token = '';
 
 class _HomePageState extends State<HomePage> {
-  bool isUpdateNeeded = false;
-  bool isIos = false;
   int _unreadCount = 0;
 
   Future<void> _fetchUnreadCount() async {
@@ -218,100 +210,16 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void judgeOSType() {
-    if (Platform.isIOS) {
-      setState(
-        () {
-          isIos = true;
-        },
-      );
-    } else if (Platform.isAndroid) {
-      setState(
-        () {
-          isIos = false;
-        },
-      );
-    }
-  }
-
-  _fetchLatestVersion() async {
-    try {
-      // await DialogGenerator.showLoadingDialog(context: context);
-      token = await SharedPrefs.fetchAccessToken();
-      // print(token);
-      if (token == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Internet Error occurred.')));
-      } else {
-        var url =
-            Uri.parse('${baseUri}versions/version/latest_version?token=$token');
-        var response = await Future.any([
-          http.get(url, headers: {"Authorization": 'JWT $token'}),
-          Future.delayed(const Duration(seconds: 5),
-              () => throw TimeoutException("Request timeout"))
-        ]);
-        if (response.statusCode == 200) {
-          Map<String, dynamic> data = jsonDecode(response.body);
-          return data;
-        } else if (response.statusCode >= 400) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Internet Error occurred.')));
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Something went wrong. Try again later')));
-        }
-      }
-    } catch (e) {
-      // Navigator.pop(context);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
-  }
-
-  Future<bool?> checkVersionInformation() async {
-    final Map<String, dynamic> latestVersionMap = await _fetchLatestVersion();
-    final double latestVersion = latestVersionMap['version'];
-    List<String> parts = currentVersion.split('.');
-    final majorUpdate = parts[0];
-    final middleUpdate = parts[1];
-    final minorUpdate = parts[2];
-    final String combined = "${majorUpdate}.${middleUpdate}${minorUpdate}";
-    final double modifiedCurrentVersion = double.parse(combined);
-    if (latestVersion > modifiedCurrentVersion) {
-      isUpdateNeeded = true;
-      return isUpdateNeeded;
-    } else if (modifiedCurrentVersion >= latestVersion) {
-      isUpdateNeeded = false;
-      return isUpdateNeeded;
-    } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error occur')));
-    }
-  }
-
   Future<dynamic> onLaunchAndroidUrl() async {
     final Uri url = Uri.parse(
         'https://play.google.com/store/apps/details?id=com.wellbee.app&pcampaignid=web_share');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      // エラーハンドリング: URLを開けない場合の処理
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: Search the latest version on Google Play')));
-    }
+    await launchUrl(url, mode: LaunchMode.externalApplication);
   }
 
   Future<dynamic> onLaunchIOSUrl() async {
-    // print('haha');
     final Uri url =
         Uri.parse('https://apps.apple.com/app/wellbee-app/id6737229335');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      // エラーハンドリング: URLを開けない場合の処理
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: Search the latest version on Apple Store')));
-    }
+    await launchUrl(url, mode: LaunchMode.externalApplication);
   }
 
   void showAwesomeDialog() {
@@ -328,25 +236,32 @@ class _HomePageState extends State<HomePage> {
     ).show(context);
   }
 
+  Future<void> _checkVersion() async {
+    final status = await VersionCheckService.check();
+    if (!mounted) return;
+    final launchUrl = Platform.isIOS ? onLaunchIOSUrl : onLaunchAndroidUrl;
+    if (status == VersionStatus.forceUpdate) {
+      VersionUpCustomAwesomeDialogue(
+        titleText: 'Update Required',
+        desc: 'Please update the app to continue.',
+        callback: launchUrl,
+      ).show(context);
+    } else if (status == VersionStatus.updateAvailable) {
+      SoftUpdateCustomAwesomeDialogue(
+        titleText: 'New Version Available',
+        desc: 'A new version of the app is available.',
+        onUpdate: launchUrl,
+      ).show(context);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    judgeOSType();
     _initFCM();
     _fetchUnreadCount();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      bool? updateNeeded = await checkVersionInformation();
-      if (updateNeeded != null && updateNeeded == true) {
-        VersionUpCustomAwesomeDialogue(
-                titleText: 'New Version Released',
-                desc: 'Please update the app to the newest version',
-                callback: isIos == true ? onLaunchIOSUrl : onLaunchAndroidUrl)
-            .show(context);
-      } else if (updateNeeded != null && updateNeeded == false) {
-        return;
-      } else {
-        showSnackBar(Colors.red, 'version check error');
-      }
+      await _checkVersion();
       _fetchAttendee();
     });
   }
@@ -388,48 +303,48 @@ class _HomePageState extends State<HomePage> {
                                       fontSize: 20.sp,
                                       fontWeight: FontWeight.w400,
                                       color: Colors.white)),
-                              GestureDetector(
-                                onTap: () async {
-                                  await Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const MailboxListPage()),
-                                  );
-                                  _fetchUnreadCount();
-                                },
-                                child: Stack(
-                                  clipBehavior: Clip.none,
-                                  children: [
-                                    Icon(Icons.mail_outline,
-                                        color: Colors.white, size: 28.sp),
-                                    if (_unreadCount > 0)
-                                      Positioned(
-                                        right: -6,
-                                        top: -6,
-                                        child: Container(
-                                          padding: EdgeInsets.all(4.w),
-                                          decoration: const BoxDecoration(
-                                            color: Colors.red,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          constraints: BoxConstraints(
-                                            minWidth: 18.w,
-                                            minHeight: 18.w,
-                                          ),
-                                          child: Text(
-                                            '$_unreadCount',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 11.sp,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
+                              // GestureDetector(
+                              //   onTap: () async {
+                              //     await Navigator.of(context).push(
+                              //       MaterialPageRoute(
+                              //           builder: (context) =>
+                              //               const MailboxListPage()),
+                              //     );
+                              //     _fetchUnreadCount();
+                              //   },
+                              //   child: Stack(
+                              //     clipBehavior: Clip.none,
+                              //     children: [
+                              //       Icon(Icons.mail_outline,
+                              //           color: Colors.white, size: 28.sp),
+                              //       if (_unreadCount > 0)
+                              //         Positioned(
+                              //           right: -6,
+                              //           top: -6,
+                              //           child: Container(
+                              //             padding: EdgeInsets.all(4.w),
+                              //             decoration: const BoxDecoration(
+                              //               color: Colors.red,
+                              //               shape: BoxShape.circle,
+                              //             ),
+                              //             constraints: BoxConstraints(
+                              //               minWidth: 18.w,
+                              //               minHeight: 18.w,
+                              //             ),
+                              //             child: Text(
+                              //               '$_unreadCount',
+                              //               style: TextStyle(
+                              //                 color: Colors.white,
+                              //                 fontSize: 11.sp,
+                              //                 fontWeight: FontWeight.bold,
+                              //               ),
+                              //               textAlign: TextAlign.center,
+                              //             ),
+                              //           ),
+                              //         ),
+                              //     ],
+                              //   ),
+                              // ),
                             ],
                           ),
                           FutureBuilder(

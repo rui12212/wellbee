@@ -363,7 +363,7 @@ class _MembershipEditPageState extends State<MembershipEditPage> {
                 'Total Price', m['total_price']?.toString() ?? 'N/A'),
             _buildReadOnlyRow('Discount Rate',
                 '${((1 - (m['discount_rate'] ?? 1)) * 100).toInt()}% OFF'),
-            _buildReadOnlyRow('Offer', m['offer']?.toString() ?? '0'),
+            _buildReadOnlyRow('Currency', m['currency']?.toString() ?? 'USD'),
             _buildReadOnlyRow('Minus (Points)', m['minus']?.toString() ?? '0'),
             _buildReadOnlyRow('Discounted Price',
                 m['discounted_total_price']?.toString() ?? 'N/A'),

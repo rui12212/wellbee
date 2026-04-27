@@ -69,6 +69,7 @@ class _PassResetConfirmPageState extends State<PassResetConfirmPage> {
           body: jsonEncode({
             'reset_token': widget.resetToken,
             'new_password': password,
+            'confirm_password': confirmPassword,
           }),
         ),
         Future.delayed(

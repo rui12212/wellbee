@@ -13,6 +13,8 @@ class QueryParameterJWTAuthentication(JWTAuthentication):
         '/accounts/password-reset/request/',
         '/accounts/password-reset/verify-otp/',
         '/accounts/password-reset/confirm/',
+        '/authen/jwt/create/',
+        '/authen/jwt/refresh/',
     }
 
     def authenticate(self, request):

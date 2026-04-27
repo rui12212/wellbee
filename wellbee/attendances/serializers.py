@@ -21,7 +21,7 @@ class MembershipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Membership
         # fields = '__all__'
-        fields=('id','user_id','course','expire_day','start_day','minus','times','max_join_times','already_join_times','last_check_in','requested_join_times','duration','request_time', 'is_approved', 'total_price','attendee_name','attendee_gender','attendee_birthday','course_name','course_image_url','num_person','discounted_total_price','attendee','last_survey_date','user_phone')
+        fields=('id','user_id','course','expire_day','start_day','minus','times','max_join_times','already_join_times','last_check_in','requested_join_times','duration','request_time', 'is_approved', 'total_price','attendee_name','attendee_gender','attendee_birthday','course_name','course_image_url','num_person','discounted_total_price','attendee','last_survey_date','user_phone','currency')
         extra_kwargs = {
             'user_id': {'read_only': True},
             'id': {'read_only': True},
@@ -61,7 +61,7 @@ class MembershipEditSerializer(serializers.ModelSerializer):
         model = Membership
         fields = (
             'id', 'user', 'attendee', 'course', 'times', 'num_person',
-            'duration', 'offer', 'minus', 'is_approved', 'total_price',
+            'duration', 'currency', 'minus', 'is_approved', 'total_price',
             'discount_rate', 'discounted_total_price', 'max_join_times',
             'requested_join_times', 'already_join_times', 'request_time',
             'start_day', 'expire_day', 'is_expired', 'last_check_in',
@@ -80,7 +80,7 @@ class MembershipEditSerializer(serializers.ModelSerializer):
             # 料金関連（読み取り専用）
             'total_price': {'read_only': True},
             'discount_rate': {'read_only': True},
-            'offer': {'read_only': True},
+            'currency': {'read_only': True},
             'minus': {'read_only': True},
             'discounted_total_price': {'read_only': True},
         }
