@@ -17,7 +17,10 @@ from attendances.models import Membership,Course,Attendee,CheckIn
 #     )
     # readonly_fields = ['start_day'] 
 
+class AttendeeAdmin(admin.ModelAdmin):
+    search_fields = ['user__phone_number', 'name']
+
 admin.site.register(Course)
 admin.site.register(Membership)
-admin.site.register(Attendee)
+admin.site.register(Attendee, AttendeeAdmin)
 admin.site.register(CheckIn)
