@@ -53,8 +53,8 @@ android {
         // 詳細については、https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration を参照してください。
         minSdkVersion = flutter.minSdkVersion
         targetSdk = 34
-        versionCode = 4
-        versionName = '3.0.0+1'
+        versionCode = 10
+        versionName = '3.0.0'
     }
 
     signingConfigs {
