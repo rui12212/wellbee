@@ -157,7 +157,7 @@ class SlotViewSet(viewsets.ModelViewSet):
         fetched_end_time = data.get('end_time')
         fetched_max_people = data.get('max_people')
 
-        course = get_object_or_404(Course, course_name = fetched_course)
+        course = get_object_or_404(Course, pk=fetched_course)
 
         try:
             slot = Slot.objects.create(
