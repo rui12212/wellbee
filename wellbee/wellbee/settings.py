@@ -215,6 +215,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
+AUTHENTICATION_BACKENDS = ['accounts.backends.PhoneNormalizingBackend']
+
 ACCOUNT_AUTHENTICATION_METHOD = 'phone_number'
 
 # Static files — served by Nginx from the shared Docker volume
