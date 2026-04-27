@@ -121,7 +121,7 @@ class _PassResetOtpPageState extends State<PassResetOtpPage> {
       final url = Uri.parse('${baseUri}accounts/password-reset/verify-firebase/');
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true'},
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'firebase_id_token': idToken}),
       );
 
