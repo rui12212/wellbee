@@ -208,8 +208,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -217,10 +215,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-ACCOUNT_AUTHENTICATION_METHOD = 'phone_number' 
+ACCOUNT_AUTHENTICATION_METHOD = 'phone_number'
 
+# Static files — served by Nginx from the shared Docker volume
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+# CSRF — required for Django admin login over HTTPS
+CSRF_TRUSTED_ORIGINS = ['https://api.wellbee-studio.com']
 
 # Cloudflare R2 / AWS S3 Configuration
 AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
@@ -233,6 +236,7 @@ AWS_S3_CUSTOM_DOMAIN = env('AWS_S3_CUSTOM_DOMAIN', default=None)
 AWS_S3_FILE_OVERWRITE = False
 AWS_QUERYSTRING_AUTH = False
 
+# Media files (course images etc.) → Cloudflare R2
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
