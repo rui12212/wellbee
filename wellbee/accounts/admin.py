@@ -7,6 +7,7 @@ from . import models
 class UserAdmin(BaseUserAdmin):
     ordering = ['id']
     list_display = ['phone_number']
+    search_fields = ['phone_number']
     fieldsets = (
         (None, {'fields': ('phone_number', 'password','points')}),
         (_('Personal Info'), {'fields': ()}),
