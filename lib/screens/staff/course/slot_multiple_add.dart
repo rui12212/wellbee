@@ -120,7 +120,7 @@ class _AddSlotPageState extends ConsumerState<AddSlotPage> {
             url,
             headers: headers,
             body: jsonEncode({
-              "course": widget.courseList['course_name'],
+              "course": widget.courseList['id'],
               "date": date,
               "start_time": startTime,
               "end_time": endTime == '24:00' ? '00:00' : endTime,
