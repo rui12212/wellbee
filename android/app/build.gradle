@@ -34,7 +34,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace = "com.wellbee.app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = '30.0.14904198'
 
     compileOptions {
@@ -52,8 +52,8 @@ android {
         // 以下の値をアプリケーションのニーズに合わせて更新できます。
         // 詳細については、https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration を参照してください。
         minSdkVersion = flutter.minSdkVersion
-        targetSdk = 34
-        versionCode = 10
+        targetSdk = 35
+        versionCode = 11
         versionName = '3.0.0'
     }
 
