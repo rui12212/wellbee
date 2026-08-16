@@ -20,7 +20,15 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "852819913883-ea6gs9io8imka7vf7qndgghm37b37698.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wellbee.fitness"
+              }
+            }
+          ]
         }
       }
     }

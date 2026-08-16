@@ -175,12 +175,13 @@ class _StaffSignInPageState extends State<StaffSignInPage> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Container(
-                    child: CustomTextBox(
+                child: PasswordCustomTextBox(
                   label: 'Password',
                   hintText: 'Your password here',
                   controller: _passwordController,
-                ).textFieldDecoration()),
+                  isPassword: true,
+                  inputType: TextInputType.text,
+                ),
               ),
               SizedBox(
                 height: 10.h,

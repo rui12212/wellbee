@@ -328,6 +328,7 @@ class _MembershipTicket extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 120.r,
+      clipBehavior: Clip.hardEdge,
       decoration: ShapeDecoration(
         color: Colors.white,
         shape: _TicketShapeBorder(width: 1, radius: 16.0),
@@ -337,18 +338,13 @@ class _MembershipTicket extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   height: 80.r,
-                  // padding: EdgeInsets.all(24),
                   child: image,
                 ),
-                Container(
-                    child: Column(
-                  children: [
-                    Text('$duration month', style: TextStyle(fontSize: 16.r)),
-                  ],
-                )),
+                Text('$duration month', style: TextStyle(fontSize: 16.r)),
               ],
             ),
           ),
@@ -361,102 +357,68 @@ class _MembershipTicket extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.r, vertical: 6.r),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: EdgeInsets.symmetric(horizontal: 12.r, vertical: 4.r),
+              child: Table(
                 children: [
-                  Table(
+                  TableRow(
                     children: [
-                      TableRow(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Name',
-                                style: TextStyle(
-                                    color: kColorText, fontSize: 16.r),
-                              ),
-                              // SizedBox(height: 4.r),
-                              Text(
-                                attendee_name,
-                                style: TextStyle(
-                                  color: kColorTextDark,
-                                  fontSize: 17.r,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Last Check',
-                                style: TextStyle(
-                                    color: kColorText, fontSize: 16.r),
-                              ),
-                              // SizedBox(height: 4.r),
-                              Text(
-                                last_check_in,
-                                style: TextStyle(
-                                  color: colorForLastCheckIn,
-                                  fontSize: 18.r,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                          Text('Name',
+                              style: TextStyle(color: kColorText, fontSize: 14.r)),
+                          Text(
+                            attendee_name,
+                            style: TextStyle(color: kColorTextDark, fontSize: 15.r),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ],
                       ),
-                      TableRow(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            height: 8.r,
-                            // width: 20.w,
-                          ),
-                          SizedBox(
-                            height: 8.r,
+                          Text('Last Check',
+                              style: TextStyle(color: kColorText, fontSize: 14.r)),
+                          Text(
+                            last_check_in,
+                            style: TextStyle(color: colorForLastCheckIn, fontSize: 15.r),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ],
                       ),
-                      TableRow(
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      SizedBox(height: 4.r),
+                      SizedBox(height: 4.r),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Expire At',
-                                style: TextStyle(
-                                    color: kColorText, fontSize: 16.r),
-                              ),
-                              // SizedBox(height: 4.r),
-                              Text(
-                                expire_day,
-                                style: TextStyle(
-                                  color: colorForExpireDay,
-                                  fontSize: 18.r,
-                                ),
-                              ),
-                            ],
+                          Text('Expire At',
+                              style: TextStyle(color: kColorText, fontSize: 14.r)),
+                          Text(
+                            expire_day,
+                            style: TextStyle(color: colorForExpireDay, fontSize: 15.r),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Join Times',
-                                style: TextStyle(
-                                    color: kColorText, fontSize: 16.r),
-                              ),
-                              // SizedBox(height: 4.r),
-                              Text(
-                                '$already_join_times/$max_join_times',
-                                style: TextStyle(
-                                  color: kColorTextDark,
-                                  fontSize: 18.r,
-                                ),
-                              ),
-                            ],
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('Join Times',
+                              style: TextStyle(color: kColorText, fontSize: 14.r)),
+                          Text(
+                            '$already_join_times/$max_join_times',
+                            style: TextStyle(color: kColorTextDark, fontSize: 15.r),
                           ),
                         ],
                       ),
