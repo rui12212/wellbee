@@ -7,7 +7,7 @@ from questionnaires.models import BaseBodySurvey, SurveyResponse
 from reservations.models import Reservation
 from . import serializers
 from rest_framework.decorators import action
-from attendances.models import Course, Interview, Membership, Attendee, CheckIn
+from attendances.models import Course, Interview, Membership, Attendee, CheckIn, Video, ViewingRecord
 from rest_framework.response import Response
 from django.db.models import F,Q
 from django.db.models import OuterRef, Subquery
@@ -18,6 +18,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Prefetch
+from rest_framework.permissions import IsAuthenticated
+
 # admin用。削除はできないようにしたい。is_activeをFalseにする仕様にする
 class MembershipViewSet(viewsets.ModelViewSet):
     queryset = Membership.objects.all()
@@ -517,3 +519,34 @@ class CourseViewSet(viewsets.ModelViewSet):
 #     serializer_class = serializers.PaymentSerializer
 
 
+class VideoViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.VideoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        course_id = self.request.query_params.get()
+        qs = Video.objects.filter(is_active=True)
+        if course_id:
+            qs = qs.filter(course_id = course_id)
+        return qs
+    
+
+class ViewingRecordViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.ViewingRecordSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = ViewingRecord.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        video_id = request.data.get('video')
+        video = get_object_or_404(Video, id=video_id)
+        record, created = ViewingRecord.objects.get_or_create(
+            user=request.user,
+            video=video
+        )
+    
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_completed = True
+        instance.save(update_fields=['is_completed'])
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)

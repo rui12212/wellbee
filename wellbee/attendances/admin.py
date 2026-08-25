@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext as _
-from attendances.models import Membership,Course,Attendee,CheckIn
+from attendances.models import Membership,Course,Attendee,CheckIn, Video, ViewingRecord
 
 # class AttendancesAdmin(admin.ModelAdmin):
 #     # ordering = ['start_day']
@@ -24,3 +24,5 @@ admin.site.register(Course)
 admin.site.register(Membership)
 admin.site.register(Attendee, AttendeeAdmin)
 admin.site.register(CheckIn)
+admin.site.register(Video)
+admin.site.register(ViewingRecord)
