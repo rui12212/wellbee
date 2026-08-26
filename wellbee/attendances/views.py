@@ -462,6 +462,20 @@ class CourseViewSet(viewsets.ModelViewSet):
         courses = Course.objects.filter(is_open=True).order_by("id")
         serializer = self.get_serializer(courses, many=True)
         return Response(serializer.data)
+
+    
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[IsAuthenticated],
+        url_path="with_videos",
+    )
+    def course_with_videos(self, request):
+        courses = Course.objects.filter(
+            is_open=True, videos__is_active=True,
+        ).distinct().order_by("id")
+        serializer = self.get_serializer(courses, many=True)
+        return Response(serializer.data)
     
     def perform_create(self, serializer):
         serializer.save()
@@ -524,7 +538,7 @@ class VideoViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        course_id = self.request.query_params.get()
+        course_id = self.request.query_params.get('course_id')
         qs = Video.objects.filter(is_active=True)
         if course_id:
             qs = qs.filter(course_id = course_id)
@@ -543,6 +557,9 @@ class ViewingRecordViewSet(viewsets.ModelViewSet):
             user=request.user,
             video=video
         )
+        serializer = self.get_serializer(record)
+        status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        return Response(serializer.data, status=status_code)
     
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()

@@ -28,6 +28,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   ChewieController? _chewieController;
   int? _recordId;
   bool _hasRecordedCompletion = false;
+  bool _showSkipButtons = false;
 
   @override
   void initState() {
@@ -105,21 +106,84 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   @override
   Widget build(BuildContext context){
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
+        toolbarHeight: isLandscape ? 36 : null,
         title: Text(
           widget.title,
-          style: TextStyle(fontSize: 18.sp),
+          style: TextStyle(fontSize: isLandscape ? 14 : 18),
         ),
       ),
-      body: Center(
-        child: _chewieController != null
-            ? Chewie(controller: _chewieController!)
-            : const CircularProgressIndicator(color: Colors.white),
-      ),
+      body: _chewieController != null
+          ? Center(
+              child: AspectRatio(
+                aspectRatio: _videoController.value.aspectRatio,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Chewie(controller: _chewieController!),
+                    Positioned.fill(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          setState(() { _showSkipButtons = !_showSkipButtons; });
+                        },
+                      ),
+                    ),
+                    if (_showSkipButtons)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              final current = _videoController.value.position;
+                              _videoController.seekTo(
+                                current - const Duration(seconds: 15),
+                              );
+                            },
+                            child: Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.3),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.replay_10,
+                                  color: Colors.white70, size: 30),
+                            ),
+                          ),
+                          const SizedBox(width: 60),
+                          GestureDetector(
+                            onTap: () {
+                              final current = _videoController.value.position;
+                              _videoController.seekTo(
+                                current + const Duration(seconds: 15),
+                              );
+                            },
+                            child: Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.3),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.forward_10,
+                                  color: Colors.white70, size: 30),
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            )
+          : const Center(child: CircularProgressIndicator(color: Colors.white)),
     );
   }
 

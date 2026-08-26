@@ -79,7 +79,7 @@ class _VideoCourseSelectPageState extends State<VideoCourseSelectPage> {
     try {
       final token = await SharedPrefs.fetchAccessToken();
       var url =
-          Uri.parse('${baseUri}attendances/course/all_course/?token=$token');
+          Uri.parse('${baseUri}attendances/course/with_videos/?token=$token');
       var response = await Future.any([
         http.get(url, headers: {
           "Authorization": 'JWT $token',

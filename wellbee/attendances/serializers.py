@@ -152,7 +152,7 @@ class VideoSerializer(serializers.ModelSerializer):
     
     def get_thumbnail_url(self, obj):
         if obj.thumbnail:
-            return obj.thumbnail_url
+            return obj.thumbnail.url
         return None
 
 class ViewingRecordSerializer(serializers.ModelSerializer):

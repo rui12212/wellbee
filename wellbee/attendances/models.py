@@ -248,7 +248,7 @@ def generate_thumbnail(sender, instance, created, **kwargs):
                  capture_output=True, timeout=30,
             )
             if result.returncode == 0 and result.stdout:
-                intance.thumbnail.save(
+                instance.thumbnail.save(
                     f"thumb_{instance.id}.jpg",
                     ContentFile(result.stdout),
                     save=True,
