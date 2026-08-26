@@ -15,6 +15,7 @@ import 'package:wellbee/screens/graph/graph_attendee.dart';
 import 'package:wellbee/screens/point/point.dart';
 import 'package:wellbee/screens/reservation/membership.dart';
 import 'package:wellbee/screens/qr/qr_reservation.dart';
+import 'package:wellbee/screens/video/video_course_select.dart';
 import 'package:wellbee/ui_parts/color.dart';
 import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
@@ -729,6 +730,47 @@ class _HomePageState extends State<HomePage> {
                                                       PointPage(
                                                           userId: userId,
                                                           points: points)));
+                                        }),
+                                    SizedBox(
+                                      height: 20.h,
+                                    ),
+                                    InkWell(
+                                        child: Container(
+                                          height: 140.h,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            color: kColorPrimary,
+                                          ),
+                                          child: Align(
+                                            alignment: Alignment.bottomLeft,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(15.0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                      Icons
+                                                          .play_circle_outline,
+                                                      color: Colors.white,
+                                                      size: 32.sp),
+                                                  SizedBox(width: 12.w),
+                                                  Text(
+                                                    'Videos',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 20.sp),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const VideoCourseSelectPage()));
                                         }),
                                     SizedBox(
                                       height: 20.h,
