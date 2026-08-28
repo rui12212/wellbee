@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     default-libmysqlclient-dev \
     ca-certificates \
+    ffmpeg \
  && update-ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
@@ -19,8 +20,6 @@ RUN pip install --upgrade pip && \
 
 COPY . /wellbee/
 
-RUN chmod 755 entrypoint.sh entrypoint.prod.sh
+RUN chmod 755 entrypoint.sh entrypoint.prod.sh entrypoint.review.sh
 
 EXPOSE 8000
-
-CMD ["./entrypoint.prod.sh"]

@@ -11,18 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 from datetime import timedelta
 from pathlib import Path
-import environ
 import os
-
-# Twilio Verify API（WhatsApp OTP）
-TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID', '')
-TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN', '')
-TWILIO_VERIFY_SERVICE_SID = os.environ.get('TWILIO_VERIFY_SERVICE_SID', '')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
 
 INSTALLED_APPS = [
     'rest_framework',
@@ -78,53 +70,24 @@ WSGI_APPLICATION = 'wellbee.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# 環境の切り替え
-# -----------Dev------------
-environ.Env.read_env(BASE_DIR / '.env')
-CORS_ALLOW_ALL_ORIGINS = True
-env = environ.Env(
-    DEBUG=(bool, True)
-)
-
-# -----------PRODUCTION----------
-# environ.Env.read_env(BASE_DIR / '.env.prod')
-# CORS_ALLOWED_ORIGINS = [
-#     env("CORS_ALLOWED_HOSTS"),
-# ]
-
-# -----------Dev------------
-# dev
-# DEBUG = True
-# ALLOWED_HOSTS = ['*','10.0.2.2:8000','192.168.1.4:8000','0.0.0.0:8000']
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'wellbee',
-#         'USER': 'root',
-#         'PASSWORD': 'Kruike221',
-#         'HOST': 'db',
-#         'PORT': '3306'
-#     }
-# }
-# CORS_ALLOW_ALL_ORIGINS = True
-
-
-# -----------PRODUCTION----------
-# SECURITY WARNING: don't run with debug turned on in production!
-
 # pro
-SECRET_KEY = env('SECRET_KEY')
-DEBUG = env('DEBUG')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+SECRET_KEY = os.environ['SECRET_KEY']
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_HOSTS', '').split(',')
 
 DATABASES = {
     'default': {
-        'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.mysql'),
-        'NAME': env('DATABASE_NAME'),
-        'USER': env('DATABASE_USER'),
-        'PASSWORD': env('DATABASE_PASSWORD'),
-        'HOST': env('DATABASE_HOST'),
-        'PORT': env('DATABASE_PORT', default='3306'),
+        'ENGINE': os.environ.get('DATABASE_ENGINE', 'django.db.backends.mysql'),
+        'NAME': os.environ['DATABASE_NAME'],
+        'USER': os.environ['DATABASE_USER'],
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],
+        'HOST': os.environ['DATABASE_HOST'],
+        'PORT': os.environ.get('DATABASE_PORT', '3306'),
     }
 }
 
@@ -228,12 +191,12 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 CSRF_TRUSTED_ORIGINS = ['https://api.wellbee-studio.com']
 
 # Cloudflare R2 / AWS S3 Configuration
-AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='wellbee-images')
-AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='auto')
-AWS_S3_ENDPOINT_URL = env('AWS_S3_ENDPOINT_URL', default=None)
-AWS_S3_CUSTOM_DOMAIN = env('AWS_S3_CUSTOM_DOMAIN', default=None)
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', 'wellbee-images')
+AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME', 'auto')
+AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL')
+AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN')
 
 AWS_S3_FILE_OVERWRITE = False
 AWS_QUERYSTRING_AUTH = False
