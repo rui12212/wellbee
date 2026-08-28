@@ -242,7 +242,7 @@ class _QrReservationPageState extends State<QrReservationPage> {
           child: Column(
             children: [
               const _Header(
-                title: 'My Reservation',
+                title: 'Reservation',
                 subtitle: 'Tap to show QR code / Swipe left to cancel',
               ),
               FutureBuilder(

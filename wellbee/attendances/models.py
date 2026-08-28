@@ -203,3 +203,55 @@ def set_last_check_in(sender, created, instance, **kwargs):
     if created:
         instance.reservation.membership.last_check_in = instance.created_at
         instance.reservation.membership.save()
+
+
+class Video(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="videos")
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    video_file = models.FileField(upload_to="videos/")
+    thumbnail = models.ImageField(upload_to="videos/thumbnails/", blank=True, null=True)
+    order = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
+
+    def __str__(self):
+        return f"{self.course.course_name} - {self.title}"
+
+
+class ViewingRecord(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    is_completed = models.BooleanField(default=False)
+    watched_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "video")
+    
+    def __str__(self):
+        return f"{self.user} - {self.video.title}"
+
+
+@receiver(post_save, sender=Video)
+def generate_thumbnail(sender, instance, created, **kwargs):
+    if created and not instance.thumbnail:
+        import subprocess
+        from django.core.files.base import ContentFile
+        try:
+            result = subprocess.run(
+                ['ffmpeg', '-i', instance.video_file.url,
+                 '-ss', '00:00:02', '-vframes', '1',
+                 '-f', 'image2', '-'],
+                 capture_output=True, timeout=30,
+            )
+            if result.returncode == 0 and result.stdout:
+                instance.thumbnail.save(
+                    f"thumb_{instance.id}.jpg",
+                    ContentFile(result.stdout),
+                    save=True,
+                )
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            pass

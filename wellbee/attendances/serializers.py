@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from attendances.models import Course, Interview, Membership, Attendee, CheckIn
+from attendances.models import Course, Interview, Membership, Attendee, CheckIn, Video, ViewingRecord
 from accounts.models import User
 
 
@@ -136,3 +136,31 @@ class CheckInSerializer(serializers.ModelSerializer):
             'id': {'read_only': True},
             'checked_by': {'read_only': True},
             }
+
+class VideoSerializer(serializers.ModelSerializer):
+    video_url = serializers.SerializerMethodField()
+    thumbnail_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Video
+        fields = ('id', 'title', 'description', 'video_url', 'thumbnail_url', 'order')
+
+    def get_video_url(self, obj):
+        if obj.video_file:
+            return obj.video_file.url
+        return None
+    
+    def get_thumbnail_url(self, obj):
+        if obj.thumbnail:
+            return obj.thumbnail.url
+        return None
+
+class ViewingRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ViewingRecord
+        fields= ('id', 'video', 'is_completed', 'watched_at')
+        extra_kwargs = {
+            "is_completed": {"read_only": True},
+            "watched_at" : {"read_only": True},
+        }
+        

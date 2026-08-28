@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -15,11 +16,11 @@ import 'package:wellbee/screens/graph/graph_attendee.dart';
 import 'package:wellbee/screens/point/point.dart';
 import 'package:wellbee/screens/reservation/membership.dart';
 import 'package:wellbee/screens/qr/qr_reservation.dart';
+import 'package:wellbee/screens/video/video_course_select.dart';
 import 'package:wellbee/ui_parts/color.dart';
 import 'package:wellbee/ui_function/convert.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/dialogue_awesome.dart';
-import 'package:wellbee/ui_parts/display.dart';
 import 'package:wellbee/services/fcm_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../assets/inet.dart';
@@ -272,13 +273,11 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
         body: ColorfulSafeArea(
           color: kColorPrimary,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  width: 390.w,
-                  // height: 200.h,
-                  child: Material(
+          child: Column(
+            children: [
+              Container(
+                width: 390.w,
+                child: Material(
                     color: kColorPrimary,
                     // elevation: 68,
                     shadowColor: kColorPrimary,
@@ -298,11 +297,6 @@ class _HomePageState extends State<HomePage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Next Reservation is...',
-                                  style: TextStyle(
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.white)),
                               // GestureDetector(
                               //   onTap: () async {
                               //     await Navigator.of(context).push(
@@ -365,70 +359,59 @@ class _HomePageState extends State<HomePage> {
                                   child: Card(
                                     color: Colors.white.withOpacity(0.12),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.r),
+                                      borderRadius: BorderRadius.circular(16.r),
                                     ),
                                     elevation: 0,
                                     child: Padding(
                                       padding: EdgeInsets.symmetric(
-                                        horizontal: 24.w,
-                                        vertical: 24.h,
+                                        horizontal: 20.w,
+                                        vertical: 14.h,
                                       ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                      child: Row(
                                         children: [
-                                          Center(
-                                            child: Icon(
-                                              Icons.calendar_today_outlined,
-                                              color: Colors.white70,
-                                              size: 48.sp,
-                                            ),
+                                          Icon(
+                                            Icons.calendar_today_outlined,
+                                            color: Colors.white70,
+                                            size: 28.sp,
                                           ),
-                                          SizedBox(height: 16.h),
-                                          Center(
+                                          SizedBox(width: 14.w),
+                                          Expanded(
                                             child: Text(
                                               'No Reservation',
                                               style: TextStyle(
-                                                fontSize: 20.sp,
+                                                fontSize: 16.sp,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white,
                                               ),
                                             ),
                                           ),
-                                          SizedBox(height: 18.h),
-                                          Center(
-                                            child: SizedBox(
-                                              width: double.infinity,
-                                              child: ElevatedButton.icon(
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.white,
-                                                  elevation: 0,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16.r),
-                                                  ),
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 14.h),
+                                          SizedBox(
+                                            height: 36.h,
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.white,
+                                                elevation: 0,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12.r),
                                                 ),
-                                                onPressed: () {
-                                                  Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          MembershipPage(),
-                                                    ),
-                                                  );
-                                                },
-                                                icon: Icon(
-                                                    Icons.add_circle_outline,
-                                                    color: kColorPrimary),
-                                                label: Text(
-                                                  'Reserve Class',
-                                                  style: TextStyle(
-                                                    color: kColorPrimary,
-                                                    fontSize: 18.sp,
-                                                    fontWeight: FontWeight.bold,
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 14.w),
+                                              ),
+                                              onPressed: () {
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        MembershipPage(),
                                                   ),
+                                                );
+                                              },
+                                              child: Text(
+                                                'Reserve',
+                                                style: TextStyle(
+                                                  color: kColorPrimary,
+                                                  fontSize: 13.sp,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
                                             ),
@@ -521,231 +504,260 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                Container(
-                  child: Column(
-                    children: [
-                      SafeArea(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              SizedBox(height: 28.h),
-                              Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 20.0.w),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      'Wellbee Service',
-                                      style: TextStyle(
-                                          fontSize: 26.sp,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(
-                                      height: 15.h,
-                                    ),
-                                    Container(
-                                      height: 200.h,
-                                      child: ListView(
-                                        scrollDirection: Axis.horizontal,
-                                        children: <Widget>[
-                                          HomeCard(
-                                              image:
-                                                  'lib/assets/attendee_pic/attendee.png',
-                                              text: 'Member\nبەشداربوو',
-                                              pass: AttendeePage()),
-                                          HomeCard(
-                                              image:
-                                                  'lib/assets/home_pic/survey.png',
-                                              text:
-                                                  'Health Survey\nراپرسیا ساخلەمیێ',
-                                              pass: SurveyAttendeePage()),
-                                          HomeCard(
-                                              image:
-                                                  'lib/assets/home_pic/graph.png',
-                                              text: 'Graph\nشێوە',
-                                              pass: GraphAttendeePage()),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 20.h,
-                                    ),
-                                    InkWell(
-                                        child: Container(
-                                          height: 140.h,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: AssetImage(
-                                                    'lib/assets/home_pic/ticket.png')),
-                                          ),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              gradient: LinearGradient(
-                                                  begin: Alignment.bottomRight,
-                                                  stops: [
-                                                    0.3,
-                                                    0.9
-                                                  ],
-                                                  colors: [
-                                                    Colors.black
-                                                        .withOpacity(.8),
-                                                    Colors.black.withOpacity(.2)
-                                                  ]),
-                                            ),
-                                            child: Align(
-                                              alignment: Alignment.bottomLeft,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(15.0),
-                                                child: Text(
-                                                  'Membership & Reservation\nئەندام و حجزکرن',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20.sp),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      MembershipPage()));
-                                        }),
-                                    SizedBox(
-                                      height: 20.h,
-                                    ),
-                                    InkWell(
-                                        child: Container(
-                                          height: 140.h,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: AssetImage(
-                                                    'lib/assets/home_pic/reservation.png')),
-                                          ),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              gradient: LinearGradient(
-                                                  begin: Alignment.bottomRight,
-                                                  stops: [
-                                                    0.3,
-                                                    0.9
-                                                  ],
-                                                  colors: [
-                                                    Colors.black
-                                                        .withOpacity(.8),
-                                                    Colors.black.withOpacity(.2)
-                                                  ]),
-                                            ),
-                                            child: Align(
-                                              alignment: Alignment.bottomLeft,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(15.0),
-                                                child: Text(
-                                                  'My Reservation\nحجزکرنا من',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20.sp),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      QrReservationPage()));
-                                        }),
-                                    SizedBox(
-                                      height: 20.h,
-                                    ),
-                                    InkWell(
-                                        child: Container(
-                                          height: 140.h,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: AssetImage(
-                                                    'lib/assets/home_pic/point.png')),
-                                          ),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              gradient: LinearGradient(
-                                                  begin: Alignment.bottomRight,
-                                                  stops: [
-                                                    0.3,
-                                                    0.9
-                                                  ],
-                                                  colors: [
-                                                    Colors.black
-                                                        .withOpacity(.8),
-                                                    Colors.black.withOpacity(.2)
-                                                  ]),
-                                            ),
-                                            child: Align(
-                                              alignment: Alignment.bottomLeft,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(15.0),
-                                                child: Text(
-                                                  'Wellbee Point\nخالێن وێلبی',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20.sp),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        onTap: () async {
-                                          final fetchedUserData =
-                                              await _fetchAttendee();
-                                          final userId =
-                                              fetchedUserData?[0]['user_id'];
-                                          final points =
-                                              fetchedUserData?[0]['points'];
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PointPage(
-                                                          userId: userId,
-                                                          points: points)));
-                                        }),
-                                    SizedBox(
-                                      height: 20.h,
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(height: 28.h),
+                          Text(
+                            'Services',
+                            style: TextStyle(
+                                fontSize: 22.sp,
+                                fontWeight: FontWeight.bold),
                           ),
-                        ),
-                      )
-                    ],
+                          SizedBox(height: 12.h),
+                          GridView.count(
+                                      crossAxisCount: 2,
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      mainAxisSpacing: 10.h,
+                                      crossAxisSpacing: 10.w,
+                                      childAspectRatio: 1.5,
+                                      children: [
+                                        _ServiceTile(
+                                          icon: CupertinoIcons.person,
+                                          color: kColorPrimary,
+                                          bgColor: const Color(0xFFE8F5F0),
+                                          label: 'Member',
+                                          sub: 'بەشداربوو',
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        AttendeePage()));
+                                          },
+                                        ),
+                                        _ServiceTile(
+                                          icon: CupertinoIcons.doc_text,
+                                          color: const Color(0xFF3B5FCC),
+                                          bgColor: const Color(0xFFEBF0FE),
+                                          label: 'Health Survey',
+                                          sub: 'ساخلەمی',
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        SurveyAttendeePage()));
+                                          },
+                                        ),
+                                        _ServiceTile(
+                                          icon: CupertinoIcons.chart_bar,
+                                          color: const Color(0xFFC27D1A),
+                                          bgColor: const Color(0xFFFEF5E7),
+                                          label: 'Graph',
+                                          sub: 'شێوە',
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        GraphAttendeePage()));
+                                          },
+                                        ),
+                                        _ServiceTile(
+                                          icon: CupertinoIcons.creditcard,
+                                          color: kColorPrimary,
+                                          bgColor: const Color(0xFFE8F5F0),
+                                          label: 'Membership',
+                                          sub: 'ئەندام',
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        MembershipPage()));
+                                          },
+                                        ),
+                                        _ServiceTile(
+                                          icon: CupertinoIcons.qrcode,
+                                          color: const Color(0xFF3B5FCC),
+                                          bgColor: const Color(0xFFEBF0FE),
+                                          label: 'Reservation',
+                                          sub: 'حجزکرنا من',
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        QrReservationPage()));
+                                          },
+                                        ),
+                                        _ServiceTile(
+                                          icon: CupertinoIcons.star,
+                                          color: const Color(0xFFC27D1A),
+                                          bgColor: const Color(0xFFFEF5E7),
+                                          label: 'Wellbee Point',
+                                          sub: 'خالێن وێلبی',
+                                          onTap: () async {
+                                            final fetchedUserData =
+                                                await _fetchAttendee();
+                                            final userId =
+                                                fetchedUserData?[0]['user_id'];
+                                            final points =
+                                                fetchedUserData?[0]['points'];
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (_) => PointPage(
+                                                        userId: userId,
+                                                        points: points)));
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10.h),
+                                    _VideoTile(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (_) =>
+                                                    const VideoCourseSelectPage()));
+                                      },
+                                    ),
+                          SizedBox(height: 20.h),
+                        ],
+                      ),
+                    ),
                   ),
-                )
+                ),
               ],
             ),
           ),
-        ));
+        );
+  }
+}
+
+class _ServiceTile extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final Color bgColor;
+  final String label;
+  final String sub;
+  final VoidCallback onTap;
+
+  const _ServiceTile({
+    required this.icon,
+    required this.color,
+    required this.bgColor,
+    required this.label,
+    required this.sub,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14.r),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        child: Row(
+          children: [
+            Container(
+              width: 40.w,
+              height: 40.w,
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Icon(icon, color: color, size: 20.sp),
+            ),
+            SizedBox(width: 10.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    sub,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _VideoTile extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _VideoTile({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14.r),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+        decoration: BoxDecoration(
+          color: kColorPrimary,
+          borderRadius: BorderRadius.circular(14.r),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40.w,
+              height: 40.w,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.18),
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Icon(CupertinoIcons.play_fill, color: Colors.white, size: 22.sp),
+            ),
+            SizedBox(width: 12.w),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Videos',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  'Watch course videos at home',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: Colors.white.withOpacity(0.7),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
