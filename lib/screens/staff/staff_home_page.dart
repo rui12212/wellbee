@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:wellbee/services/version_check_service.dart';
+import 'package:wellbee/ui_parts/dialogue_awesome.dart';
 import 'package:wellbee/screens/staff/calendar/calendar.dart';
 import 'package:wellbee/screens/staff/course/course.dart';
 import 'package:wellbee/screens/staff/course_add/edit_courses.dart';
@@ -25,9 +29,44 @@ class _StaffHomePageState extends State<StaffHomePage> {
   final Color _primaryColor = Color.fromARGB(255, 97, 198, 187);
   final Color _backgroundColor = Color(0xFFF5F7FA);
 
+  Future<void> _checkVersion() async {
+    final status = await VersionCheckService.check();
+    if (!mounted) return;
+    Future<dynamic> Function() storeUrl = Platform.isIOS
+        ? () async {
+            await launchUrl(
+              Uri.parse('https://apps.apple.com/app/wellbee-app/id6737229335'),
+              mode: LaunchMode.externalApplication,
+            );
+          }
+        : () async {
+            await launchUrl(
+              Uri.parse(
+                  'https://play.google.com/store/apps/details?id=com.wellbee.app&pcampaignid=web_share'),
+              mode: LaunchMode.externalApplication,
+            );
+          };
+    if (status == VersionStatus.forceUpdate) {
+      VersionUpCustomAwesomeDialogue(
+        titleText: 'Update Required',
+        desc: 'Please update the app to continue.',
+        callback: storeUrl,
+      ).show(context);
+    } else if (status == VersionStatus.updateAvailable) {
+      SoftUpdateCustomAwesomeDialogue(
+        titleText: 'New Version Available',
+        desc: 'A new version of the app is available.',
+        onUpdate: storeUrl,
+      ).show(context);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _checkVersion();
+    });
   }
 
   Widget _buildMenuCard({
