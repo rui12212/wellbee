@@ -537,6 +537,19 @@ class VideoViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.VideoSerializer
     permission_classes = [IsAuthenticated]
 
+    def list(self, request, *args, **kwargs):
+        today = timezone.now().date()
+        has_active = Membership.objects.filter(
+            user=request.user,
+            expire_day__gte=today,
+        ).exists()
+        if not has_active:
+            return Response(
+                {"detail": "Active membership required."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return super().list(request, *args, **kwargs)
+
     def get_queryset(self):
         course_id = self.request.query_params.get('course_id')
         qs = Video.objects.filter(is_active=True)
