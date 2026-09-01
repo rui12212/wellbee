@@ -20,6 +20,6 @@ RUN pip install --upgrade pip && \
 
 COPY . /wellbee/
 
-RUN chmod 755 entrypoint.sh entrypoint.prod.sh entrypoint.review.sh
+RUN chmod 755 entrypoint.sh entrypoint.prod.sh entrypoint.review.sh deploy.sh
 
 EXPOSE 8000
