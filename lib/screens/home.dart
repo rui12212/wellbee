@@ -101,13 +101,14 @@ String? token = '';
 
 class _HomePageState extends State<HomePage> {
   int _unreadCount = 0;
+  bool _hasMembership = false;
 
   Future<void> _fetchUnreadCount() async {
     try {
       final token = await SharedPrefs.fetchAccessToken();
       if (token == null) return;
-      var url = Uri.parse(
-          '${baseUri}attendances/mailbox/unread-count/?token=$token');
+      var url =
+          Uri.parse('${baseUri}attendances/mailbox/unread-count/?token=$token');
       var response = await http.get(url, headers: {
         "Authorization": 'JWT $token',
         "Content-Type": "application/json"
@@ -131,6 +132,29 @@ class _HomePageState extends State<HomePage> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _fetchUnreadCount();
     });
+  }
+
+  Future<void> _fetchMembershipStatus() async {
+    try {
+      final token = await SharedPrefs.fetchAccessToken();
+      if (token == null) return;
+      var url =
+          Uri.parse('${baseUri}attendances/membership/my_all_membership/?token=$token');
+      var response = await http.get(url, headers: {
+        "Authorization": 'JWT $token',
+        "Content-Type": "application/json"
+      });
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        if (mounted) {
+          setState(() {
+            _hasMembership = data.isNotEmpty;
+          });
+        }
+      }
+    } catch (e) {
+      print('$e: Error on fetching memberships');
+    }
   }
 
   @override
@@ -261,6 +285,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _initFCM();
     _fetchUnreadCount();
+    _fetchMembershipStatus();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _checkVersion();
       _fetchAttendee();
@@ -270,370 +295,345 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: ColorfulSafeArea(
-          color: kColorPrimary,
-          child: Column(
-            children: [
-              Container(
-                width: 390.w,
-                child: Material(
-                    color: kColorPrimary,
-                    // elevation: 68,
-                    shadowColor: kColorPrimary,
-                    borderRadius: const BorderRadius.only(
-                      bottomRight: Radius.circular(24),
-                      bottomLeft: Radius.circular(24),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: 24.w,
-                        right: 24.w,
-                        top: 16.h,
-                        bottom: 18.h,
-                      ),
-                      child: Column(
+      backgroundColor: Colors.white,
+      body: ColorfulSafeArea(
+        color: kColorPrimary,
+        child: Column(
+          children: [
+            Container(
+              width: 390.w,
+              child: Material(
+                color: kColorPrimary,
+                // elevation: 68,
+                shadowColor: kColorPrimary,
+                borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(24),
+                  bottomLeft: Radius.circular(24),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 24.w,
+                    right: 24.w,
+                    top: 16.h,
+                    bottom: 18.h,
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // GestureDetector(
-                              //   onTap: () async {
-                              //     await Navigator.of(context).push(
-                              //       MaterialPageRoute(
-                              //           builder: (context) =>
-                              //               const MailboxListPage()),
-                              //     );
-                              //     _fetchUnreadCount();
-                              //   },
-                              //   child: Stack(
-                              //     clipBehavior: Clip.none,
-                              //     children: [
-                              //       Icon(Icons.mail_outline,
-                              //           color: Colors.white, size: 28.sp),
-                              //       if (_unreadCount > 0)
-                              //         Positioned(
-                              //           right: -6,
-                              //           top: -6,
-                              //           child: Container(
-                              //             padding: EdgeInsets.all(4.w),
-                              //             decoration: const BoxDecoration(
-                              //               color: Colors.red,
-                              //               shape: BoxShape.circle,
-                              //             ),
-                              //             constraints: BoxConstraints(
-                              //               minWidth: 18.w,
-                              //               minHeight: 18.w,
-                              //             ),
-                              //             child: Text(
-                              //               '$_unreadCount',
-                              //               style: TextStyle(
-                              //                 color: Colors.white,
-                              //                 fontSize: 11.sp,
-                              //                 fontWeight: FontWeight.bold,
-                              //               ),
-                              //               textAlign: TextAlign.center,
-                              //             ),
-                              //           ),
-                              //         ),
-                              //     ],
-                              //   ),
-                              // ),
-                            ],
-                          ),
-                          FutureBuilder(
-                            future: _fetchReservation(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                    child: Text('Error: ${snapshot.error}'));
-                              } else if (!snapshot.hasData ||
-                                  snapshot.data!.isEmpty ||
-                                  snapshot.data == null) {
-                                return Container(
-                                  width: 390.w,
-                                  child: Card(
-                                    color: Colors.white.withOpacity(0.12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16.r),
-                                    ),
-                                    elevation: 0,
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 20.w,
-                                        vertical: 14.h,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.calendar_today_outlined,
-                                            color: Colors.white70,
-                                            size: 28.sp,
-                                          ),
-                                          SizedBox(width: 14.w),
-                                          Expanded(
-                                            child: Text(
-                                              'No Reservation',
-                                              style: TextStyle(
-                                                fontSize: 16.sp,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 36.h,
-                                            child: ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.white,
-                                                elevation: 0,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12.r),
-                                                ),
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 14.w),
-                                              ),
-                                              onPressed: () {
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        MembershipPage(),
-                                                  ),
-                                                );
-                                              },
-                                              child: Text(
-                                                'Reserve',
-                                                style: TextStyle(
-                                                  color: kColorPrimary,
-                                                  fontSize: 13.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                          // GestureDetector(
+                          //   onTap: () async {
+                          //     await Navigator.of(context).push(
+                          //       MaterialPageRoute(
+                          //           builder: (context) =>
+                          //               const MailboxListPage()),
+                          //     );
+                          //     _fetchUnreadCount();
+                          //   },
+                          //   child: Stack(
+                          //     clipBehavior: Clip.none,
+                          //     children: [
+                          //       Icon(Icons.mail_outline,
+                          //           color: Colors.white, size: 28.sp),
+                          //       if (_unreadCount > 0)
+                          //         Positioned(
+                          //           right: -6,
+                          //           top: -6,
+                          //           child: Container(
+                          //             padding: EdgeInsets.all(4.w),
+                          //             decoration: const BoxDecoration(
+                          //               color: Colors.red,
+                          //               shape: BoxShape.circle,
+                          //             ),
+                          //             constraints: BoxConstraints(
+                          //               minWidth: 18.w,
+                          //               minHeight: 18.w,
+                          //             ),
+                          //             child: Text(
+                          //               '$_unreadCount',
+                          //               style: TextStyle(
+                          //                 color: Colors.white,
+                          //                 fontSize: 11.sp,
+                          //                 fontWeight: FontWeight.bold,
+                          //               ),
+                          //               textAlign: TextAlign.center,
+                          //             ),
+                          //           ),
+                          //         ),
+                          //     ],
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                      FutureBuilder(
+                        future: _fetchReservation(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty ||
+                              snapshot.data == null) {
+                            return Container(
+                              width: 390.w,
+                              child: Card(
+                                color: Colors.white.withOpacity(0.12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                ),
+                                elevation: 0,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w,
+                                    vertical: 14.h,
                                   ),
-                                );
-                              } else {
-                                final reservation = snapshot.data!;
-                                final DateTime intDate =
-                                    DateTime.parse(reservation['date']);
-                                String formattedDateOfWeek =
-                                    DateFormat.EEEE('en').format(intDate);
-                                final courseName =
-                                    reservation['slot_course_name'];
-                                final startTime =
-                                    reservation['slot_start_time'];
-                                final endTime = reservation['slot_end_time'];
-                                String formattedStartTime =
-                                    IntConverter.formatTime(startTime);
-                                String formattedEndTime =
-                                    IntConverter.formatTime(endTime);
-                                final dateOfWeek = formattedDateOfWeek;
-                                final date = reservation['date'];
-                                return Row(
-                                  children: [
-                                    Expanded(
-                                      child: CourseTime(
-                                        courseName: courseName,
-                                        startTime: formattedStartTime,
-                                        endTime: formattedEndTime,
-                                        courseDate: date,
-                                        dateOfWeek: dateOfWeek,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.calendar_today_outlined,
+                                        color: Colors.white70,
+                                        size: 28.sp,
                                       ),
-                                    ),
-                                    Container(
-                                      width: 130.w,
-                                      height: 110.h,
-                                      child: reservation[
-                                                      'slot_course_image_url'] !=
-                                                  null &&
-                                              reservation[
-                                                      'slot_course_image_url']
-                                                  .toString()
-                                                  .isNotEmpty
-                                          ? Image.network(
-                                              reservation[
-                                                  'slot_course_image_url'],
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (context, error, stackTrace) {
-                                                return Image.asset(
-                                                  'lib/assets/invi_course_pic/female_fitness.png',
-                                                  fit: BoxFit.cover,
-                                                );
-                                              },
-                                              loadingBuilder: (context, child,
-                                                  loadingProgress) {
-                                                if (loadingProgress == null)
-                                                  return child;
-                                                return Center(
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    value: loadingProgress
-                                                                .expectedTotalBytes !=
-                                                            null
-                                                        ? loadingProgress
-                                                                .cumulativeBytesLoaded /
-                                                            loadingProgress
-                                                                .expectedTotalBytes!
-                                                        : null,
-                                                  ),
-                                                );
-                                              },
-                                            )
-                                          : Image.asset(
+                                      SizedBox(width: 14.w),
+                                      Expanded(
+                                        child: Text(
+                                          'No Reservation',
+                                          style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 36.h,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.white,
+                                            elevation: 0,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12.r),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 14.w),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    MembershipPage(),
+                                              ),
+                                            );
+                                          },
+                                          child: Text(
+                                            'Reserve',
+                                            style: TextStyle(
+                                              color: kColorPrimary,
+                                              fontSize: 13.sp,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          } else {
+                            final reservation = snapshot.data!;
+                            final DateTime intDate =
+                                DateTime.parse(reservation['date']);
+                            String formattedDateOfWeek =
+                                DateFormat.EEEE('en').format(intDate);
+                            final courseName = reservation['slot_course_name'];
+                            final startTime = reservation['slot_start_time'];
+                            final endTime = reservation['slot_end_time'];
+                            String formattedStartTime =
+                                IntConverter.formatTime(startTime);
+                            String formattedEndTime =
+                                IntConverter.formatTime(endTime);
+                            final dateOfWeek = formattedDateOfWeek;
+                            final date = reservation['date'];
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: CourseTime(
+                                    courseName: courseName,
+                                    startTime: formattedStartTime,
+                                    endTime: formattedEndTime,
+                                    courseDate: date,
+                                    dateOfWeek: dateOfWeek,
+                                  ),
+                                ),
+                                Container(
+                                  width: 130.w,
+                                  height: 110.h,
+                                  child: reservation['slot_course_image_url'] !=
+                                              null &&
+                                          reservation['slot_course_image_url']
+                                              .toString()
+                                              .isNotEmpty
+                                      ? Image.network(
+                                          reservation['slot_course_image_url'],
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return Image.asset(
                                               'lib/assets/invi_course_pic/female_fitness.png',
                                               fit: BoxFit.cover,
-                                            ),
-                                    )
-                                  ],
-                                );
-                              }
+                                            );
+                                          },
+                                          loadingBuilder: (context, child,
+                                              loadingProgress) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes!
+                                                    : null,
+                                              ),
+                                            );
+                                          },
+                                        )
+                                      : Image.asset(
+                                          'lib/assets/invi_course_pic/female_fitness.png',
+                                          fit: BoxFit.cover,
+                                        ),
+                                )
+                              ],
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(height: 28.h),
+                      Text(
+                        'Services',
+                        style: TextStyle(
+                            fontSize: 22.sp, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 12.h),
+                      GridView.count(
+                        crossAxisCount: 2,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        mainAxisSpacing: 10.h,
+                        crossAxisSpacing: 10.w,
+                        childAspectRatio: 1.5,
+                        children: [
+                          _ServiceTile(
+                            icon: CupertinoIcons.person,
+                            color: kColorPrimary,
+                            bgColor: const Color(0xFFE8F5F0),
+                            label: 'Member',
+                            sub: 'بەشداربوو',
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => AttendeePage()));
+                            },
+                          ),
+                          _ServiceTile(
+                            icon: CupertinoIcons.doc_text,
+                            color: const Color(0xFF3B5FCC),
+                            bgColor: const Color(0xFFEBF0FE),
+                            label: 'Health Survey',
+                            sub: 'ساخلەمی',
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => SurveyAttendeePage()));
+                            },
+                          ),
+                          _ServiceTile(
+                            icon: CupertinoIcons.chart_bar,
+                            color: const Color(0xFFC27D1A),
+                            bgColor: const Color(0xFFFEF5E7),
+                            label: 'Graph',
+                            sub: 'شێوە',
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => GraphAttendeePage()));
+                            },
+                          ),
+                          _ServiceTile(
+                            icon: CupertinoIcons.creditcard,
+                            color: kColorPrimary,
+                            bgColor: const Color(0xFFE8F5F0),
+                            label: 'Membership',
+                            sub: 'ئەندام',
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => MembershipPage()));
+                            },
+                          ),
+                          _ServiceTile(
+                            icon: CupertinoIcons.qrcode,
+                            color: const Color(0xFF3B5FCC),
+                            bgColor: const Color(0xFFEBF0FE),
+                            label: 'Reservation',
+                            sub: 'حجزکرنا من',
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => QrReservationPage()));
+                            },
+                          ),
+                          _ServiceTile(
+                            icon: CupertinoIcons.star,
+                            color: const Color(0xFFC27D1A),
+                            bgColor: const Color(0xFFFEF5E7),
+                            label: 'Wellbee Point',
+                            sub: 'خالێن وێلبی',
+                            onTap: () async {
+                              final fetchedUserData = await _fetchAttendee();
+                              final userId = fetchedUserData?[0]['user_id'];
+                              final points = fetchedUserData?[0]['points'];
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => PointPage(
+                                      userId: userId, points: points)));
                             },
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(height: 28.h),
-                          Text(
-                            'Services',
-                            style: TextStyle(
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 12.h),
-                          GridView.count(
-                                      crossAxisCount: 2,
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      mainAxisSpacing: 10.h,
-                                      crossAxisSpacing: 10.w,
-                                      childAspectRatio: 1.5,
-                                      children: [
-                                        _ServiceTile(
-                                          icon: CupertinoIcons.person,
-                                          color: kColorPrimary,
-                                          bgColor: const Color(0xFFE8F5F0),
-                                          label: 'Member',
-                                          sub: 'بەشداربوو',
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        AttendeePage()));
-                                          },
-                                        ),
-                                        _ServiceTile(
-                                          icon: CupertinoIcons.doc_text,
-                                          color: const Color(0xFF3B5FCC),
-                                          bgColor: const Color(0xFFEBF0FE),
-                                          label: 'Health Survey',
-                                          sub: 'ساخلەمی',
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        SurveyAttendeePage()));
-                                          },
-                                        ),
-                                        _ServiceTile(
-                                          icon: CupertinoIcons.chart_bar,
-                                          color: const Color(0xFFC27D1A),
-                                          bgColor: const Color(0xFFFEF5E7),
-                                          label: 'Graph',
-                                          sub: 'شێوە',
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        GraphAttendeePage()));
-                                          },
-                                        ),
-                                        _ServiceTile(
-                                          icon: CupertinoIcons.creditcard,
-                                          color: kColorPrimary,
-                                          bgColor: const Color(0xFFE8F5F0),
-                                          label: 'Membership',
-                                          sub: 'ئەندام',
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        MembershipPage()));
-                                          },
-                                        ),
-                                        _ServiceTile(
-                                          icon: CupertinoIcons.qrcode,
-                                          color: const Color(0xFF3B5FCC),
-                                          bgColor: const Color(0xFFEBF0FE),
-                                          label: 'Reservation',
-                                          sub: 'حجزکرنا من',
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        QrReservationPage()));
-                                          },
-                                        ),
-                                        _ServiceTile(
-                                          icon: CupertinoIcons.star,
-                                          color: const Color(0xFFC27D1A),
-                                          bgColor: const Color(0xFFFEF5E7),
-                                          label: 'Wellbee Point',
-                                          sub: 'خالێن وێلبی',
-                                          onTap: () async {
-                                            final fetchedUserData =
-                                                await _fetchAttendee();
-                                            final userId =
-                                                fetchedUserData?[0]['user_id'];
-                                            final points =
-                                                fetchedUserData?[0]['points'];
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (_) => PointPage(
-                                                        userId: userId,
-                                                        points: points)));
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10.h),
-                                    _VideoTile(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (_) =>
-                                                    const VideoCourseSelectPage()));
-                                      },
-                                    ),
-                          SizedBox(height: 20.h),
-                        ],
+                      SizedBox(height: 10.h),
+                      _VideoTile(
+                        enabled: _hasMembership,
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => const VideoCourseSelectPage()));
+                        },
                       ),
-                    ),
+                      SizedBox(height: 20.h),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        );
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -709,53 +709,58 @@ class _ServiceTile extends StatelessWidget {
 
 class _VideoTile extends StatelessWidget {
   final VoidCallback onTap;
+  final bool enabled;
 
-  const _VideoTile({required this.onTap});
+  const _VideoTile({required this.onTap, this.enabled = true});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14.r),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-        decoration: BoxDecoration(
-          color: kColorPrimary,
-          borderRadius: BorderRadius.circular(14.r),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40.w,
-              height: 40.w,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.18),
-                borderRadius: BorderRadius.circular(10.r),
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.4,
+      child: InkWell(
+        onTap: enabled ? onTap: null,
+        borderRadius: BorderRadius.circular(14.r),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          decoration: BoxDecoration(
+            color: kColorPrimary,
+            borderRadius: BorderRadius.circular(14.r),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40.w,
+                height: 40.w,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Icon(CupertinoIcons.play_fill,
+                    color: Colors.white, size: 22.sp),
               ),
-              child: Icon(CupertinoIcons.play_fill, color: Colors.white, size: 22.sp),
-            ),
-            SizedBox(width: 12.w),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Videos',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+              SizedBox(width: 12.w),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Videos',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                Text(
-                  'Watch course videos at home',
-                  style: TextStyle(
-                    fontSize: 10.sp,
-                    color: Colors.white.withOpacity(0.7),
+                  Text(
+                    'Watch course videos at home',
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: Colors.white.withOpacity(0.7),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
