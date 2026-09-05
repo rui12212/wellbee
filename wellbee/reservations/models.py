@@ -77,11 +77,11 @@ def set_start_end_time(sender, instance, **kwargs):
 @receiver(post_save, sender=Reservation)
 def set_requested_join_times(sender, instance, created, **kwargs):
     if created:
-      if instance.membership.requested_join_times < instance.membership.max_join_times:
-             instance.membership.requested_join_times += 1
-             instance.membership.save() 
-      else:
-         raise ValidationError('Reached to max times to request reservation')
+        if instance.membership.requested_join_times < 10:
+          instance.membership.requested_join_times += 1
+          instance.membership.save()
+        else:
+            raise ValueError("Reached to max requested_join_times")
 
 @receiver(post_save, sender=Reservation)
 def add_reserved_people(sender, instance, created, **kwargs):
@@ -115,6 +115,14 @@ def update_reserved_people_on_delete(sender, instance, **kwargs):
         if slot.reserved_people <= instance.slot.max_people-1:
             slot.is_max = False
         slot.save()
+
+@receiver(post_delete, sender=Reservation)
+def decrease_requested_join_times_on_delete(sender, instance, **kwargs):
+    if not instance.attended:
+        membership = instance.membership
+        if membership.requested_join_times > 0:
+            membership.requested_join_times -= 1
+            membership.save()
 
 # def cleanup_migrations():
 #     from django.db.migrations.recorder import MigrationRecorder

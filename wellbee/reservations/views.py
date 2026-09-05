@@ -69,8 +69,7 @@ class SlotViewSet(viewsets.ModelViewSet):
             return slots
         
         if self.action == 'fetch_each_course_slots':
-            course_name = self.request.query_params.get('course_name')
-            slots = Slot.objects.filter(course__course_name = course_name).order_by('date','start_time')
+            slots = Slot.objects.order_by('date','start_time')
             return slots
 
         if self.action == 'fetch_course_slots':
@@ -217,24 +216,15 @@ class ReservationViewSet(viewsets.ModelViewSet):
         # )
         if my_overlap_reservation.exists():
             raise ValidationError('Same reservation already exists')
-        # max_requested_timesを弾く
-        if membership.requested_join_times == membership.max_join_times:
-            raise ValidationError('Request denied. Already reached to max reservation times')
-         # max_reservation_timesを弾く
-        if  membership.already_join_times ==  membership.max_join_times:
-            raise ValidationError('You already reached to max join times')
-        # validation_day以降の予約を弾く
+        if membership.requested_join_times >= 10:
+            raise ValidationError('Monthly reservation limit reached')
         if membership.expire_day < slot.date:
             raise ValidationError('Selected slot is out of your membership\'s expire day')
-        
-        # requested_times_joinがmax_join_timesと同数なら、createを弾く
-        else:
-            reservation = Reservation.objects.create(
+
+        reservation = Reservation.objects.create(
             membership=membership,
             slot=slot,
             date=date,
-            # attended=False,
-            # is_cancelled=True,
         )
         serializer = self.get_serializer(reservation)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

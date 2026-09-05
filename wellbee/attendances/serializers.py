@@ -108,10 +108,11 @@ class AttendeeSerializer(serializers.ModelSerializer):
     user_phone = serializers.CharField(source='user.phone_number', read_only=True)
     points = serializers.IntegerField(source='user.points', read_only=True)
     membership = MembershipSerializer(source='membership_set', read_only=True, many=True)
+    stamps = serializers.IntegerField(source='user.stamps',read_only=True)
 
     class Meta:
         model = Attendee
-        fields = ('id','user', 'name', 'gender', 'date_of_birth', 'any_comment', 'created_date', 'reason', 'goal','last_survey_date','user_id','user_phone','points','membership')
+        fields = ('id','user', 'name', 'gender', 'date_of_birth', 'any_comment', 'created_date', 'reason', 'goal','last_survey_date','user_id','user_phone','points','membership','stamps')
         extra_kwargs = {
             'user': {'read_only': True},
             'created_date': {'read_only': True},

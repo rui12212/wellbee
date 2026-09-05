@@ -178,20 +178,47 @@ def validate_staff(sender, instance, **kwargs):
     if not instance.checked_by.is_staff:
         raise  ValueError('The confirmation of the checking must be a staff member')
 
+# @receiver(post_save, sender=CheckIn)
+# def set_points_for_checkin(sender, created, instance, **kwargs):
+#     if created:
+#         instance.reservation.membership.user.points += 1
+#         instance.reservation.membership.user.save()
+
 @receiver(post_save, sender=CheckIn)
-def set_points_for_checkin(sender, created, instance, **kwargs):
+def increment_stamps(sender, created, instance, **kwargs):
     if created:
-        instance.reservation.membership.user.points += 1
-        instance.reservation.membership.user.save()
-        
+        user = instance.reservation.membership.user
+        today = timezone.localdate()
+
+        already_checked_in_today = CheckIn.objects.filter(
+            reservation__membership__user=user,
+            created_at__date=today
+        ).exclude(
+            pk=instance.pk
+        ).exists()
+
+        if not already_checked_in_today:
+            user.stamps += 1
+            if user.stamps % 5 == 0:
+                user.points += 1
+            user.save()
+
+@receiver(post_save, sender=CheckIn)
+def decrease_requested_join_times(sender, created, instance, **kwargs):
+    if created:
+        instance.reservation.membership.requested_join_times -= 1
+        instance.reservation.membership.save()
+
+# Dropin含めて、ReservationとCheckinは何回でもできるようにするため、削除
 @receiver(post_save, sender=CheckIn)
 def set_already_join_times(sender,created, instance, **kwargs):
     if created:
-        if instance.reservation.membership.already_join_times < instance.reservation.membership.max_join_times:
-            instance.reservation.membership.already_join_times += 1
-            instance.reservation.membership.save()
-        else:
-            raise ValueError('You have reached the maximum number of times you can join this course. Please apply for a new membership')
+        # if instance.reservation.membership.already_join_times < instance.reservation.membership.max_join_times:
+        instance.reservation.membership.already_join_times += 1
+        instance.reservation.membership.save()
+        # else:
+        #     raise ValueError('You have reached the maximum number of times you can join this course. Please apply for a new membership')
+
 @receiver(post_save, sender=CheckIn)
 def set_boolean_reservation(sender, created, instance, **kwargs):
     if created:

@@ -9,7 +9,7 @@ class UserAdmin(BaseUserAdmin):
     list_display = ['phone_number']
     search_fields = ['phone_number']
     fieldsets = (
-        (None, {'fields': ('phone_number', 'password','points')}),
+        (None, {'fields': ('phone_number', 'password','points','stamps')}),
         (_('Personal Info'), {'fields': ()}),
         (
             _('Permissions'),
@@ -25,7 +25,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('phone_number', 'password1', 'password2','points' )
+            'fields': ('phone_number', 'password1', 'password2','points','stamps')
         }),
     )
 
