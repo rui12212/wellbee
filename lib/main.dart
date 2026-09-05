@@ -10,6 +10,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:wellbee/firebase_options.dart';
 import 'package:wellbee/version/version_info.dart';
+import 'package:wellbee/services/version_check_service.dart';
+import 'package:wellbee/ui_parts/dialogue_awesome.dart';
 import 'package:wellbee/screens/first_attendee_add.dart';
 import 'package:wellbee/screens/pass_reset_request.dart';
 import 'package:wellbee/screens/staff/auth/staff_signin.dart';
@@ -263,9 +265,40 @@ class _SignInPageState extends State<SignInPage> {
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
-      // エラーハンドリング: URLを開けない場合の処理
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Try again later')));
+    }
+  }
+
+  Future<void> _checkVersion() async {
+    final status = await VersionCheckService.check();
+    if (!mounted) return;
+    Future<dynamic> Function() storeUrl = Platform.isIOS
+        ? () async {
+            await launchUrl(
+              Uri.parse('https://apps.apple.com/app/wellbee-app/id6737229335'),
+              mode: LaunchMode.externalApplication,
+            );
+          }
+        : () async {
+            await launchUrl(
+              Uri.parse(
+                  'https://play.google.com/store/apps/details?id=com.wellbee.app&pcampaignid=web_share'),
+              mode: LaunchMode.externalApplication,
+            );
+          };
+    if (status == VersionStatus.forceUpdate) {
+      VersionUpCustomAwesomeDialogue(
+        titleText: 'Update Required',
+        desc: 'Please update the app to continue.',
+        callback: storeUrl,
+      ).show(context);
+    } else if (status == VersionStatus.updateAvailable) {
+      SoftUpdateCustomAwesomeDialogue(
+        titleText: 'New Version Available',
+        desc: 'A new version of the app is available.',
+        onUpdate: storeUrl,
+      ).show(context);
     }
   }
 
@@ -273,6 +306,9 @@ class _SignInPageState extends State<SignInPage> {
   void initState() {
     super.initState();
     fetchTokenAndCheckAttendeeExist();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _checkVersion();
+    });
   }
 
   @override

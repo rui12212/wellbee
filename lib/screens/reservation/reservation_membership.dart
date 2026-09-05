@@ -137,13 +137,12 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
     return kSlotEvents[day] ?? [];
   }
 
-  Future<List<dynamic>?> _fetchEachCourseSlots(String courseName) async {
+  Future<List<dynamic>?> _fetchAllCourseSlots() async {
     try {
       token = await SharedPrefs.fetchAccessToken();
       var url = Uri.parse('${baseUri}reservations/slot/each_course_slots/')
           .replace(queryParameters: {
         'token': token,
-        'course_name': widget.membershipList['course_name'],
       });
       // print(widget.courseList['course_name']);
       var response = await Future.any([
@@ -218,8 +217,8 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
     }
   }
 
-  Future<List?> fetchSlotsEachDays(String course, DateTime? date) async {
-    final List<dynamic>? allSlots = await _fetchEachCourseSlots(course);
+  Future<List?> fetchSlotsEachDays(DateTime? date) async {
+    final List<dynamic>? allSlots = await _fetchAllCourseSlots();
     final String formattedDate = DateFormat('yyyy-MM-dd').format(date!);
     final slotList = [];
 
@@ -251,7 +250,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
 
   Future _fetchAndBuildEvents() async {
     List<dynamic>? allSlots =
-        await _fetchEachCourseSlots(widget.membershipList['course_name']);
+        await _fetchAllCourseSlots();
 
     if (allSlots != null) {
       setState(() {
@@ -349,7 +348,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                       _focusedDay = focusedDay;
                     });
                     await fetchSlotsEachDays(
-                        widget.membershipList['course_name'], _selectedDay);
+                        _selectedDay);
                   }
                 },
                 onFormatChanged: (format) {
@@ -367,7 +366,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
               ),
               FutureBuilder(
                 future: fetchSlotsEachDays(
-                    widget.membershipList['course_name'], _selectedDay),
+                    _selectedDay),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
