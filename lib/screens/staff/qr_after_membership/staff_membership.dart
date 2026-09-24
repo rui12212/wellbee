@@ -185,20 +185,6 @@ class _StaffMembershipPageState extends State<StaffMembershipPage> {
                       child: ListView.builder(
                           itemCount: membershipList.length,
                           itemBuilder: (context, index) {
-                            // request_join_timesとmax_join_timesの比較
-                            final requested_join_times =
-                                membershipList[index]['requested_join_times'];
-                            final max_join_times =
-                                membershipList[index]['max_join_times'];
-                            final isAlreadyMaxRequest =
-                                requested_join_times == max_join_times;
-
-                            // already_join_timesとmax_join_timesの比較
-                            final already_join_times =
-                                membershipList[index]['already_join_times'];
-                            final isAlreadyMaxJoin =
-                                already_join_times == max_join_times;
-
                             bool is_expired = false;
                             DateTime formattedDate = DateTime.parse(
                                 membershipList[index]['expire_day']);
@@ -211,7 +197,7 @@ class _StaffMembershipPageState extends State<StaffMembershipPage> {
 
                             return Column(
                               children: [
-                                isAlreadyMaxJoin || is_expired
+                                is_expired
                                     ? Stack(
                                         children: [
                                           Container(
@@ -220,7 +206,14 @@ class _StaffMembershipPageState extends State<StaffMembershipPage> {
                                             child: Column(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
-                                              children: [],
+                                              children: [
+                                                Text('Expired',
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 22.sp,
+                                                        fontWeight:
+                                                            FontWeight.w800)),
+                                              ],
                                             ),
                                           ),
                                           Opacity(
@@ -231,38 +224,8 @@ class _StaffMembershipPageState extends State<StaffMembershipPage> {
                                           )
                                         ],
                                       )
-                                    : isAlreadyMaxRequest || is_expired
-                                        ? Stack(
-                                            children: [
-                                              Container(
-                                                height: 120.h,
-                                                alignment: Alignment.center,
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                        'Reached to max request times',
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 22.sp,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w800)),
-                                                  ],
-                                                ),
-                                              ),
-                                              Opacity(
-                                                opacity: 0.3,
-                                                child: TicketList(
-                                                    membershipList:
-                                                        membershipList[index]),
-                                              )
-                                            ],
-                                          )
-                                        : TicketList(
-                                            membershipList:
-                                                membershipList[index]),
+                                    : TicketList(
+                                        membershipList: membershipList[index]),
                                 SizedBox(height: 10.h),
                               ],
                             );

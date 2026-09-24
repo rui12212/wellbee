@@ -66,3 +66,8 @@ wellbee/build/
 # Claude agent generated files
 .company/
 researcher/
+learnings/
+.claude/
+
+# Python 仮想環境
+.venv/

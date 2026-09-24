@@ -69,62 +69,45 @@ class _StaffHomePageState extends State<StaffHomePage> {
     });
   }
 
-  Widget _buildMenuCard({
+  Widget _buildGridTile({
     required IconData icon,
     required String title,
+    required Color color,
     required VoidCallback onTap,
-    Color? iconColor,
   }) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.r),
-      ),
-      margin: EdgeInsets.only(bottom: 16.h),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16.r),
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 20.w,
-            vertical: 20.h,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.r),
-            color: Colors.white,
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(12.w),
-                decoration: BoxDecoration(
-                  color: (iconColor ?? _primaryColor).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Icon(
-                  icon,
-                  color: iconColor ?? _primaryColor,
-                  size: 28.sp,
-                ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14.r),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        child: Row(
+          children: [
+            Container(
+              width: 40.w,
+              height: 40.w,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10.r),
               ),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
+              child: Icon(icon, color: color, size: 20.sp),
+            ),
+            SizedBox(width: 10.w),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
                 ),
               ),
-              Icon(
-                Icons.chevron_right,
-                color: Colors.grey[400],
-                size: 24.sp,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -170,87 +153,86 @@ class _StaffHomePageState extends State<StaffHomePage> {
                     ],
                   ),
                 ),
-                // メニューカード
-                _buildMenuCard(
-                  icon: Icons.calendar_month_outlined,
-                  title: 'All Course Calendar',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => CalendarPage()),
-                    );
-                  },
+                // メニューグリッド
+                GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  mainAxisSpacing: 12.h,
+                  crossAxisSpacing: 12.w,
+                  childAspectRatio: 1.6,
+                  children: [
+                    _buildGridTile(
+                      icon: Icons.calendar_month_outlined,
+                      title: 'Calendar',
+                      color: const Color(0xFF3B5FCC),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => CalendarPage()),
+                      ),
+                    ),
+                    _buildGridTile(
+                      icon: Icons.edit_calendar_outlined,
+                      title: 'Course Edit',
+                      color: const Color(0xFFC27D1A),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => EditCoursesPage()),
+                      ),
+                    ),
+                    _buildGridTile(
+                      icon: Icons.school_outlined,
+                      title: 'Slot Add',
+                      color: _primaryColor,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => AllCoursePage()),
+                      ),
+                    ),
+                    _buildGridTile(
+                      icon: Icons.airplane_ticket_outlined,
+                      title: 'Check Member',
+                      color: const Color(0xFFE8344E),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => CheckExpireMembershipPage()),
+                      ),
+                    ),
+                    _buildGridTile(
+                      icon: Icons.edit_note_outlined,
+                      title: 'Edit Member',
+                      color: const Color(0xFF7B61FF),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const MembershipEditListPage()),
+                      ),
+                    ),
+                    _buildGridTile(
+                      icon: Icons.health_and_safety_outlined,
+                      title: 'Health Survey',
+                      color: const Color(0xFF039674),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => CheckHealthSurveyPage()),
+                      ),
+                    ),
+                    _buildGridTile(
+                      icon: Icons.lock_reset_outlined,
+                      title: 'Password Reset',
+                      color: Colors.grey.shade600,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const UserPasswordResetPage()),
+                      ),
+                    ),
+                    _buildGridTile(
+                      icon: Icons.person_add_outlined,
+                      title: 'Add Staff',
+                      color: const Color(0xFF077CE3),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const AddStaffUserPage()),
+                      ),
+                    ),
+                  ],
                 ),
-                _buildMenuCard(
-                  icon: Icons.edit_calendar_outlined,
-                  title: 'Course Edit',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => EditCoursesPage()),
-                    );
-                  },
-                ),
-                _buildMenuCard(
-                  icon: Icons.school_outlined,
-                  title: 'Slot Add',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => AllCoursePage()),
-                    );
-                  },
-                ),
-                _buildMenuCard(
-                  icon: Icons.airplane_ticket_outlined,
-                  title: 'Check Membership',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => CheckExpireMembershipPage()),
-                    );
-                  },
-                ),
-                _buildMenuCard(
-                  icon: Icons.edit_note_outlined,
-                  title: 'Edit Membership',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => const MembershipEditListPage()),
-                    );
-                  },
-                ),
-                _buildMenuCard(
-                  icon: Icons.health_and_safety_outlined,
-                  title: 'Check Health Survey',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => CheckHealthSurveyPage()),
-                    );
-                  },
-                ),
-                _buildMenuCard(
-                  icon: Icons.lock_reset_outlined,
-                  title: 'Password Reset',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const UserPasswordResetPage()),
-                    );
-                  },
-                ),
-                _buildMenuCard(
-                  icon: Icons.person_add_outlined,
-                  title: 'Add Staff User',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => const AddStaffUserPage()),
-                    );
-                  },
-                ),
-
                 SizedBox(height: 16.h),
               ],
             ),

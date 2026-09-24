@@ -91,51 +91,6 @@ class QrCodePage extends StatefulWidget {
 class _QrCodePageState extends State<QrCodePage> {
   String? token = '';
 
-  // Future<void> _fetchToken() async {
-  //   token = await SharedPrefs.fetchAccessToken();
-  // }
-
-  Future<List<dynamic>?> _fetchReservation() async {
-    try {
-      token = await SharedPrefs.fetchAccessToken();
-      var url = Uri.parse(
-          '${baseUri}reservations/reservation/my_reservations/?token=$token');
-      var response = await Future.any([
-        http.get(url, headers: {
-          "Authorization": 'JWT $token',
-          "Content-Type": "application/json"
-        }),
-        Future.delayed(const Duration(seconds: 15),
-            () => throw TimeoutException("Request timeout"))
-      ]);
-      if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
-        if (data.isNotEmpty && data != null) {
-          print(data);
-          return data;
-        } else {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Error occurred.')));
-        }
-      } else if (response.statusCode >= 400) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Internet Error occurred')));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Something went wrong. Try again later')));
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchReservation();
-  }
-
   @override
   showSnackBar(color, text) {
     ScaffoldMessenger.of(context).showSnackBar(

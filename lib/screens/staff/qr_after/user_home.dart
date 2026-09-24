@@ -283,7 +283,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                                       SizedBox(height: 8.h),
                                       _infoRow(
                                         Icons.fitness_center_rounded,
-                                        '${d['already_join_times']} / ${d['max_join_times']} sessions',
+                                        '${d['already_join_times']} sessions',
                                         statusColor,
                                       ),
                                       SizedBox(height: 4.h),

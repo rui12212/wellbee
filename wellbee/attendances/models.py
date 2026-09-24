@@ -8,6 +8,7 @@ from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from django.core.validators import RegexValidator
 from accounts.models import User
+from rest_framework.exceptions import PermissionDenied
 
 
 
@@ -176,7 +177,7 @@ class CheckIn(models.Model):
 @receiver(pre_save, sender=CheckIn)
 def validate_staff(sender, instance, **kwargs):
     if not instance.checked_by.is_staff:
-        raise  ValueError('The confirmation of the checking must be a staff member')
+        raise PermissionDenied('The confirmation of the checking must be a staff member')
 
 # @receiver(post_save, sender=CheckIn)
 # def set_points_for_checkin(sender, created, instance, **kwargs):
@@ -203,11 +204,11 @@ def increment_stamps(sender, created, instance, **kwargs):
                 user.points += 1
             user.save()
 
-@receiver(post_save, sender=CheckIn)
-def decrease_requested_join_times(sender, created, instance, **kwargs):
-    if created:
-        instance.reservation.membership.requested_join_times -= 1
-        instance.reservation.membership.save()
+# @receiver(post_save, sender=CheckIn)
+# def decrease_requested_join_times(sender, created, instance, **kwargs):
+#     if created:
+#         instance.reservation.membership.requested_join_times -= 1
+#         instance.reservation.membership.save()
 
 # Dropin含めて、ReservationとCheckinは何回でもできるようにするため、削除
 @receiver(post_save, sender=CheckIn)

@@ -171,6 +171,34 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
     }
   }
 
+  String _extractErrorMessage(http.Response response) {
+    final body = utf8.decode(response.bodyBytes);
+
+    // 500エラーでHTMLが返るケース
+    if (body.trimLeft().startsWith('<')){
+      return 'Server error (${response.statusCode})';
+    }
+
+    try {
+      final decoded = jsonDecode(body);
+
+      // ValidationError('文字列') -> ['メッセージ']
+      if (decoded is Map) {
+        if(decoded['detail'] != null) {
+          final detail = decoded['detail'];
+          return detail is List ? detail.first.toString() : detail.toString();
+        }
+
+        // フィールド単位の検証エラーは {'field': ['メッセージ']}
+        final first = decoded.values.first;
+        return first is List ? first.first.toString() : first.toString();
+      }
+    }catch(_) {
+
+    }
+    return body.isEmpty ? 'Request failed (${response.statusCode})': body;
+  }
+
   Future<void> _createReservation() async {
     try {
       token = await SharedPrefs.fetchAccessToken();
@@ -206,7 +234,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
           showSnackBar(Colors.red, 'Some Error occurred.Try again later');
         }
       } else if (response.statusCode >= 400) {
-        showSnackBar(Colors.red, 'Error: ${response.body}');
+        showSnackBar(Colors.red, _extractErrorMessage(response));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('Something went wrong. Try again later')));
@@ -394,6 +422,8 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                           final bool is_cancelled =
                               courseSlotList[index]['is_cancelled'];
                           final bool is_max = courseSlotList[index]['is_max'];
+                          final String courseName =
+                              courseSlotList[index]['slot_course_name'] ?? '';
                           // print(courseSlotList[index]['is_max']);
                           return Container(
                             height: 100.h,
@@ -403,17 +433,25 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                                     child: Column(
                                       children: [
                                         ListTile(
-                                            title: Container(
-                                              child: Text(
-                                                  '$formattedStartTime - $formattedEndTime',
-                                                  style: TextStyle(
-                                                      fontSize: 20.w)),
-                                            ),
-                                            subtitle: Row(
+                                            title: Text(courseName,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                    fontSize: 18.w,
+                                                    fontWeight:
+                                                        FontWeight.w600)),
+                                            subtitle: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                Text('Avalable Seats: '),
                                                 Text(
-                                                    '${courseSlotList[index]['reserved_people']}/${courseSlotList[index]['max_people']}'),
+                                                    '$formattedStartTime - $formattedEndTime',
+                                                    style: TextStyle(
+                                                        fontSize: 15.w)),
+                                                Text(
+                                                    'Available Seats: ${courseSlotList[index]['reserved_people']}/${courseSlotList[index]['max_people']}',
+                                                    style: TextStyle(
+                                                        fontSize: 13.w)),
                                               ],
                                             ),
                                             trailing: is_cancelled == true &&
@@ -442,16 +480,24 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                                 : Column(
                                     children: [
                                       ListTile(
-                                        title: Container(
-                                          child: Text(
-                                              '$formattedStartTime - $formattedEndTime',
-                                              style: TextStyle(fontSize: 20.w)),
-                                        ),
-                                        subtitle: Row(
+                                        title: Text(courseName,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 18.w,
+                                                fontWeight: FontWeight.w600)),
+                                        subtitle: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Text('Avalable Seats:'),
                                             Text(
-                                                '${courseSlotList[index]['reserved_people']}/${courseSlotList[index]['max_people']}'),
+                                                '$formattedStartTime - $formattedEndTime',
+                                                style:
+                                                    TextStyle(fontSize: 15.w)),
+                                            Text(
+                                                'Available Seats: ${courseSlotList[index]['reserved_people']}/${courseSlotList[index]['max_people']}',
+                                                style:
+                                                    TextStyle(fontSize: 13.w)),
                                           ],
                                         ),
                                         trailing: ElevatedButton(
@@ -471,7 +517,7 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
                                                     titleText:
                                                         'Confirm Reservation\nحجزکرنێ پشت راست بکە',
                                                     desc:
-                                                        'Make reservation on \n$date  $formattedStartTime-$formattedEndTime',
+                                                        '$courseName\n$date  $formattedStartTime-$formattedEndTime',
                                                     callback:
                                                         _createReservation,
                                                   ).show(context);

@@ -5,12 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wellbee/assets/inet.dart';
-import 'package:wellbee/screens/staff/calendar/calendar.dart';
-import 'package:wellbee/screens/staff/course/course.dart';
 import 'package:wellbee/screens/staff/qr_after_point/point_select.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/color.dart';
-import 'package:wellbee/ui_parts/dialogue_awesome.dart';
 import 'package:wellbee/ui_parts/textstyle.dart';
 import 'package:http/http.dart' as http;
 
@@ -33,10 +30,12 @@ class _Header extends StatelessWidget {
             alignment: Alignment.topLeft,
             child: Row(
               children: [
-                Text(
-                  title,
-                  style:
-                      TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+                Flexible(
+                  child: Text(
+                    title,
+                    style:
+                        TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 TextButton(
                   style: TextButton.styleFrom(
@@ -64,23 +63,22 @@ class _Header extends StatelessWidget {
   }
 }
 
-class PointDecreasePage extends StatefulWidget {
+class StampDecreasePage extends StatefulWidget {
   String pk;
-  int point;
-  PointDecreasePage(
-      // this.newUser,
-      {Key? key,
-      required this.pk,
-      required this.point})
-      : super(key: key);
+  int stamp;
+  StampDecreasePage({
+    Key? key,
+    required this.pk,
+    required this.stamp,
+  }) : super(key: key);
 
   @override
-  _PointDecreasePageState createState() => _PointDecreasePageState();
+  _StampDecreasePageState createState() => _StampDecreasePageState();
 }
 
-class _PointDecreasePageState extends State<PointDecreasePage> {
+class _StampDecreasePageState extends State<StampDecreasePage> {
   String? token = '';
-  final TextEditingController _pointController = TextEditingController();
+  final TextEditingController _stampController = TextEditingController();
 
   @override
   showSnackBar(color, text) {
@@ -89,23 +87,16 @@ class _PointDecreasePageState extends State<PointDecreasePage> {
     );
   }
 
-  Future<void> decreasePoints() async {
-    if (_pointController.text.trim().isEmpty) {
+  Future<void> decreaseStamps() async {
+    if (_stampController.text.trim().isEmpty) {
       showSnackBar(Colors.red, 'The field is empty');
       return;
-    }
-    // final int? parsedIncreasedPoints =
-    //     int.tryParse(_pointController.text.trim());
-    // if (parsedIncreasedPoints == null) {
-    //   showSnackBar(Colors.red, 'Please enter a valid number');
-    //   return;
-    // }
-    else {
+    } else {
       try {
-        final int increasedPoints = int.tryParse(_pointController.text) ?? 0;
-        final int finalPoint = widget.point - increasedPoints;
-        if (finalPoint < 0) {
-          showSnackBar(Colors.red, 'Point cannot be minus');
+        final int decreasedStamps = int.tryParse(_stampController.text) ?? 0;
+        final int finalStamp = widget.stamp - decreasedStamps;
+        if (finalStamp < 0) {
+          showSnackBar(Colors.red, 'Stamp cannot be minus');
           return;
         }
         token = await SharedPrefs.fetchStaffAccessToken();
@@ -118,13 +109,13 @@ class _PointDecreasePageState extends State<PointDecreasePage> {
                 "Authorization": 'JWT $token',
                 "Content-Type": "application/json"
               },
-              body: jsonEncode({'points': finalPoint})),
+              body: jsonEncode({'stamps': finalStamp})),
           Future.delayed(const Duration(seconds: 15),
               () => throw TimeoutException("Request timeout"))
         ]);
 
         if (response.statusCode == 200) {
-          showSnackBar(kColorPrimary, 'Point increment success!');
+          showSnackBar(kColorPrimary, 'Stamp decrement success!');
 
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
             builder: (context) {
@@ -132,12 +123,12 @@ class _PointDecreasePageState extends State<PointDecreasePage> {
             },
           ), ((route) => false));
         } else {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Failed to add points')));
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to remove stamps')));
         }
       } catch (e) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('$e :Failed to add points')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('$e :Failed to remove stamps')));
       }
     }
   }
@@ -145,18 +136,6 @@ class _PointDecreasePageState extends State<PointDecreasePage> {
   @override
   void initState() {
     super.initState();
-  }
-
-  void showAwesomeDialog(
-      // int id,
-      ) {
-    CustomAwesomeDialogueForCancelReservation(
-      titleText: 'Give Point',
-      desc: 'Did you make sure the detail?',
-      callback: () async {
-        // await _cancelReservation(id);
-      },
-    ).show(context);
   }
 
   @override
@@ -172,16 +151,16 @@ class _PointDecreasePageState extends State<PointDecreasePage> {
               child: Container(
                   child: Column(
                 children: [
-                  _Header(title: 'Use Point', pk: widget.pk),
+                  _Header(title: 'Remove Stamp', pk: widget.pk),
                   Container(
                     height: 500.h,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Current Point',
+                        Text('Current Stamp',
                             style: TextStyle(
                                 fontWeight: FontWeight.w300, fontSize: 20.sp)),
-                        Text('${widget.point}pt',
+                        Text('${widget.stamp}',
                             style: TextStyle(
                                 fontSize: 50.sp, fontWeight: FontWeight.bold)),
                         SizedBox(
@@ -189,7 +168,7 @@ class _PointDecreasePageState extends State<PointDecreasePage> {
                         ),
                         Align(
                             alignment: Alignment.topCenter,
-                            child: Text('How much point the member use?',
+                            child: Text('How many stamps to remove?',
                                 style: TextStyle(
                                     color: kColorTextDarkGrey,
                                     fontSize: 20.sp,
@@ -198,29 +177,30 @@ class _PointDecreasePageState extends State<PointDecreasePage> {
                           label: '',
                           hintText: '',
                           inputType: TextInputType.number,
-                          controller: _pointController,
+                          controller: _stampController,
                         ).textFieldDecoration(),
                         SizedBox(
                           height: 40.h,
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            final decreasePoint = _pointController.text.trim();
-                            int? intDecreasePoint = int.tryParse(decreasePoint);
-                            if (intDecreasePoint == null) {
-                              showSnackBar(Colors.red, 'Point must be numbers');
-                            } else if (intDecreasePoint <= 0) {
+                            final decreaseStamp = _stampController.text.trim();
+                            int? intDecreaseStamp =
+                                int.tryParse(decreaseStamp);
+                            if (intDecreaseStamp == null) {
+                              showSnackBar(Colors.red, 'Stamp must be numbers');
+                            } else if (intDecreaseStamp <= 0) {
                               showSnackBar(
                                   Colors.red, 'Enter a number greater than 0');
                             } else {
-                              decreasePoints();
+                              decreaseStamps();
                             }
                           },
-                          child: Text('Use Point',
+                          child: Text('Remove Stamp',
                               style: TextStyle(
                                   color: kColorPrimary,
                                   fontWeight: FontWeight.w700,
-                                  fontSize: 22)),
+                                  fontSize: 22.sp)),
                         ),
                       ],
                     ),

@@ -149,7 +149,6 @@ class MembershipViewSet(viewsets.ModelViewSet):
         memberships = Membership.objects.filter(
             user = user_id,
             expire_day__gte = today_date,
-            already_join_times__lt = F('max_join_times')
         ).order_by('expire_day').first()
         serializer = self.get_serializer(memberships)
         return Response(serializer.data)
@@ -166,7 +165,6 @@ class MembershipViewSet(viewsets.ModelViewSet):
         memberships = Membership.objects.filter(
                 user = request.user,
                 is_approved = True,
-                already_join_times__lte = F('max_join_times'),
                 expire_day__gte = today_date
                 # is_expired = False,
             ).annotate(
@@ -390,24 +388,23 @@ class InterviewViewSet(viewsets.ModelViewSet):
     
 
 class CheckInViewSet(viewsets.ModelViewSet):
-    queryset = CheckIn.objects.all()
     serializer_class = serializers.CheckInSerializer
-    permission_classes = [CheckInPermission]
-
-    # def get_queryset(self):
-    #      if self.action == 'fetch_staff_checkin':
-    #         check_in = CheckIn.objects.all()
-    #         return check_in
-         
-    # @action(detail=False,methods=['get'],url_path='staff_checkin')
-    # def fetch_staff_checkin(self,request):
-    #     user_id = self.request.query_params.get('user_id')
-    #     last_checkin = CheckIn.objects.filter(
-    #         reservation__membership__user = user_id
-    #     ).reverse().first()
-    #     serializer = self.get_serializer(last_checkin)
-    #     return Response(serializer.data,status=status.HTTP_200_OK)
+    def get_queryset(self):
+         if self.action == "fetch_recent_three_checkin":
+            checkins = CheckIn.objects.all()
+            return checkins
     
+    @action(detail=False, methods=['get'], permission_classes=[CheckInPermission], url_path='recent_three_checkin')
+    def fetch_recent_three_checkin(self, request):
+        check_ins = CheckIn.objects.filter(
+            reservation__membership__user = request.user
+        ).annotate(
+                checkin_course_name = F('reservation__slot__course__course_name')
+        ).order_by(
+                '-created_at'
+        )[:3]
+        serializer = self.get_serializer(check_ins, many=True)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
        data = request.data

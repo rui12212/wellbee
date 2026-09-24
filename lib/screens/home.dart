@@ -609,9 +609,12 @@ class _HomePageState extends State<HomePage> {
                               final fetchedUserData = await _fetchAttendee();
                               final userId = fetchedUserData?[0]['user_id'];
                               final points = fetchedUserData?[0]['points'];
+                              final stamps = fetchedUserData?[0]['stamps'] ?? 0;
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (_) => PointPage(
-                                      userId: userId, points: points)));
+                                      userId: userId,
+                                      points: points,
+                                      stamps: stamps)));
                             },
                           ),
                         ],

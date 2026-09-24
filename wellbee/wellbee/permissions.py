@@ -157,7 +157,7 @@ class CheckInPermission(BasePermission):
         if view.action in ['list', 'retrieve']:
             return request.user.is_staff
         # 自分で作ったアクションを実行する許可を下記
-        if view.action  == 'fetch_staff_checkin':
+        if view.action  == 'fetch_staff_checkin' or view.action == 'fetch_recent_three_checkin':
             return (request.user and request.user.is_authenticated) or request.user.is_staff
          # 更新と削除はスタッフのみ
         if view.action == 'destroy':
