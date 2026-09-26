@@ -43,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     points = models.IntegerField(default=0, verbose_name='points')
     is_staff = models.BooleanField(default=False,)
     is_active = models.BooleanField(default=True,)
+    stamps = models.IntegerField(default=0, null=False, verbose_name='stamps')
     objects = UserManager()
     USERNAME_FIELD = 'phone_number'
 # USERNAME_FIELD = 'phone_number'に入れている項目はrequired fieldsから抜くこと
