@@ -2,14 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
-		<!-- TODO: テスト後に削除すること - ローカル開発用ATS例外 -->
-		<key>NSAppTransportSecurity</key>
-		<dict>
-			<key>NSAllowsLocalNetworking</key>
-			<true/>
-			<key>NSAllowsArbitraryLoads</key>
-			<true/>
-		</dict>
 		<key>FLTEnableImpeller</key>
 		<false/>
 		<key>CADisableMinimumFrameDurationOnPhone</key>

@@ -18,9 +18,9 @@ echo "===4 起動確認 ==="
 docker ps
 
 echo "===5 動作確認 ==="
-curl -s -o /dev/null -w "v4 API: %{http_code}\n" \
-  https://api.wellbee-studio.com/api/v4/attendances/course/
-curl -s -o /dev/null -w "既存API: %{http_code}\n" \
+curl -s -o /dev/null -w "v5 API (app-review): %{http_code}\n" \
+  https://api.wellbee-studio.com/api/v5/attendances/course/
+curl -s -o /dev/null -w "既存API (app-prod): %{http_code}\n" \
   https://api.wellbee-studio.com/attendances/course/
 
 
