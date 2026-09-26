@@ -197,8 +197,12 @@ class _PointIncreasePageState extends State<PointIncreasePage> {
                             int? intIncreasePoint = int.tryParse(increasePoint);
                             if (intIncreasePoint == null) {
                               showSnackBar(Colors.red, 'Point must be numbers');
-                            } else
+                            } else if (intIncreasePoint <= 0) {
+                              showSnackBar(
+                                  Colors.red, 'Enter a number greater than 0');
+                            } else {
                               increasePoints();
+                            }
                           },
                           child: Text('Give Point',
                               style: TextStyle(

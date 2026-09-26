@@ -239,12 +239,12 @@ class _Ticket extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Join Times',
+                            'Check-in',
                             style: TextStyle(color: kColorText, fontSize: 16.r),
                           ),
                           // SizedBox(height: 4.r),
                           Text(
-                            '$already_join_times/$max_join_times',
+                            '$already_join_times',
                             style: TextStyle(
                               color: kColorTextDark,
                               fontSize: 18.w,
@@ -414,10 +414,10 @@ class _MembershipTicket extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('Join Times',
+                          Text('Check-in',
                               style: TextStyle(color: kColorText, fontSize: 14.r)),
                           Text(
-                            '$already_join_times/$max_join_times',
+                            '$already_join_times',
                             style: TextStyle(color: kColorTextDark, fontSize: 15.r),
                           ),
                         ],

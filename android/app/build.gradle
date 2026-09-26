@@ -52,9 +52,9 @@ android {
         // 以下の値をアプリケーションのニーズに合わせて更新できます。
         // 詳細については、https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration を参照してください。
         minSdkVersion = flutter.minSdkVersion
-        targetSdk = 35
-        versionCode = 11
-        versionName = '3.0.0'
+        targetSdk = 36
+        versionCode = 13
+        versionName = '4.0.0'
     }
 
     signingConfigs {

@@ -14,6 +14,7 @@ migrate_working_dir/
 
 # 環境変数
 .env
+.env.local
 .env.prod
 
 # Firebase
@@ -59,6 +60,14 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# iOS/Xcode build cache
+wellbee/build/
+
 # Claude agent generated files
 .company/
 researcher/
+learnings/
+.claude/
+
+# Python 仮想環境
+.venv/

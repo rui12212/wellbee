@@ -215,102 +215,20 @@ class _MembershipPageState extends State<MembershipPage> {
                       child: ListView.builder(
                           itemCount: membershipList.length,
                           itemBuilder: (context, index) {
-                            // request_join_timesとmax_join_timesの比較
-                            final requested_join_times =
-                                membershipList[index]['requested_join_times'];
-                            final max_join_times =
-                                membershipList[index]['max_join_times'];
-                            final isAlreadyMaxRequest =
-                                requested_join_times == max_join_times;
-
-                            // already_join_timesとmax_join_timesの比較
-                            final already_join_times =
-                                membershipList[index]['already_join_times'];
-                            final isAlreadyMaxJoin =
-                                already_join_times == max_join_times;
-
                             return Column(
                               children: [
                                 InkWell(
-                                    child: isAlreadyMaxJoin
-                                        ? Stack(
-                                            children: [
-                                              Container(
-                                                height: 120.h,
-                                                alignment: Alignment.center,
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                        'Reached to max join times',
-                                                        style: TextStyle(
-                                                            color: const Color
-                                                                .fromARGB(
-                                                                255, 0, 0, 0),
-                                                            fontSize: 22.sp,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w800)),
-                                                  ],
-                                                ),
-                                              ),
-                                              Opacity(
-                                                opacity: 0.3,
-                                                child: TicketList(
-                                                    membershipList:
-                                                        membershipList[index]),
-                                              )
-                                            ],
-                                          )
-                                        : isAlreadyMaxRequest
-                                            ? Stack(
-                                                children: [
-                                                  Container(
-                                                    height: 120.h,
-                                                    alignment: Alignment.center,
-                                                    child: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                            'Reached to max request times',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 22.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w800)),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  Opacity(
-                                                    opacity: 0.3,
-                                                    child: TicketList(
-                                                        membershipList:
-                                                            membershipList[
-                                                                index]),
-                                                  )
-                                                ],
-                                              )
-                                            : TicketList(
-                                                membershipList:
-                                                    membershipList[index]),
-                                    onTap: isAlreadyMaxJoin
-                                        ? null
-                                        : isAlreadyMaxRequest
-                                            ? null
-                                            : () {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ReservationMembershipPage(
-                                                                membershipList:
-                                                                    membershipList[
-                                                                        index])));
-                                              }),
+                                    child: TicketList(
+                                        membershipList: membershipList[index]),
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ReservationMembershipPage(
+                                                      membershipList:
+                                                          membershipList[
+                                                              index])));
+                                    }),
                                 SizedBox(height: 10.h),
                               ],
                             );

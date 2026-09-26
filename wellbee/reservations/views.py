@@ -9,11 +9,11 @@ from django.shortcuts import get_object_or_404, render
 # Create your views here.
 from rest_framework import generics, viewsets, status
 from rest_framework.permissions import AllowAny
-from wellbee.permissions import IsStaffUser, BasePermission, ReservationPermission, SlotPermission
+from wellbee.permissions import IsStaffUser, BasePermission, ReservationPermission, SlotPermission, CheckInPermission
 from . import serializers
 from rest_framework.decorators import action
 from reservations.models import Slot, Reservation
-from attendances.models import Course, Membership
+from attendances.models import Course, Membership, CheckIn
 from rest_framework.response import Response
 from django.db.models import F,Q
 from django.utils.dateparse import parse_date
@@ -22,6 +22,7 @@ from django.utils.timezone import make_aware
 from datetime import timedelta
 import pytz
 from dateutil.relativedelta import relativedelta
+from rest_framework.throttling import ScopedRateThrottle
 
 now_utc = timezone.now()
 local_timezone = pytz.timezone('Africa/Nairobi')
@@ -69,8 +70,10 @@ class SlotViewSet(viewsets.ModelViewSet):
             return slots
         
         if self.action == 'fetch_each_course_slots':
-            course_name = self.request.query_params.get('course_name')
-            slots = Slot.objects.filter(course__course_name = course_name).order_by('date','start_time')
+            now_local = timezone.now().astimezone(pytz.timezone('Africa/Nairobi'))
+            slots = Slot.objects.filter(
+                Q(date__gt=now_local.date()) | Q(date=now_local.date(), end_time__gte=now_local.time())
+            ).order_by('date','start_time')
             return slots
 
         if self.action == 'fetch_course_slots':
@@ -194,6 +197,12 @@ class ReservationViewSet(viewsets.ModelViewSet):
     queryset = Reservation.objects.all()
     serializer_class = serializers.ReservationSerializer
     permission_classes = [ReservationPermission]
+    throttle_scope = 'reservation_create'
+
+    def get_throttles(self):
+        if self.action == 'create':
+            return [ScopedRateThrottle()]
+        return []
 
     # ★ここは何度でも見るべき場所だな。フロントエント側のリクエストデータを参照している
     def create(self, request, *args, **kwargs):
@@ -211,30 +220,16 @@ class ReservationViewSet(viewsets.ModelViewSet):
             membership=membership,
             slot=slot
         )
-        
-        # my_course_membership = Membership.objects.filter(
-        #     id=membership_id,
-        # )
+
         if my_overlap_reservation.exists():
             raise ValidationError('Same reservation already exists')
-        # max_requested_timesを弾く
-        if membership.requested_join_times == membership.max_join_times:
-            raise ValidationError('Request denied. Already reached to max reservation times')
-         # max_reservation_timesを弾く
-        if  membership.already_join_times ==  membership.max_join_times:
-            raise ValidationError('You already reached to max join times')
-        # validation_day以降の予約を弾く
         if membership.expire_day < slot.date:
             raise ValidationError('Selected slot is out of your membership\'s expire day')
-        
-        # requested_times_joinがmax_join_timesと同数なら、createを弾く
-        else:
-            reservation = Reservation.objects.create(
+
+        reservation = Reservation.objects.create(
             membership=membership,
             slot=slot,
             date=date,
-            # attended=False,
-            # is_cancelled=True,
         )
         serializer = self.get_serializer(reservation)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -394,14 +389,6 @@ class ReservationViewSet(viewsets.ModelViewSet):
         
     def destroy(self, request, *args, **kwargs):
             reservation = self.get_object()
-            membership = reservation.membership
-
-            if membership.requested_join_times >0:
-                membership.requested_join_times = F('requested_join_times') - 1
-                membership.save()
-            if membership.requested_join_times==0:
-                membership.requested_join_times=0
-            
             reservation.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 

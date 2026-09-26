@@ -80,7 +80,6 @@ class UserViewSet(viewsets.ModelViewSet):
         user.delete()
         return Response({'status': 'User has been deleted.'}, status=status.HTTP_200_OK)
 
-
     
     # @csrf_exempt
     # def update_points(request, user_id):

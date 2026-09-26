@@ -2,14 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
-		<!-- TODO: テスト後に削除すること - ローカル開発用ATS例外 -->
-		<key>NSAppTransportSecurity</key>
-		<dict>
-			<key>NSAllowsLocalNetworking</key>
-			<true/>
-			<key>NSAllowsArbitraryLoads</key>
-			<true/>
-		</dict>
 		<key>FLTEnableImpeller</key>
 		<false/>
 		<key>CADisableMinimumFrameDurationOnPhone</key>
@@ -37,11 +29,9 @@
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>NSCameraUsageDescription</key>
-		<string>Can I use the camera please?</string>
-		<key>NSMicrophoneUsageDescription</key>
-		<string>Can I use the mic please?</string>
+		<string>This app uses the camera to scan QR codes for attendance check-in.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
-		<string>Only staff users need this feature; general users do not use this feature.In order to manage reservation status, it needs the access to the camera.</string>
+		<string>This app accesses your photo library to select images for course management.</string>
 		<key>UIApplicationSceneManifest</key>
 		<dict>
 			<key>UIApplicationSupportsMultipleScenes</key>

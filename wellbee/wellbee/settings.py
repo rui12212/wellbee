@@ -127,6 +127,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
+    'DEFAULT_THROTTLE_RATES': {
+        'reservation_create': '10/min',
+    },
      'EXCEPTION_HANDLER': 'wellbee.utils.custom_exception_handler',
 }
 
