@@ -12,7 +12,8 @@ import 'package:wellbee/screens/questionnaire/questionnaire_attendee.dart';
 import 'package:wellbee/main.dart';
 import 'package:wellbee/services/version_check_service.dart';
 import 'package:wellbee/screens/attendee/attendee.dart';
-import 'package:wellbee/screens/graph/graph_attendee.dart';
+import 'package:wellbee/screens/graph/graph_menu.dart';
+import 'package:wellbee/ui_parts/checkin_record_section.dart';
 import 'package:wellbee/screens/point/point.dart';
 import 'package:wellbee/screens/reservation/membership.dart';
 import 'package:wellbee/screens/qr/qr_reservation.dart';
@@ -530,12 +531,8 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       SizedBox(height: 28.h),
-                      Text(
-                        'Services',
-                        style: TextStyle(
-                            fontSize: 22.sp, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 12.h),
+                      const _SectionHeader(title: 'Services'),
+                      SizedBox(height: 14.h),
                       GridView.count(
                         crossAxisCount: 2,
                         shrinkWrap: true,
@@ -574,7 +571,7 @@ class _HomePageState extends State<HomePage> {
                             sub: 'شێوە',
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => GraphAttendeePage()));
+                                  builder: (_) => const GraphMenuPage()));
                             },
                           ),
                           _ServiceTile(
@@ -627,6 +624,10 @@ class _HomePageState extends State<HomePage> {
                               builder: (_) => const VideoCourseSelectPage()));
                         },
                       ),
+                      SizedBox(height: 34.h),
+                      const _SectionHeader(title: 'Check-in Record'),
+                      SizedBox(height: 14.h),
+                      const CheckInRecordSection(),
                       SizedBox(height: 20.h),
                     ],
                   ),
@@ -710,6 +711,47 @@ class _ServiceTile extends StatelessWidget {
   }
 }
 
+/// ホーム画面の大項目の見出し。
+/// 左の縦バーと右へ伸びる罫線で、ここから下が1つのまとまりであることを示す。
+class _SectionHeader extends StatelessWidget {
+  final String title;
+
+  const _SectionHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: 4.w,
+          height: 22.h,
+          decoration: BoxDecoration(
+            color: kColorPrimary,
+            borderRadius: BorderRadius.circular(2.r),
+          ),
+        ),
+        SizedBox(width: 10.w),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.bold,
+            letterSpacing: -0.3,
+          ),
+        ),
+        SizedBox(width: 12.w),
+        Expanded(
+          child: Container(
+            height: 1.h,
+            color: Colors.grey.shade200,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _VideoTile extends StatelessWidget {
   final VoidCallback onTap;
   final bool enabled;
@@ -724,10 +766,11 @@ class _VideoTile extends StatelessWidget {
         onTap: enabled ? onTap: null,
         borderRadius: BorderRadius.circular(14.r),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
           decoration: BoxDecoration(
-            color: kColorPrimary,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(color: Colors.grey.shade200),
           ),
           child: Row(
             children: [
@@ -735,29 +778,28 @@ class _VideoTile extends StatelessWidget {
                 width: 40.w,
                 height: 40.w,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.18),
+                  color: const Color(0xFFE8F5F0),
                   borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Icon(CupertinoIcons.play_fill,
-                    color: Colors.white, size: 22.sp),
+                    color: kColorPrimary, size: 20.sp),
               ),
-              SizedBox(width: 12.w),
+              SizedBox(width: 10.w),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Videos',
                     style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
                     ),
                   ),
                   Text(
                     'Watch course videos at home',
                     style: TextStyle(
                       fontSize: 10.sp,
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.grey,
                     ),
                   ),
                 ],

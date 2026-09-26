@@ -19,6 +19,8 @@ from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Prefetch
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Count
+from django.db.models.functions import TruncMonth
 
 # admin用。削除はできないようにしたい。is_activeをFalseにする仕様にする
 class MembershipViewSet(viewsets.ModelViewSet):
@@ -405,6 +407,30 @@ class CheckInViewSet(viewsets.ModelViewSet):
         )[:3]
         serializer = self.get_serializer(check_ins, many=True)
         return Response(serializer.data)
+
+    
+    @action(detail=False, methods=['get'], permission_classes=[CheckInPermission], url_path='my_monthly_checkin')
+    def fetch_my_monthly_checkin(self, request):
+        rows = CheckIn.objects.filter(
+            reservation__membership__user=request.user
+        ).annotate(
+            month=TruncMonth('created_at'),
+            course_name=F('reservation__slot__course__course_name'),
+        ).values(
+            'month', 'course_name'
+        ).annotate(
+            count=Count('id')
+        ).order_by('month', 'course_name')
+
+        data = [
+            {
+                'month': timezone.localtime(row['month']).strftime('%Y-%m'),
+                'course_name': row['course_name'],
+                'count': row['count'],
+            }
+            for row in rows if row['month'] is not None
+        ]
+        return Response(data)
 
     def create(self, request, *args, **kwargs):
        data = request.data

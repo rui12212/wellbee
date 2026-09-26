@@ -552,20 +552,11 @@ class _PointPageState extends State<PointPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Check-in QR',
+                  'My Page QR',
                   style: TextStyle(
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF212121),
-                  ),
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  'Show to staff for check-in\nسکان بکە بو چوونا ژوو',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: const Color(0xFF9E9E9E),
-                    height: 1.4,
                   ),
                 ),
                 SizedBox(height: 8.h),
