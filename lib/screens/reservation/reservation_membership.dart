@@ -314,8 +314,8 @@ class _ReservationMembershipPageState extends State<ReservationMembershipPage> {
           padding: EdgeInsets.all(15),
           child: Column(
             children: [
-              _Header(
-                title: widget.membershipList['course_name'],
+              const _Header(
+                title: 'Course Calendar',
                 subtitle: 'Select date and time to reserve',
               ),
               TableCalendar(

@@ -196,16 +196,19 @@ class _CheckInRecordSectionState extends State<CheckInRecordSection> {
   Widget _buildBody() {
     if (_isLoading) {
       return SizedBox(
+        width: double.infinity,
         height: 160.h,
         child: const Center(child: CircularProgressIndicator()),
       );
     }
     if (_errorMessage != null) {
       return SizedBox(
+        width: double.infinity,
         height: 160.h,
         child: Center(
           child: Text(
             _errorMessage!,
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14.sp, color: kColorTextDarkGrey),
           ),
         ),
@@ -213,6 +216,7 @@ class _CheckInRecordSectionState extends State<CheckInRecordSection> {
     }
     if (_countsByMonth.isEmpty || _halves.isEmpty) {
       return Container(
+        width: double.infinity,
         height: 160.h,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey.shade200),
