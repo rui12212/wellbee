@@ -26,6 +26,12 @@ android/gradle.properties
 
 # androidのkey(今後バージョン更新に必要)
 /android/app/key.jks
+
+# APNs の秘密鍵・証明書（プッシュ通知用）
+# 漏れると誰でもこのアプリにプッシュ通知を送れるため、絶対にコミットしない
+*.p8
+*.p12
+*.mobileprovision
 /android/app/key.properties
 
 # IntelliJ related

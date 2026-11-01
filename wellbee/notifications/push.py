@@ -32,7 +32,7 @@ def send_push(notification, users):
             return 0
 
         app = get_app()
-        body = notification.body[:_BODY_LIMIT]
+        body = _truncate(notification.body)
         success = 0
 
         for start in range(0, len(tokens), _CHUNK_SIZE):
@@ -56,6 +56,18 @@ def send_push(notification, users):
             'FCM送信に失敗しました notification_id=%s', notification.pk
         )
         return 0
+
+
+def _truncate(body):
+    """プッシュに載せる本文を切り詰める。
+
+    切れていることが分かるよう末尾に「…」を付ける。これが無いと文の途中で
+    ぷつりと終わり、続きがあることが読み手に伝わらない。
+    """
+    text = body.strip()
+    if len(text) <= _BODY_LIMIT:
+        return text
+    return text[:_BODY_LIMIT - 1] + '…'
 
 
 def _remove_stale_tokens(tokens, response):

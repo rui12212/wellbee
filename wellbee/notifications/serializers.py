@@ -105,6 +105,11 @@ class RecipientCountSerializer(serializers.Serializer):
 class UserNotificationSerializer(serializers.ModelSerializer):
     """ユーザーが自分宛のメッセージを閲覧する用。"""
 
+    # プッシュ通知の data に載せている notification_id と突き合わせて、
+    # タップしたメッセージを特定するために返す
+    notification_id = serializers.IntegerField(
+        source='notification.id', read_only=True
+    )
     title = serializers.CharField(source='notification.title', read_only=True)
     body = serializers.CharField(source='notification.body', read_only=True)
     image_url = serializers.SerializerMethodField()
@@ -119,6 +124,7 @@ class UserNotificationSerializer(serializers.ModelSerializer):
         model = UserNotification
         fields = (
             'id',
+            'notification_id',
             'title',
             'body',
             'image_url',
@@ -135,9 +141,14 @@ class UserNotificationSerializer(serializers.ModelSerializer):
         return None
 
 
-class FCMTokenSerializer(serializers.ModelSerializer):
-    """プッシュ通知の送信先トークン登録用。"""
+class FCMTokenSerializer(serializers.Serializer):
+    """プッシュ通知の送信先トークン登録用。
 
-    class Meta:
-        model = FCMToken
-        fields = ('token',)
+    ModelSerializer にしないのは、token に unique=True が付いているため
+    「既に存在する」というバリデーションエラーで400になってしまうから。
+    同じ端末は起動のたびに同じトークンを送ってくるので、再登録は正常な
+    動作であり、エラーにしてはいけない。所有者の付け替えは
+    ビュー側の update_or_create が担う。
+    """
+
+    token = serializers.CharField(max_length=255)

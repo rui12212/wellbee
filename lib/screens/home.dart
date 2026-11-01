@@ -131,9 +131,39 @@ class _HomePageState extends State<HomePage> {
   void _initFCM() {
     final fcmService = FCMService();
     fcmService.initialize();
+
+    // アプリを開いている間に届いたとき。iOSはバナーを出さないので、
+    // 未読バッジの更新で気づけるようにする。
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _fetchUnreadCount();
     });
+
+    // 通知をタップしてアプリが前面に戻ったとき
+    FirebaseMessaging.onMessageOpenedApp.listen(_openFromNotification);
+
+    // アプリが完全に終了していて、通知から起動されたとき。
+    // この経路は listen では拾えないので個別に取る。
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) _openFromNotification(message);
+    });
+  }
+
+  /// プッシュ通知をタップしたときに、そのメッセージの詳細を開く。
+  ///
+  /// 受信箱を経由するのは、詳細画面がレコード全体を必要とするため。
+  /// 一覧が取得を終えてから該当メッセージを突き合わせて開く。
+  /// 見つからなければ受信箱のまま止まる。
+  Future<void> _openFromNotification(RemoteMessage message) async {
+    if (!mounted) return;
+    final raw = message.data['notification_id'];
+    final id = raw is int ? raw : int.tryParse(raw?.toString() ?? '');
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NotificationListPage(openNotificationId: id),
+      ),
+    );
+    if (mounted) _fetchUnreadCount();
   }
 
   Future<void> _fetchMembershipStatus() async {
@@ -254,6 +284,9 @@ class _HomePageState extends State<HomePage> {
       titleText: 'Sign Out',
       desc: 'Are you sure to Sign out?\nYour auto login will be off!',
       callback: () async {
+        // トークンを消す前に解除する。解除APIの認証にアクセストークンが必要。
+        // これを忘れると、端末を譲渡・売却したときに前の持ち主宛の通知が届く。
+        await FCMService().unregisterToken();
         await SharedPrefs.clearAuthInfo();
         await Navigator.of(context)
             .pushReplacement(MaterialPageRoute(builder: ((context) {

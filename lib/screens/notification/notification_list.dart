@@ -10,7 +10,11 @@ import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/color.dart';
 
 class NotificationListPage extends StatefulWidget {
-  const NotificationListPage({super.key});
+  /// プッシュ通知から開かれたときに、そのメッセージの詳細を自動で開く。
+  /// 一覧の取得後に突き合わせるので、見つからなければ一覧のまま止まる。
+  final int? openNotificationId;
+
+  const NotificationListPage({super.key, this.openNotificationId});
 
   @override
   State<NotificationListPage> createState() => _NotificationListPageState();
@@ -23,6 +27,10 @@ class _NotificationListPageState extends State<NotificationListPage> {
 
   /// 一覧が変わったかどうか。ホーム画面の未読バッジを更新させるために返す。
   bool _didChange = false;
+
+  /// プッシュから指定されたメッセージを開いたか。引っ張って更新したときに
+  /// 再度開かないよう、1回だけに制限する。
+  bool _openedFromPush = false;
 
   @override
   void initState() {
@@ -53,6 +61,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
           _isLoading = false;
           _errorMessage = null;
         });
+        _openRequestedIfAny();
       } else if (response.statusCode >= 400) {
         setState(() {
           _isLoading = false;
@@ -86,6 +95,26 @@ class _NotificationListPageState extends State<NotificationListPage> {
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
     ];
     return '${months[local.month - 1]} ${local.day}';
+  }
+
+  /// プッシュ通知から指定されたメッセージを開く。1回だけ実行する。
+  void _openRequestedIfAny() {
+    final wanted = widget.openNotificationId;
+    if (wanted == null || _openedFromPush) return;
+    _openedFromPush = true;
+
+    final target = _messages.firstWhere(
+      (m) => m['notification_id'] == wanted,
+      orElse: () => const {},
+    );
+    // 配信レコードが見つからない場合は一覧のまま止める。
+    // 既に削除された、別アカウント宛だった、といったケース。
+    if (target.isEmpty) return;
+
+    // 一覧の描画が終わってから遷移する
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _openDetail(target);
+    });
   }
 
   Future<void> _openDetail(Map<String, dynamic> message) async {
