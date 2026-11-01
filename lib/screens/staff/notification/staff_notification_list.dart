@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:wellbee/assets/inet.dart';
+import 'package:wellbee/screens/staff/notification/staff_notification_detail.dart';
 import 'package:wellbee/screens/staff/notification/staff_notification_target.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/color.dart';
@@ -30,7 +31,8 @@ class _StaffNotificationListPageState extends State<StaffNotificationListPage> {
 
   Future<void> _fetchMessages() async {
     try {
-      final token = await SharedPrefs.fetchAccessToken();
+      // スタッフ用トークンは会員用と別のキーに保存されている
+      final token = await SharedPrefs.fetchStaffAccessToken();
       final url =
           Uri.parse('${baseUri}notifications/notification/?token=$token');
       final response = await Future.any([
@@ -98,8 +100,18 @@ class _StaffNotificationListPageState extends State<StaffNotificationListPage> {
     if (dt == null) return '';
     final local = dt.toLocal();
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[local.month - 1]} ${local.day}';
   }
@@ -273,6 +285,7 @@ class _StaffNotificationListPageState extends State<StaffNotificationListPage> {
   }
 
   Widget _buildRow(Map<String, dynamic> message) {
+    final bool staffOnly = message['staff_only'] == true;
     final bool isCourse = message['target_type'] == 'course';
     final String scope =
         isCourse ? (message['course_name'] ?? 'Course') : 'All members';
@@ -280,92 +293,118 @@ class _StaffNotificationListPageState extends State<StaffNotificationListPage> {
         (message['image_url'] as String?)?.isNotEmpty ?? false;
     final int delivered = (message['delivered_count'] as num?)?.toInt() ?? 0;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
+    return Material(
+      // テスト送信は本番のメッセージと混ざらないよう色を変える
+      color: staffOnly ? const Color(0xFFFFF8D6) : Colors.white,
+      borderRadius: BorderRadius.circular(14.r),
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => StaffNotificationDetailPage(message: message),
+          ),
+        ),
         borderRadius: BorderRadius.circular(14.r),
-        border: Border.all(color: const Color(0xFFE4DFD8)),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 14.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(
+                color: staffOnly ? kColorSecondary : const Color(0xFFE4DFD8)),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 14.h),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  message['title'] ?? '',
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF212121),
-                    height: 1.4,
-                  ),
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Text(
-                _formatDate(message['created_at']),
-                style: TextStyle(fontSize: 11.sp, color: Colors.grey),
-              ),
-            ],
-          ),
-          SizedBox(height: 9.h),
-          Row(
-            children: [
-              Expanded(
-                child: Wrap(
-                  spacing: 7.w,
-                  runSpacing: 6.h,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    _buildTag(scope, highlight: true),
-                    _buildTag(_statusLabel(message['membership_status'])),
-                    if (hasImage) _buildImageTag(),
-                  ],
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Sent to ',
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      message['title'] ?? '',
                       style: TextStyle(
-                          fontSize: 12.5.sp, color: kColorTextDarkGrey),
-                    ),
-                    TextSpan(
-                      text: '$delivered',
-                      style: TextStyle(
-                        fontSize: 12.5.sp,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w600,
                         color: const Color(0xFF212121),
+                        height: 1.4,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Text(
+                    _formatDate(message['created_at']),
+                    style: TextStyle(fontSize: 11.sp, color: Colors.grey),
+                  ),
+                ],
+              ),
+              SizedBox(height: 9.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: Wrap(
+                      spacing: 7.w,
+                      runSpacing: 6.h,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: staffOnly
+                          ? [
+                              _buildTag('Staff only', test: true),
+                              if (hasImage) _buildImageTag(),
+                            ]
+                          : [
+                              _buildTag(scope, highlight: true),
+                              _buildTag(
+                                  _statusLabel(message['membership_status'])),
+                              if (hasImage) _buildImageTag(),
+                            ],
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Sent to ',
+                          style: TextStyle(
+                              fontSize: 12.5.sp, color: kColorTextDarkGrey),
+                        ),
+                        TextSpan(
+                          text: '$delivered',
+                          style: TextStyle(
+                            fontSize: 12.5.sp,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF212121),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildTag(String label, {bool highlight = false}) {
+  Widget _buildTag(String label, {bool highlight = false, bool test = false}) {
+    final Color bg = test
+        ? const Color(0xFFFFEFAE)
+        : (highlight ? const Color(0xFFE8F5F0) : const Color(0xFFF0ECE6));
+    final Color fg = test
+        ? const Color(0xFF7A6A2E)
+        : (highlight ? const Color(0xFF0D6650) : kColorTextDarkGrey);
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 3.h),
       decoration: BoxDecoration(
-        color: highlight ? const Color(0xFFE8F5F0) : const Color(0xFFF0ECE6),
+        color: bg,
         borderRadius: BorderRadius.circular(6.r),
       ),
       child: Text(
         label,
         style: TextStyle(
           fontSize: 11.sp,
-          fontWeight: highlight ? FontWeight.w600 : FontWeight.w400,
-          color: highlight ? const Color(0xFF0D6650) : kColorTextDarkGrey,
+          fontWeight: (highlight || test) ? FontWeight.w600 : FontWeight.w400,
+          color: fg,
         ),
       ),
     );

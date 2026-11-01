@@ -36,7 +36,8 @@ class _StaffNotificationTargetPageState
 
   Future<void> _fetchCourses() async {
     try {
-      final token = await SharedPrefs.fetchAccessToken();
+      // スタッフ用トークンは会員用と別のキーに保存されている
+      final token = await SharedPrefs.fetchStaffAccessToken();
       final url = Uri.parse('${baseUri}attendances/course/?token=$token');
       final response = await Future.any([
         http.get(url, headers: {
@@ -78,7 +79,8 @@ class _StaffNotificationTargetPageState
     });
 
     try {
-      final token = await SharedPrefs.fetchAccessToken();
+      // スタッフ用トークンは会員用と別のキーに保存されている
+      final token = await SharedPrefs.fetchStaffAccessToken();
       final url = Uri.parse(
           '${baseUri}notifications/notification/recipient_count/?token=$token');
       final response = await Future.any([
@@ -91,6 +93,7 @@ class _StaffNotificationTargetPageState
           body: jsonEncode({
             'target_type': _draft.targetType,
             'membership_status': _draft.membershipStatus,
+            'staff_only': _draft.staffOnly,
             if (_draft.targetCourseId != null)
               'target_course': _draft.targetCourseId,
           }),
@@ -148,6 +151,11 @@ class _StaffNotificationTargetPageState
     _fetchRecipientCount();
   }
 
+  void _toggleStaffOnly(bool value) {
+    setState(() => _draft.staffOnly = value);
+    _fetchRecipientCount();
+  }
+
   Future<void> _goNext() async {
     final sent = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
@@ -182,6 +190,8 @@ class _StaffNotificationTargetPageState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      _buildStaffOnlyCard(),
+                      SizedBox(height: 22.h),
                       _buildSectionLabel('WHO RECEIVES THIS'),
                       SizedBox(height: 10.h),
                       _buildTargetOption(
@@ -283,6 +293,73 @@ class _StaffNotificationTargetPageState
     );
   }
 
+  /// テスト送信用のチェックボックス。実在の会員に影響を出さずに
+  /// 動作確認するための逃げ道なので、他の選択肢より前に置いている。
+  Widget _buildStaffOnlyCard() {
+    final on = _draft.staffOnly;
+    return Material(
+      color: on ? const Color(0xFFFFF8D6) : Colors.white,
+      borderRadius: BorderRadius.circular(12.r),
+      child: InkWell(
+        onTap: () => _toggleStaffOnly(!on),
+        borderRadius: BorderRadius.circular(12.r),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: on ? kColorSecondary : const Color(0xFFE4DFD8),
+              width: on ? 2 : 1,
+            ),
+          ),
+          padding: EdgeInsets.fromLTRB(11.w, 12.h, 14.w, 12.h),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 24.w,
+                height: 24.w,
+                child: Checkbox(
+                  value: on,
+                  activeColor: const Color(0xFF9A7B10),
+                  onChanged: (v) => _toggleStaffOnly(v ?? false),
+                ),
+              ),
+              SizedBox(width: 10.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Only staff (test)',
+                      style: TextStyle(
+                        fontSize: 14.5.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF212121),
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      on
+                          ? 'Sending to staff only. Course and membership are ignored.'
+                          : 'Send to staff only, ignoring course and membership. Use this to check a message safely.',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: on
+                            ? const Color(0xFF7A6A2E)
+                            : kColorTextDarkGrey,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSectionLabel(String text) {
     return Text(
       text,
@@ -301,55 +378,63 @@ class _StaffNotificationTargetPageState
     required String description,
   }) {
     final selected = _draft.targetType == value;
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12.r),
-      child: InkWell(
-        onTap: () => _selectTargetType(value),
+    // スタッフ限定が有効なときは宛先条件を見ないので、選択自体を止める
+    final disabled = _draft.staffOnly;
+
+    return Opacity(
+      opacity: disabled ? 0.45 : 1.0,
+      child: Material(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(
-              color: selected ? kColorPrimary : const Color(0xFFE4DFD8),
-              width: selected ? 2 : 1,
+        child: InkWell(
+          onTap: disabled ? null : () => _selectTargetType(value),
+          borderRadius: BorderRadius.circular(12.r),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: selected && !disabled
+                    ? kColorPrimary
+                    : const Color(0xFFE4DFD8),
+                width: selected && !disabled ? 2 : 1,
+              ),
             ),
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 13.w, vertical: 13.h),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                selected ? Icons.radio_button_checked : Icons.radio_button_off,
-                size: 20.sp,
-                color: selected ? kColorPrimary : Colors.grey,
-              ),
-              SizedBox(width: 11.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 14.5.sp,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF212121),
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: kColorTextDarkGrey,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
+            padding: EdgeInsets.symmetric(horizontal: 13.w, vertical: 13.h),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  selected ? Icons.radio_button_checked : Icons.radio_button_off,
+                  size: 20.sp,
+                  color: selected && !disabled ? kColorPrimary : Colors.grey,
                 ),
-              ),
-            ],
+                SizedBox(width: 11.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 14.5.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF212121),
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      Text(
+                        description,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: kColorTextDarkGrey,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -378,49 +463,62 @@ class _StaffNotificationTargetPageState
     if (_courses.isEmpty) {
       return _buildHint('No courses available.');
     }
-    return Wrap(
-      spacing: 8.w,
-      runSpacing: 8.h,
-      children: _courses.map((course) {
-        final selected = _draft.targetCourseId == course['id'];
-        return _buildChip(
-          label: course['course_name'] ?? '',
-          selected: selected,
-          onTap: () => _selectCourse(course),
-        );
-      }).toList(),
+    final staffOnly = _draft.staffOnly;
+    return Opacity(
+      opacity: staffOnly ? 0.45 : 1.0,
+      child: Wrap(
+        spacing: 8.w,
+        runSpacing: 8.h,
+        children: _courses.map((course) {
+          final selected = _draft.targetCourseId == course['id'];
+          return _buildChip(
+            label: course['course_name'] ?? '',
+            selected: selected,
+            onTap: staffOnly ? null : () => _selectCourse(course),
+            disabled: staffOnly,
+          );
+        }).toList(),
+      ),
     );
   }
 
   Widget _buildStatusChips() {
+    final staffOnly = _draft.staffOnly;
     // コース指定のときは「メンバーシップなし」を選べない
-    final noneDisabled = _draft.targetType == 'course';
-    return Wrap(
-      spacing: 8.w,
-      runSpacing: 8.h,
-      children: [
-        _buildChip(
-          label: 'Any status',
-          selected: _draft.membershipStatus == 'all',
-          onTap: () => _selectStatus('all'),
-        ),
-        _buildChip(
-          label: 'Active',
-          selected: _draft.membershipStatus == 'active',
-          onTap: () => _selectStatus('active'),
-        ),
-        _buildChip(
-          label: 'Expired',
-          selected: _draft.membershipStatus == 'expired',
-          onTap: () => _selectStatus('expired'),
-        ),
-        _buildChip(
-          label: 'No membership',
-          selected: _draft.membershipStatus == 'none',
-          onTap: noneDisabled ? null : () => _selectStatus('none'),
-          disabled: noneDisabled,
-        ),
-      ],
+    final noneDisabled = staffOnly || _draft.targetType == 'course';
+
+    return Opacity(
+      opacity: staffOnly ? 0.45 : 1.0,
+      child: Wrap(
+        spacing: 8.w,
+        runSpacing: 8.h,
+        children: [
+          _buildChip(
+            label: 'Any status',
+            selected: _draft.membershipStatus == 'all',
+            onTap: staffOnly ? null : () => _selectStatus('all'),
+            disabled: staffOnly,
+          ),
+          _buildChip(
+            label: 'Active',
+            selected: _draft.membershipStatus == 'active',
+            onTap: staffOnly ? null : () => _selectStatus('active'),
+            disabled: staffOnly,
+          ),
+          _buildChip(
+            label: 'Expired',
+            selected: _draft.membershipStatus == 'expired',
+            onTap: staffOnly ? null : () => _selectStatus('expired'),
+            disabled: staffOnly,
+          ),
+          _buildChip(
+            label: 'No membership',
+            selected: _draft.membershipStatus == 'none',
+            onTap: noneDisabled ? null : () => _selectStatus('none'),
+            disabled: noneDisabled,
+          ),
+        ],
+      ),
     );
   }
 

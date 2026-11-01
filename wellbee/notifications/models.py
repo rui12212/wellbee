@@ -45,6 +45,10 @@ class Notification(models.Model):
         null=True,
         blank=True,
     )
+    # True のときはスタッフ全員にだけ配信し、target_type / membership_status /
+    # target_course を一切見ない。実在の会員に影響を出さずに動作確認するための
+    # 逃げ道として用意している。
+    staff_only = models.BooleanField(verbose_name='staff_only', default=False)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name='created_by',

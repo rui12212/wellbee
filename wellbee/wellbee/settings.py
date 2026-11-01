@@ -89,6 +89,10 @@ DATABASES = {
         'PASSWORD': os.environ['DATABASE_PASSWORD'],
         'HOST': os.environ['DATABASE_HOST'],
         'PORT': os.environ.get('DATABASE_PORT', '3306'),
+        # 接続の文字コードを明示する。未指定だと utf8mb3（3バイト）になり、
+        # 絵文字などの4バイト文字で「Incorrect string value」(1366) になる。
+        # テーブル側は既に utf8mb4 なのでマイグレーションは不要。
+        'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
 

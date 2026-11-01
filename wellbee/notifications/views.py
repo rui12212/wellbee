@@ -70,6 +70,7 @@ class NotificationViewSet(
             data['target_type'],
             data['membership_status'],
             data.get('target_course'),
+            data.get('staff_only', False),
         )
         return Response({'recipient_count': count})
 

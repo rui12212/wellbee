@@ -26,6 +26,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             'membership_status',
             'target_course',
             'course_name',
+            'staff_only',
             'delivered_count',
             'created_at',
         )
@@ -43,6 +44,10 @@ class NotificationSerializer(serializers.ModelSerializer):
         return None
 
     def validate(self, data):
+        # スタッフ限定の送信は他の条件を一切見ないので、組み合わせの検証も不要
+        if data.get('staff_only'):
+            return data
+
         target_type = data.get('target_type')
         membership_status = data.get('membership_status')
         target_course = data.get('target_course')
@@ -76,8 +81,12 @@ class RecipientCountSerializer(serializers.Serializer):
         choices=Notification.MEMBERSHIP_STATUS
     )
     target_course = serializers.IntegerField(required=False, allow_null=True)
+    staff_only = serializers.BooleanField(required=False, default=False)
 
     def validate(self, data):
+        if data.get('staff_only'):
+            return data
+
         if data.get('target_type') == 'course':
             if not data.get('target_course'):
                 raise serializers.ValidationError(

@@ -6,7 +6,9 @@ from .models import UserNotification
 User = get_user_model()
 
 
-def resolve_recipients(target_type, membership_status, target_course_id=None):
+def resolve_recipients(
+    target_type, membership_status, target_course_id=None, staff_only=False
+):
     """宛先条件から対象ユーザーの QuerySet を返す。
 
     期限切れの判定には Membership.is_expired を使わない。あのフィールドを
@@ -15,10 +17,17 @@ def resolve_recipients(target_type, membership_status, target_course_id=None):
 
     - 有効（active）  : expire_day >= 今日 のメンバーシップを1件でも持つ
     - 期限切れ(expired): メンバーシップ履歴はあるが、有効なものが1件もない
+
+    staff_only が True のときは他の条件を一切見ず、スタッフ全員を返す。
     """
     today = timezone.localdate()
-    # スタッフと退会済みは配信対象から除く
-    base = User.objects.filter(is_staff=False, is_active=True)
+    # 退会済みだけを除く。スタッフも会員として通っている可能性があるため、
+    # 配信対象から外さない。
+    base = User.objects.filter(is_active=True)
+
+    if staff_only:
+        # テスト送信用。コースやメンバーシップ状態を無視してスタッフ全員に送る
+        return base.filter(is_staff=True)
 
     if target_type == 'all':
         if membership_status == 'all':
@@ -61,10 +70,12 @@ def resolve_recipients(target_type, membership_status, target_course_id=None):
     return User.objects.none()
 
 
-def count_recipients(target_type, membership_status, target_course_id=None):
+def count_recipients(
+    target_type, membership_status, target_course_id=None, staff_only=False
+):
     """送信前に「何人に届くか」を数える。レコードは作らない。"""
     return resolve_recipients(
-        target_type, membership_status, target_course_id
+        target_type, membership_status, target_course_id, staff_only
     ).count()
 
 
@@ -79,6 +90,7 @@ def deliver(notification):
             notification.target_type,
             notification.membership_status,
             notification.target_course_id,
+            notification.staff_only,
         )
     )
     if not users:

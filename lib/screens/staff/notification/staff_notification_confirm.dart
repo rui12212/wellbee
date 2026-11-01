@@ -34,7 +34,8 @@ class _StaffNotificationConfirmPageState
     final draft = widget.draft;
 
     try {
-      final token = await SharedPrefs.fetchAccessToken();
+      // スタッフ用トークンは会員用と別のキーに保存されている
+      final token = await SharedPrefs.fetchStaffAccessToken();
       final url =
           Uri.parse('${baseUri}notifications/notification/?token=$token');
 
@@ -45,6 +46,7 @@ class _StaffNotificationConfirmPageState
       request.fields['body'] = draft.body.trim();
       request.fields['target_type'] = draft.targetType;
       request.fields['membership_status'] = draft.membershipStatus;
+      request.fields['staff_only'] = draft.staffOnly.toString();
       if (draft.targetCourseId != null) {
         request.fields['target_course'] = draft.targetCourseId.toString();
       }

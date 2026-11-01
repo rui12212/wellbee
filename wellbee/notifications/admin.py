@@ -6,6 +6,7 @@ from .models import FCMToken, Notification, UserNotification
 class NotificationAdmin(admin.ModelAdmin):
     list_display = [
         'title',
+        'staff_only',
         'target_type',
         'membership_status',
         'target_course',
@@ -13,7 +14,7 @@ class NotificationAdmin(admin.ModelAdmin):
         'created_by',
         'created_at',
     ]
-    list_filter = ['target_type', 'membership_status', 'created_at']
+    list_filter = ['staff_only', 'target_type', 'membership_status', 'created_at']
     search_fields = ['title', 'body']
     readonly_fields = ['created_by', 'created_at']
 

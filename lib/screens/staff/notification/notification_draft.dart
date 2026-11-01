@@ -14,6 +14,10 @@ class NotificationDraft {
   int? targetCourseId;
   String? targetCourseName;
 
+  /// テスト送信用。true のときはコースもメンバーシップ状態も無視して
+  /// スタッフ全員にだけ届く。実在の会員に影響を出さずに確認するためのもの。
+  bool staffOnly;
+
   String title;
   String body;
   XFile? image;
@@ -26,6 +30,7 @@ class NotificationDraft {
     this.membershipStatus = 'active',
     this.targetCourseId,
     this.targetCourseName,
+    this.staffOnly = false,
     this.title = '',
     this.body = '',
     this.image,
@@ -37,6 +42,8 @@ class NotificationDraft {
   /// コース指定なのにコースが選ばれていない場合と、コース指定＋
   /// 「メンバーシップなし」の組み合わせはサーバー側でも拒否される。
   bool get isTargetValid {
+    // スタッフ限定は他の条件を見ないので常に成立する
+    if (staffOnly) return true;
     if (targetType == 'course') {
       if (targetCourseId == null) return false;
       if (membershipStatus == 'none') return false;
@@ -48,6 +55,7 @@ class NotificationDraft {
 
   /// 確認画面やカードに出す宛先の説明文
   String get targetLabel {
+    if (staffOnly) return 'Staff only (test)';
     final scope = targetType == 'course'
         ? (targetCourseName ?? 'Course')
         : 'All members';
