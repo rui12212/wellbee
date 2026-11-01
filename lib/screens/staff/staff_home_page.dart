@@ -11,6 +11,7 @@ import 'package:wellbee/screens/staff/course_add/edit_courses.dart';
 import 'package:wellbee/screens/staff/health_survey/health_survey_expirely.dart';
 import 'package:wellbee/screens/staff/membership/all_course.dart';
 import 'package:wellbee/screens/staff/membership/membership_edit_list.dart';
+import 'package:wellbee/screens/staff/notification/staff_notification_list.dart';
 import 'package:wellbee/screens/staff/qr_after_add_staff/add_staff_user.dart';
 import 'package:wellbee/screens/staff/user_password_reset.dart';
 
@@ -229,6 +230,15 @@ class _StaffHomePageState extends State<StaffHomePage> {
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (_) => const AddStaffUserPage()),
+                      ),
+                    ),
+                    _buildGridTile(
+                      icon: Icons.campaign_outlined,
+                      title: 'Messages',
+                      color: const Color(0xFFC2185B),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const StaffNotificationListPage()),
                       ),
                     ),
                   ],
