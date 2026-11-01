@@ -10,6 +10,7 @@ urlpatterns = [
     path('api/v5/questionnaires/', include('questionnaires.urls')),
     path('api/v5/reservations/', include('reservations.urls')),
     path('api/v5/versions/', include('versions.urls')),
+    path('api/v5/notifications/', include('notifications.urls')),
     # /authen/jwt/create/にアクセスすることで、phonenumberとpasswordでPOSTするとJWTトークンを返してくれる
     path('api/v5/authen/', include('djoser.urls.jwt')),
     path('accounts/', include('accounts.urls')),
