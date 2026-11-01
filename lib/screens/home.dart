@@ -13,6 +13,7 @@ import 'package:wellbee/main.dart';
 import 'package:wellbee/services/version_check_service.dart';
 import 'package:wellbee/screens/attendee/attendee.dart';
 import 'package:wellbee/screens/graph/graph_menu.dart';
+import 'package:wellbee/screens/notification/notification_list.dart';
 import 'package:wellbee/ui_parts/checkin_record_section.dart';
 import 'package:wellbee/screens/point/point.dart';
 import 'package:wellbee/screens/reservation/membership.dart';
@@ -108,8 +109,8 @@ class _HomePageState extends State<HomePage> {
     try {
       final token = await SharedPrefs.fetchAccessToken();
       if (token == null) return;
-      var url =
-          Uri.parse('${baseUri}attendances/mailbox/unread-count/?token=$token');
+      var url = Uri.parse(
+          '${baseUri}notifications/user_notification/unread_count/?token=$token');
       var response = await http.get(url, headers: {
         "Authorization": 'JWT $token',
         "Content-Type": "application/json"
@@ -323,48 +324,51 @@ class _HomePageState extends State<HomePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // GestureDetector(
-                          //   onTap: () async {
-                          //     await Navigator.of(context).push(
-                          //       MaterialPageRoute(
-                          //           builder: (context) =>
-                          //               const MailboxListPage()),
-                          //     );
-                          //     _fetchUnreadCount();
-                          //   },
-                          //   child: Stack(
-                          //     clipBehavior: Clip.none,
-                          //     children: [
-                          //       Icon(Icons.mail_outline,
-                          //           color: Colors.white, size: 28.sp),
-                          //       if (_unreadCount > 0)
-                          //         Positioned(
-                          //           right: -6,
-                          //           top: -6,
-                          //           child: Container(
-                          //             padding: EdgeInsets.all(4.w),
-                          //             decoration: const BoxDecoration(
-                          //               color: Colors.red,
-                          //               shape: BoxShape.circle,
-                          //             ),
-                          //             constraints: BoxConstraints(
-                          //               minWidth: 18.w,
-                          //               minHeight: 18.w,
-                          //             ),
-                          //             child: Text(
-                          //               '$_unreadCount',
-                          //               style: TextStyle(
-                          //                 color: Colors.white,
-                          //                 fontSize: 11.sp,
-                          //                 fontWeight: FontWeight.bold,
-                          //               ),
-                          //               textAlign: TextAlign.center,
-                          //             ),
-                          //           ),
-                          //         ),
-                          //     ],
-                          //   ),
-                          // ),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () async {
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const NotificationListPage()),
+                              );
+                              // 戻るボタンでも端末の戻るジェスチャーでも
+                              // 必ず件数を取り直す
+                              _fetchUnreadCount();
+                            },
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Icon(Icons.mail_outline,
+                                    color: Colors.white, size: 28.sp),
+                                if (_unreadCount > 0)
+                                  Positioned(
+                                    right: -6,
+                                    top: -6,
+                                    child: Container(
+                                      padding: EdgeInsets.all(4.w),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      constraints: BoxConstraints(
+                                        minWidth: 18.w,
+                                        minHeight: 18.w,
+                                      ),
+                                      child: Text(
+                                        '$_unreadCount',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 11.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                       FutureBuilder(
