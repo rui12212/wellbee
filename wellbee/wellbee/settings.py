@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'questionnaires.apps.QuestionnairesConfig',
     'reservations.apps.ReservationsConfig',
     'versions.apps.VersionsConfig',
+    'notifications.apps.NotificationsConfig',
 ]
 
 MIDDLEWARE = [
