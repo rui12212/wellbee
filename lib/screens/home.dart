@@ -12,6 +12,7 @@ import 'package:wellbee/screens/questionnaire/questionnaire_attendee.dart';
 import 'package:wellbee/main.dart';
 import 'package:wellbee/services/version_check_service.dart';
 import 'package:wellbee/screens/attendee/attendee.dart';
+import 'package:wellbee/screens/force_update.dart';
 import 'package:wellbee/screens/graph/graph_menu.dart';
 import 'package:wellbee/screens/notification/notification_list.dart';
 import 'package:wellbee/ui_parts/checkin_record_section.dart';
@@ -301,11 +302,10 @@ class _HomePageState extends State<HomePage> {
     if (!mounted) return;
     final launchUrl = Platform.isIOS ? onLaunchIOSUrl : onLaunchAndroidUrl;
     if (status == VersionStatus.forceUpdate) {
-      VersionUpCustomAwesomeDialogue(
-        titleText: 'Update Required',
-        desc: 'Please update the app to continue.',
-        callback: launchUrl,
-      ).show(context);
+      // ダイアログではなく画面を置き換える。閉じて操作を続けられては
+      // サポート外のバージョンを使わせてしまう
+      ForceUpdateScreen.replaceWith(context);
+      return;
     } else if (status == VersionStatus.updateAvailable) {
       SoftUpdateCustomAwesomeDialogue(
         titleText: 'New Version Available',

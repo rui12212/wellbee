@@ -9,7 +9,9 @@ class VersionCheckService {
       final remoteConfig = FirebaseRemoteConfig.instance;
       await remoteConfig.setConfigSettings(RemoteConfigSettings(
         fetchTimeout: const Duration(seconds: 10),
-        minimumFetchInterval: Duration.zero, // TODO: テスト後に Duration(hours: 1) に戻す
+        // Duration.zero だと起動のたびにFirebaseへ取得に行き、クォータを
+        // 消費する。強制アップデートの反映が最大1時間遅れるのは許容する。
+        minimumFetchInterval: const Duration(hours: 1),
       ));
       await remoteConfig.setDefaults({
         'latest_version': '0.0.0',

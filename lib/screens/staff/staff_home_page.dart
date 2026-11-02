@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wellbee/services/version_check_service.dart';
 import 'package:wellbee/ui_parts/dialogue_awesome.dart';
+import 'package:wellbee/screens/force_update.dart';
 import 'package:wellbee/screens/staff/calendar/calendar.dart';
 import 'package:wellbee/screens/staff/course/course.dart';
 import 'package:wellbee/screens/staff/course_add/edit_courses.dart';
@@ -48,11 +49,10 @@ class _StaffHomePageState extends State<StaffHomePage> {
             );
           };
     if (status == VersionStatus.forceUpdate) {
-      VersionUpCustomAwesomeDialogue(
-        titleText: 'Update Required',
-        desc: 'Please update the app to continue.',
-        callback: storeUrl,
-      ).show(context);
+      // ダイアログではなく画面を置き換える。閉じて操作を続けられては
+      // サポート外のバージョンを使わせてしまう
+      ForceUpdateScreen.replaceWith(context);
+      return;
     } else if (status == VersionStatus.updateAvailable) {
       SoftUpdateCustomAwesomeDialogue(
         titleText: 'New Version Available',
