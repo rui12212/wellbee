@@ -53,8 +53,11 @@ android {
         // 詳細については、https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration を参照してください。
         minSdkVersion = flutter.minSdkVersion
         targetSdk = 36
-        versionCode = 13
-        versionName = '4.0.0'
+        // pubspec.yaml の version を唯一の情報源にする。ここに直接書くと
+        // pubspec を上げても反映されず、提出時に「このバージョンコードは
+        // 既に使用されています」で弾かれる。
+        versionCode = flutterVersionCode.toInteger()
+        versionName = flutterVersionName
     }
 
     signingConfigs {

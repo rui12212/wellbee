@@ -5,6 +5,15 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('wellbee_122024/', admin.site.urls),
+    # v6（審査用）。app-prod がこのコードで動く
+    path('api/v6/accounts/', include('accounts.urls')),
+    path('api/v6/attendances/', include('attendances.urls')),
+    path('api/v6/questionnaires/', include('questionnaires.urls')),
+    path('api/v6/reservations/', include('reservations.urls')),
+    path('api/v6/versions/', include('versions.urls')),
+    path('api/v6/notifications/', include('notifications.urls')),
+    path('api/v6/authen/', include('djoser.urls.jwt')),
+    # v5（現行ユーザー）。app-review が本番として動いている間は残す
     path('api/v5/accounts/', include('accounts.urls')),
     path('api/v5/attendances/', include('attendances.urls')),
     path('api/v5/questionnaires/', include('questionnaires.urls')),
