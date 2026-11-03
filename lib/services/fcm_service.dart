@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:wellbee/assets/inet.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
@@ -29,17 +28,14 @@ class FCMService {
       final accessToken = await SharedPrefs.fetchAccessToken();
       if (accessToken == null) return;
 
-      final deviceType = Platform.isIOS ? 'ios' : 'android';
       await http.post(
-        Uri.parse('${baseUri}attendances/fcm-token/register/?token=$accessToken'),
+        Uri.parse(
+            '${baseUri}notifications/fcm_token/register/?token=$accessToken'),
         headers: {
           'Authorization': 'JWT $accessToken',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({
-          'token': fcmToken,
-          'device_type': deviceType,
-        }),
+        body: jsonEncode({'token': fcmToken}),
       );
     } catch (e) {
       print('FCM token registration error: $e');
@@ -52,8 +48,10 @@ class FCMService {
       if (accessToken == null) return;
 
       final fcmToken = await _messaging.getToken();
+      if (fcmToken == null) return;
       await http.post(
-        Uri.parse('${baseUri}attendances/fcm-token/unregister/?token=$accessToken'),
+        Uri.parse(
+            '${baseUri}notifications/fcm_token/unregister/?token=$accessToken'),
         headers: {
           'Authorization': 'JWT $accessToken',
           'Content-Type': 'application/json',

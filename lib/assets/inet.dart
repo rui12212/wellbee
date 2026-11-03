@@ -1,5 +1,10 @@
 // <pro>
-const String baseUri = 'https://api.wellbee-studio.com/api/v5/';
+const String baseUri = 'https://api.wellbee-studio.com/api/v6/';
+
+// <ngrok> ローカルDocker（ngrok経由で実機から接続。URLは起動ごとに変わる）
+// HTTPSなのでATS例外は不要
+// final String baseUri =
+//     'https://fdbc-240b-c020-640-cbcf-8d5c-334f-ff9e-8957.ngrok-free.app/api/v6/';
 
 // <dev>
 // final String baseUri = 'http://10.0.2.2:80/';  // Android emulator

@@ -5,12 +5,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wellbee/services/version_check_service.dart';
 import 'package:wellbee/ui_parts/dialogue_awesome.dart';
+import 'package:wellbee/screens/force_update.dart';
 import 'package:wellbee/screens/staff/calendar/calendar.dart';
 import 'package:wellbee/screens/staff/course/course.dart';
 import 'package:wellbee/screens/staff/course_add/edit_courses.dart';
 import 'package:wellbee/screens/staff/health_survey/health_survey_expirely.dart';
 import 'package:wellbee/screens/staff/membership/all_course.dart';
 import 'package:wellbee/screens/staff/membership/membership_edit_list.dart';
+import 'package:wellbee/screens/staff/notification/staff_notification_list.dart';
 import 'package:wellbee/screens/staff/qr_after_add_staff/add_staff_user.dart';
 import 'package:wellbee/screens/staff/user_password_reset.dart';
 
@@ -47,11 +49,10 @@ class _StaffHomePageState extends State<StaffHomePage> {
             );
           };
     if (status == VersionStatus.forceUpdate) {
-      VersionUpCustomAwesomeDialogue(
-        titleText: 'Update Required',
-        desc: 'Please update the app to continue.',
-        callback: storeUrl,
-      ).show(context);
+      // ダイアログではなく画面を置き換える。閉じて操作を続けられては
+      // サポート外のバージョンを使わせてしまう
+      ForceUpdateScreen.replaceWith(context);
+      return;
     } else if (status == VersionStatus.updateAvailable) {
       SoftUpdateCustomAwesomeDialogue(
         titleText: 'New Version Available',
@@ -229,6 +230,15 @@ class _StaffHomePageState extends State<StaffHomePage> {
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (_) => const AddStaffUserPage()),
+                      ),
+                    ),
+                    _buildGridTile(
+                      icon: Icons.campaign_outlined,
+                      title: 'Messages',
+                      color: const Color(0xFFC2185B),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const StaffNotificationListPage()),
                       ),
                     ),
                   ],

@@ -12,7 +12,9 @@ import 'package:wellbee/screens/questionnaire/questionnaire_attendee.dart';
 import 'package:wellbee/main.dart';
 import 'package:wellbee/services/version_check_service.dart';
 import 'package:wellbee/screens/attendee/attendee.dart';
+import 'package:wellbee/screens/force_update.dart';
 import 'package:wellbee/screens/graph/graph_menu.dart';
+import 'package:wellbee/screens/notification/notification_list.dart';
 import 'package:wellbee/ui_parts/checkin_record_section.dart';
 import 'package:wellbee/screens/point/point.dart';
 import 'package:wellbee/screens/reservation/membership.dart';
@@ -108,8 +110,8 @@ class _HomePageState extends State<HomePage> {
     try {
       final token = await SharedPrefs.fetchAccessToken();
       if (token == null) return;
-      var url =
-          Uri.parse('${baseUri}attendances/mailbox/unread-count/?token=$token');
+      var url = Uri.parse(
+          '${baseUri}notifications/user_notification/unread_count/?token=$token');
       var response = await http.get(url, headers: {
         "Authorization": 'JWT $token',
         "Content-Type": "application/json"
@@ -130,9 +132,39 @@ class _HomePageState extends State<HomePage> {
   void _initFCM() {
     final fcmService = FCMService();
     fcmService.initialize();
+
+    // アプリを開いている間に届いたとき。iOSはバナーを出さないので、
+    // 未読バッジの更新で気づけるようにする。
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _fetchUnreadCount();
     });
+
+    // 通知をタップしてアプリが前面に戻ったとき
+    FirebaseMessaging.onMessageOpenedApp.listen(_openFromNotification);
+
+    // アプリが完全に終了していて、通知から起動されたとき。
+    // この経路は listen では拾えないので個別に取る。
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) _openFromNotification(message);
+    });
+  }
+
+  /// プッシュ通知をタップしたときに、そのメッセージの詳細を開く。
+  ///
+  /// 受信箱を経由するのは、詳細画面がレコード全体を必要とするため。
+  /// 一覧が取得を終えてから該当メッセージを突き合わせて開く。
+  /// 見つからなければ受信箱のまま止まる。
+  Future<void> _openFromNotification(RemoteMessage message) async {
+    if (!mounted) return;
+    final raw = message.data['notification_id'];
+    final id = raw is int ? raw : int.tryParse(raw?.toString() ?? '');
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NotificationListPage(openNotificationId: id),
+      ),
+    );
+    if (mounted) _fetchUnreadCount();
   }
 
   Future<void> _fetchMembershipStatus() async {
@@ -253,6 +285,9 @@ class _HomePageState extends State<HomePage> {
       titleText: 'Sign Out',
       desc: 'Are you sure to Sign out?\nYour auto login will be off!',
       callback: () async {
+        // トークンを消す前に解除する。解除APIの認証にアクセストークンが必要。
+        // これを忘れると、端末を譲渡・売却したときに前の持ち主宛の通知が届く。
+        await FCMService().unregisterToken();
         await SharedPrefs.clearAuthInfo();
         await Navigator.of(context)
             .pushReplacement(MaterialPageRoute(builder: ((context) {
@@ -267,11 +302,10 @@ class _HomePageState extends State<HomePage> {
     if (!mounted) return;
     final launchUrl = Platform.isIOS ? onLaunchIOSUrl : onLaunchAndroidUrl;
     if (status == VersionStatus.forceUpdate) {
-      VersionUpCustomAwesomeDialogue(
-        titleText: 'Update Required',
-        desc: 'Please update the app to continue.',
-        callback: launchUrl,
-      ).show(context);
+      // ダイアログではなく画面を置き換える。閉じて操作を続けられては
+      // サポート外のバージョンを使わせてしまう
+      ForceUpdateScreen.replaceWith(context);
+      return;
     } else if (status == VersionStatus.updateAvailable) {
       SoftUpdateCustomAwesomeDialogue(
         titleText: 'New Version Available',
@@ -323,48 +357,51 @@ class _HomePageState extends State<HomePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // GestureDetector(
-                          //   onTap: () async {
-                          //     await Navigator.of(context).push(
-                          //       MaterialPageRoute(
-                          //           builder: (context) =>
-                          //               const MailboxListPage()),
-                          //     );
-                          //     _fetchUnreadCount();
-                          //   },
-                          //   child: Stack(
-                          //     clipBehavior: Clip.none,
-                          //     children: [
-                          //       Icon(Icons.mail_outline,
-                          //           color: Colors.white, size: 28.sp),
-                          //       if (_unreadCount > 0)
-                          //         Positioned(
-                          //           right: -6,
-                          //           top: -6,
-                          //           child: Container(
-                          //             padding: EdgeInsets.all(4.w),
-                          //             decoration: const BoxDecoration(
-                          //               color: Colors.red,
-                          //               shape: BoxShape.circle,
-                          //             ),
-                          //             constraints: BoxConstraints(
-                          //               minWidth: 18.w,
-                          //               minHeight: 18.w,
-                          //             ),
-                          //             child: Text(
-                          //               '$_unreadCount',
-                          //               style: TextStyle(
-                          //                 color: Colors.white,
-                          //                 fontSize: 11.sp,
-                          //                 fontWeight: FontWeight.bold,
-                          //               ),
-                          //               textAlign: TextAlign.center,
-                          //             ),
-                          //           ),
-                          //         ),
-                          //     ],
-                          //   ),
-                          // ),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () async {
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const NotificationListPage()),
+                              );
+                              // 戻るボタンでも端末の戻るジェスチャーでも
+                              // 必ず件数を取り直す
+                              _fetchUnreadCount();
+                            },
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Icon(Icons.mail_outline,
+                                    color: Colors.white, size: 28.sp),
+                                if (_unreadCount > 0)
+                                  Positioned(
+                                    right: -6,
+                                    top: -6,
+                                    child: Container(
+                                      padding: EdgeInsets.all(4.w),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      constraints: BoxConstraints(
+                                        minWidth: 18.w,
+                                        minHeight: 18.w,
+                                      ),
+                                      child: Text(
+                                        '$_unreadCount',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 11.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                       FutureBuilder(
