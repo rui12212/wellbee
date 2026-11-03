@@ -18,6 +18,14 @@ def _get_app():
     return _app
 
 
+def get_app():
+    """他アプリ（通知のFCM送信など）から Firebase アプリを取得する公開関数。
+
+    initialize_app を複数回呼ぶとエラーになるため、初期化はここに集約する。
+    """
+    return _get_app()
+
+
 def verify_id_token(id_token: str) -> Optional[dict]:
     """Firebase IDトークンを検証し、デコード済みトークンを返す。失敗時はNone。"""
     try:

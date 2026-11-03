@@ -10,6 +10,7 @@ import 'package:wellbee/screens/setting/account.dart';
 import 'dart:convert';
 
 import 'package:wellbee/screens/top_page.dart';
+import 'package:wellbee/services/fcm_service.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/dialogue_awesome.dart';
 
@@ -68,6 +69,9 @@ class _SettingPageState extends State<SettingPage> {
       titleText: 'Sign Out',
       desc: 'Are you sure to Sign out?\nYour auto login will be off!',
       callback: () async {
+        // トークンを消す前に解除する。解除APIの認証にアクセストークンが必要。
+        // これを忘れると、端末を譲渡・売却したときに前の持ち主宛の通知が届く。
+        await FCMService().unregisterToken();
         await SharedPrefs.clearAuthInfo();
         await Navigator.of(context)
             .pushReplacement(MaterialPageRoute(builder: ((context) {

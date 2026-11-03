@@ -13,6 +13,7 @@ import 'package:wellbee/screens/setting/setting_page.dart';
 import 'dart:convert';
 
 import 'package:wellbee/screens/top_page.dart';
+import 'package:wellbee/services/fcm_service.dart';
 import 'package:wellbee/ui_function/shared_prefs.dart';
 import 'package:wellbee/ui_parts/color.dart';
 import 'package:wellbee/ui_parts/dialogue_awesome.dart';
@@ -130,6 +131,9 @@ class _AccountPageState extends State<AccountPage> {
             () => throw TimeoutException("Request timeout"))
       ]);
       if (response.statusCode == 200) {
+        // 退会するので送信先も消す。トークンを消す前に解除すること
+        // （解除APIの認証にアクセストークンが必要）。
+        await FCMService().unregisterToken();
         await SharedPrefs.clearAuthInfo();
         // List<dynamic> data = jsonDecode(response.body);
         showSnackBar(kColorPrimary, 'User inactivated');
