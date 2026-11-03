@@ -17,8 +17,18 @@ class QueryParameterJWTAuthentication(JWTAuthentication):
         '/authen/jwt/refresh/',
     }
 
+    def _is_unauthenticated(self, path):
+        """認証スキップ対象かを末尾一致で判定する。
+
+        完全一致にすると /api/v6/accounts/create/ のようなバージョン
+        プレフィックス付きのパスが外れ、バージョンを上げるたびに
+        UNAUTHENTICATED_PATHS を書き足す必要が出る。先頭を見ないことで
+        プレフィックスに追従しなくて済む。
+        """
+        return any(path.endswith(p) for p in self.UNAUTHENTICATED_PATHS)
+
     def authenticate(self, request):
-        if request.method == 'POST' and request.path in self.UNAUTHENTICATED_PATHS:
+        if request.method == 'POST' and self._is_unauthenticated(request.path):
             return None
 
         # URLからtokenを取得
